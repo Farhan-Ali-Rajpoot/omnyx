@@ -1,0 +1,71 @@
+{
+  "name": "tendor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.12.2",
+    "@react-three/drei": "^10.5.0",
+    "@react-three/fiber": "^9.2.0",
+    "autoprefixer": "^10.4.22",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "formidable": "^3.5.4",
+    "framer-motion": "^12.23.5",
+    "geoip-lite": "^1.4.10",
+    "git-filter-repo": "^0.0.30",
+    "gsap": "^3.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.525.0",
+    "maath": "^0.10.8",
+    "mongoose": "^8.15.0",
+    "next": "^16.0.3",
+    "next-sitemap": "^4.2.3",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.5.2",
+    "react-icons": "^5.5.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "tailwind-scrollbar": "^4.0.2",
+    "tailwindcss": "^4.1.17",
+    "tesseract.js": "^6.0.1",
+    "three": "^0.178.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/geoip-lite": "^1.4.4",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/jwt-decode": "^2.2.1",
+    "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "baseline-browser-mapping": "^2.9.11",
+    "nodemailer": "^7.0.3",
+    "typescript": "^5"
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "next-sitemap.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Farhan-Ali-Rajpoot/prodpost.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Farhan-Ali-Rajpoot/prodpost/issues"
+  },
+  "homepage": "https://github.com/Farhan-Ali-Rajpoot/prodpost#readme"
+}

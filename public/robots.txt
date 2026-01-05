@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://prodpost.vercel.app
+
+# Sitemaps
+Sitemap: https://prodpost.vercel.app/sitemap.xml

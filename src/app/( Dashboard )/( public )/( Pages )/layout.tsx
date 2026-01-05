@@ -1,0 +1,23 @@
+import React from "react";
+import { Navbar } from "@/components/layout/Navbar/Navbar";
+import { decodeJwtTokenFromRequest } from "@/libs/DecodeJwtTokenFromCookies"; 
+import { Footer } from "@/components/layout/Footer";
+import { JwtPayload } from "jsonwebtoken";
+import type { User } from "@/components/@types/Layout";
+import { Tokens } from "@/config/tokens";
+
+const layout = async ({ children }: { children: React.ReactNode }) => {
+  const user: User | string | JwtPayload | null = await decodeJwtTokenFromRequest(Tokens.user.session);
+
+  return (
+    <>
+      <div className="relative min-h-screen px-2 md:px-8 max-w-site mx-auto overflow-x-hidden">
+        <Navbar user={user} />
+        {children}
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default layout;

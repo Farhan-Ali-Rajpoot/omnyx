@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";  
+
+
+
+
+@layer utilities {
+  @media (hover: none) and (pointer: coarse) {
+    .hover-only {
+      display: none !important;
+    }
+  }
+}
