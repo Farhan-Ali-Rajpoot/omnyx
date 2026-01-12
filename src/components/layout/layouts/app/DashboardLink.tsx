@@ -76,24 +76,32 @@ export function DashboardLink({
       href={href!}
       style={style}
       className={`
-        group flex w-full items-center py-[calc(var(--size-fluid-unit)*0.7)] px-[calc(var(--size-fluid-unit)*0.8)] rounded-[calc(var(--size-fluid-unit)*0.3)]
+        group flex w-full items-center 
+        py-[calc(var(--sfu)*0.65)] px-[calc(var(--sfu)*0.74)] rounded-[calc(var(--sfu)*0.28)]
         hover:bg-[var(--color-bg-surface-hover)] data-active:bg-[var(--color-bg-surface-emphasis)] data-active:pointer-events-none
         ${className}
       `}
     >
       {icon && (
-        <span className={` text-[calc(var(--size-fluid-unit)*1.4)] text-[var(--color-icon-muted)] ${iconColorClass} `}> {renderIcon(icon)} </span>
+        <span
+          className={` text-[calc(var(--sfu)*1.3)] text-[var(--color-icon-muted)] ${iconColorClass} `}
+        >
+          {" "}
+          {renderIcon(icon)}{" "}
+        </span>
       )}
 
-        <span
-          className="
-            block ml-[calc(var(--size-fluid-unit)*0.75)] text-[calc(var(--size-fluid-unit)*0.95)] tracking-[calc(var(--size-fluid-unit)*0.025)] w-0
-            group-open:w-full max-w-[calc(var(--size-fluid-unit)*12.5)] overflow-hidden whitespace-nowrap transition-all duration-[var(--duration-long)]
-            ease-[var(--motion-steady)]
-          "
-        >
-          {label}
-        </span>
+      <span
+        className="
+          dashboard-link-text
+          block ml-[calc(var(--sfu)*0.7)] text-[calc(var(--sfu)*0.88)] tracking-[calc(var(--sfu)*0.023)] 
+          max-w-0 overflow-hidden whitespace-nowrap 
+          transition-all duration-[var(--duration-long)]
+          ease-[var(--motion-steady)]
+        "
+      >
+        {label}
+      </span>
     </Link>
   );
 }

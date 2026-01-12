@@ -1,7 +1,7 @@
 import { founderName } from "./founder"; 
 import { Viewport } from "next";
 
-export const appName: string = `Hanufer`;
+export const appName: string = `Omnyx`;
 export const appEmail: string = process.env.APP_EMAIL as string; 
 
 export const appTitle: string = `${appName} | Helping developers to Connect and share their ideas`;

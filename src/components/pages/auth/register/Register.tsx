@@ -7,6 +7,7 @@ import { RegisterFormSubmitHandler } from "./RegisterFormSubmitHandler";
 import { FormError } from "@/components/UI/Form/FormError";
 import { FrontendRoutes } from "@/config/urls";
 import { Checkbox } from "@/components/UI/Form/Checkbox";
+import { Badge } from "@/components/UI/Badge";
 
 const RegisterForm = () => {
   return (
@@ -33,11 +34,7 @@ const RegisterForm = () => {
           {/* OR Divider */}
           <div className="flex items-center">
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
-            <span className="px-[calc(var(--sfu)*0.4)] mx-[calc(var(--sfu)*0.4)] rounded-[calc(var(--sfu)*0.125)]
-            bg-[var(--color-electric-indigo)] text-[calc(var(--sfu)*0.75)]
-            text-[var(--color-text-action)]">
-              OR
-            </span>
+             <Badge className="bg-[var(--color-electric-indigo)] text-[var(--color-text-action)]">OR</Badge>
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
           </div>
 

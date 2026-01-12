@@ -16,10 +16,19 @@ const config: Config = {
           '50%': { strokeDasharray: '90, 150', strokeDashoffset: '-35' },
           '100%': { strokeDasharray: '90, 150', strokeDashoffset: '-124' },
         },
+        enter: {
+          "0%": {
+            transform: "scale(0.8) translateY(calc(var(--sfu) * 10))",
+          },
+          "100%": {
+            transform: "scale(1) translateY(0) translateX(0)",
+          },
+        },
       },
       animation: {
         // We combine the standard spin with our custom dash animation
         'google-dash': 'google-dash 1.5s ease-in-out infinite',
+        enter: "enter var(--duration-long) ease-[var(--motion-steady)] forwards",
       }
     },
   },

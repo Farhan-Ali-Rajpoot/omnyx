@@ -9,6 +9,7 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   required?: boolean;
   enableError?: boolean;
   border?: boolean;
+  interactive?: boolean;
 }
 
 const FormInput = ({
@@ -19,19 +20,20 @@ const FormInput = ({
   enableError = false,
   required = true,
   border = true,
+  interactive = false,
   ...props
 }: FormInputProps) => {
   return (
     <div
       data-input={name}
-      className={`flex flex-col gap-[calc(var(--sfu)*0.5)] ${
+      className={`w-full flex flex-col gap-[calc(var(--sfu)*0.5)] ${
         enableError ? "group" : ""
       }`}
     >
       {label && (
         <label
           htmlFor={name}
-          className="text-[calc(var(--sfu)*0.75)] leading-[calc(var(--sfu)*1)]  uppercase"
+          className="text-[calc(var(--sfu)*0.65)] leading-[calc(var(--sfu)*1)]  uppercase"
         >
           {label}
         </label>
@@ -41,9 +43,10 @@ const FormInput = ({
         {...props}
         placeholder={placeholder}
         name={name}
-        className={`py-[calc(var(--sfu)*0.75)] px-[calc(var(--sfu)*1)] leading-[calc(var(--sfu)*1.25)] rounded-[calc(var(--sfu)*0.25)]
-        bg-[var(--color-bg-input)]
-        focus:outline-none w-full border-[var(--color-border-surface)] focus:border-[var(--color-border-active)]  ${border && `border`}
+        className={`py-[calc(var(--sfu)*0.65)] px-[calc(var(--sfu)*0.9)] leading-[calc(var(--sfu)*1.25)] rounded-[calc(var(--sfu)*0.25)]
+        bg-[var(--color-bg-input)] placeholder-[var(--color-text-placeholder)] border-[calc(var(--sfu)*0.0625)]
+        focus:outline-none w-full focus:border-[var(--color-border-emphasis)]  ${border ? `border-[var(--color-border-surface)]` : `border-transparent` } 
+        ${interactive && `hover:border-[var(--color-border-surface)]`}
         ${enableError && "group-data-error:!border-[var(--color-electric-red)]"}
         ${className}`}
         required={required}

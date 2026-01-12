@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar } from "@/components/layout/Navbar/Navbar";
+import { Navbar } from "@/components/layout/Navbar";
 import { decodeJwtTokenFromRequest } from "@/libs/DecodeJwtTokenFromCookies"; 
 import { Footer } from "@/components/layout/Footer";
 import { JwtPayload } from "jsonwebtoken";
@@ -11,7 +11,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="relative min-h-screen px-2 md:px-8 max-w-site mx-auto overflow-x-hidden">
+      <div className="relative min-h-screen px-2 md:px-8 max-w-site mx-auto overflow-x-hidden ">
         <Navbar user={user} />
         {children}
       </div>

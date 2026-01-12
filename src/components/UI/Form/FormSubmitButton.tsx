@@ -18,7 +18,7 @@ export function FormSubmitButton({
       data-state="idle"
       className="
         group relative flex items-center justify-center 
-        py-[calc(var(--sfu)*0.75)] px-[calc(var(--sfu)*1.5)] 
+        py-[calc(var(--sfu)*0.65)] px-[calc(var(--sfu)*0.9)]
         leading-[calc(var(--sfu)*1.5)]
         rounded-[calc(var(--sfu)*0.25)] 
         text-[var(--color-text-action)] 

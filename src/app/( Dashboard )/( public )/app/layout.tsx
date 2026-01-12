@@ -11,7 +11,7 @@ import {
   category,
 } from "@/app/Meta";
 import { Metadata } from "next";
-import { Dashboard } from "@/components/layout/layouts/dashboard/Dashboard";
+import { Dashboard } from "@/components/layout/layouts/app/Dashboard";
 
 export const metadata: Metadata = {
   title:

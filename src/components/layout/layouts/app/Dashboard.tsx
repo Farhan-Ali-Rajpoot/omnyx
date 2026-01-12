@@ -1,5 +1,5 @@
 "use client";
-import { AppIconJSX } from "@/config/icons/appIcons";
+import { AppIconJSX, AppNameTextSVG } from "@/config/icons/appIcons";
 import { appName } from "@/config/meta/app";
 import { ReactNode } from "react";
 import {
@@ -55,38 +55,70 @@ export async function Dashboard({ children }: DashboardProps) {
   return (
     <>
       <InitAccordion />
-      <div className="flex app">
+      {/* Structure for CSS Toggle:
+        1. Hidden Input (peer)
+        2. Aside (peer-checked reacts to input)
+        3. Labels inside/outside act as toggle buttons
+      */}
+      <div className="flex app relative">
+        <input
+          type="checkbox"
+          id="app-sidebar-toggle"
+          className="peer hidden"
+          aria-hidden="true"
+        />
+
         {/* Aside */}
         <aside
           id="dashboard-sidebar"
           className="
-            dashboard-sidebar group peer
+            dashboard-sidebar group
             fixed top-0 left-0 z-30
             flex flex-col justify-between items-center
-            w-[calc(100vw-var(--sfu))] 
-            h-[calc(var(--sfu)*4)] 
-            p-[calc(var(--sfu)*0.7)] 
-            m-[calc(var(--sfu)*0.5)]
+            
+            /* Mobile Base Styles (Scaled down ~93%) */
+            w-[calc(100vw-(var(--sfu)*0.9))] 
+            h-[calc(var(--sfu)*3.7)] 
+            p-[calc(var(--sfu)*0.65)] 
+            m-[calc(var(--sfu)*0.45)]
             overflow-hidden 
             bg-[var(--color-bg-surface)] 
-            border-[length:calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)]
-            rounded-[calc(var(--sfu)*0.5)]
+            border-[length:calc(var(--sfu)*0.06)] border-[var(--color-border-surface)]
+            rounded-[calc(var(--sfu)*0.45)]
             
             transition-[width,height,background-color] 
             duration-[var(--duration-long)] 
             ease-[var(--motion-steady)]
 
-            [&[open]]:h-[90vh]
+            /* Mobile Open State */
+            peer-checked:h-[90vh]
+            md:peer-checked:h-[calc(100vh-(var(--sfu)*0.9))]
 
-            md:[&[open]]:h-[calc(100vh-var(--sfu))]
-
+            /* Desktop Base Styles */
             md:relative md:top-auto md:left-auto md:z-auto
-            md:h-[calc(100vh-var(--sfu))] 
-            md:w-[calc(var(--sfu)*5)] 
-            md:p-[calc(var(--sfu)*1)]
+            md:h-[calc(100vh-(var(--sfu)*0.9))] 
+            md:w-[calc(var(--sfu)*4.65)] 
+            md:p-[calc(var(--sfu)*0.93)]
             md:border-none md:overflow-visible
 
-            md:[&[open]]:w-[calc(var(--sfu)*18.5)]
+            md:peer-checked:w-[calc(var(--sfu)*17)]
+
+            peer-checked:[&_.app-name]:max-w-[calc(var(--sfu)*11.6)]
+            peer-checked:[&_.toggle-icon]:rotate-0
+            peer-checked:[&_.toggle-line-1]:translate-y-[calc(var(--sfu)*0.38)]
+            peer-checked:[&_.toggle-line-1]:rotate-45
+            peer-checked:[&_.toggle-line-2]:opacity-0
+            peer-checked:[&_.toggle-line-3]:translate-y-[calc(var(--sfu)*-0.38)]
+            peer-checked:[&_.toggle-line-3]:-rotate-45
+            peer-checked:[&_.mobile-separator]:scale-x-100
+            peer-checked:[&_.link-tooltip-wrapper]:hidden
+            peer-checked:[&_.dashboard-link-item]:translate-y-0
+            peer-checked:[&_.user-name]:max-w-[calc(var(--sfu)*11.6)]
+            peer-checked:[&_.mobile-logout]:block
+            
+            md:peer-checked:[&_.header-container]:px-[calc(var(--sfu)*0.75)]
+
+            peer-checked:[&_.dashboard-link-text]:max-w-[calc(var(--sfu)*11.6)]
           "
         >
           {/* Top Section */}
@@ -94,115 +126,115 @@ export async function Dashboard({ children }: DashboardProps) {
             {/* Header */}
             <div
               className="
-                flex items-center justify-between pb-[calc(var(--sfu)*0.7)]
+                header-container
+                flex items-center justify-between pb-[calc(var(--sfu)*0.65)]
                 md:justify-center md:pb-0 md:block
+                md:transition-[padding] md:duration-[var(--duration-long)]
               "
             >
               <div
                 className="
                   flex flex-row-reverse items-center justify-between
-                  text-[calc(var(--sfu)*1.8)]
+                  text-[calc(var(--sfu)*1.67)]
                   transition-all duration-[var(--duration-long)] ease-[var(--motion-steady)]
 
-                  gap-[calc(var(--sfu)*0.5)]
+                  gap-[calc(var(--sfu)*0.46)]
                   md:gap-0
                   
-                  md:flex-row md:text-[calc(var(--sfu)*2)]
-                  md:p-[calc(var(--sfu)*0.5)_0_calc(var(--sfu)*2)_0]
-                  
-                  md:group-open:p-[calc(var(--sfu)*0.5)_0_calc(var(--sfu)*2)_calc(var(--sfu)*0.8)]
+                  md:flex-row md:text-[calc(var(--sfu)*1.86)]
+                  md:pt-[calc(var(--sfu)*1)]
+                  md:pb-[calc(var(--sfu)*1.75)]
                 "
               >
                 <h1
                   className="
-                    font-bold uppercase 
-                    tracking-[calc(var(--sfu)*0.025)]
-                    
-                    md:max-w-[calc(var(--sfu)*12.5)] md:overflow-hidden md:whitespace-nowrap 
+                    app-name
+                    md:max-w-[calc(var(--sfu)*11.6)] md:overflow-hidden md:whitespace-nowrap 
                     md:transition-all md:duration-[var(--duration-long)] md:ease-[var(--motion-steady)]
-                    
-                    md:group-open:max-w-[calc(var(--sfu) * 12.5)]
                   "
                 >
-                  {appName}
+                  <AppNameTextSVG className="min-w-fit" />
                 </h1>
-                <h1 className="md:min-w-[calc(var(--sfu)*3)] flex items-center justify-center text-[var(--color-bg-action)]">
+                <h1 className="md:min-w-[calc(var(--sfu)*2.8)] flex items-center justify-center text-[var(--color-bg-action)]">
                   <AppIconJSX />
                 </h1>
               </div>
 
-              {/* Aside Type Toggler Icon (Desktop Only) */}
-              <div
-                data-toggle-target-id="dashboard-sidebar"
+              {/* Aside Type Toggler Icon (Desktop Only) - LABEL for Checkbox */}
+              <label
+                htmlFor="app-sidebar-toggle"
                 className="
                   hidden md:block
-                  absolute top-[calc(var(--sfu)*2.5)] right-0
-                  p-[calc(var(--sfu)*0.75)_calc(var(--sfu)*0.25)]
-                  text-[calc(var(--sfu)*0.75)]
+                  absolute top-[calc(var(--sfu)*2.3)] right-0
+                  p-[calc(var(--sfu)*0.7)_calc(var(--sfu)*0.23)]
+                  text-[calc(var(--sfu)*0.7)]
                   bg-[var(--color-bg-surface)]
-                  rounded-r-[calc(var(--sfu)*0.25)]
+                  rounded-r-[calc(var(--sfu)*0.23)]
                   origin-center cursor-pointer pointer-events-none opacity-0
                   transition-all duration-[var(--duration-medium)] ease-[var(--motion-steady)]
                   
                   group-hover:translate-x-[98%] group-hover:opacity-100 group-hover:pointer-events-auto
                   
-                  group-open:hover:opacity-100 group-open:hover:pointer-events-auto
+                  /* We use sibling selector logic for hover persistence on open state if needed, 
+                     but here we rely on the group-hover which works fine */
+                  peer-checked:hover:opacity-100 peer-checked:hover:pointer-events-auto
                 "
               >
                 <div
                   className="
+                    toggle-icon
                     transform rotate-180 
-                    group-open:rotate-0
                     transition-transform
                   "
                 >
                   <FiChevronLeft />
                 </div>
-              </div>
+              </label>
 
-              {/* Navbar Type Toggler Icon (Mobile Only) */}
-              <div
-                data-toggle-target-id="dashboard-sidebar"
+              {/* Navbar Type Toggler Icon (Mobile Only) - LABEL for Checkbox */}
+              <label
+                htmlFor="app-sidebar-toggle"
                 className="
-                  flex flex-col gap-[calc(var(--sfu)*0.3)]
-                  px-[calc(var(--sfu)*0.65)]
+                  flex flex-col gap-[calc(var(--sfu)*0.28)]
+                  px-[calc(var(--sfu)*0.6)]
+                  cursor-pointer
                   md:hidden
                 "
               >
                 <div
                   className="
-                    w-[calc(var(--sfu)*1.75)] h-[calc(var(--sfu)*0.1)] 
+                    toggle-line-1
+                    w-[calc(var(--sfu)*1.62)] h-[calc(var(--sfu)*0.09)] 
                     bg-[var(--color-text-base)] 
                     transition-all duration-[var(--duration-medium)] ease-[var(--motion-steady)]
-                    group-open:translate-y-[calc(var(--sfu)*0.41)] group-open:rotate-45
                   "
                 ></div>
                 <div
                   className="
-                    w-[calc(var(--sfu)*1.75)] h-[calc(var(--sfu)*0.1)] 
+                    toggle-line-2
+                    w-[calc(var(--sfu)*1.62)] h-[calc(var(--sfu)*0.09)] 
                     bg-[var(--color-text-base)] 
                     transition-all duration-[var(--duration-medium)] ease-[var(--motion-steady)]
-                    group-open:opacity-0
                   "
                 ></div>
                 <div
                   className="
-                    w-[calc(var(--sfu)*1.75)] h-[calc(var(--sfu)*0.1)] 
+                    toggle-line-3
+                    w-[calc(var(--sfu)*1.62)] h-[calc(var(--sfu)*0.09)] 
                     bg-[var(--color-text-base)] 
                     transition-all duration-[var(--duration-medium)] ease-[var(--motion-steady)]
-                    group-open:translate-y-[calc(var(--sfu)*-0.41)] group-open:-rotate-45
                   "
                 ></div>
-              </div>
+              </label>
             </div>
 
             {/* Styling border line (Mobile Only) */}
             <div
               className="
-                h-[calc(var(--sfu)*0.0625)] w-full 
+                mobile-separator
+                h-[calc(var(--sfu)*0.06)] w-full 
                 bg-[var(--color-border-surface)] 
                 scale-x-0 transition-all duration-[var(--duration-long)] ease-[var(--motion-steady)]
-                group-open:scale-x-100
                 md:hidden
               "
             />
@@ -211,7 +243,7 @@ export async function Dashboard({ children }: DashboardProps) {
             <div
               className="
                 flex flex-col 
-                pt-[calc(var(--sfu)*1)] gap-[calc(var(--sfu)*0.125)]
+                pt-[calc(var(--sfu)*0.93)] gap-[calc(var(--sfu)*0.11)]
                 md:pt-0
               "
             >
@@ -219,17 +251,19 @@ export async function Dashboard({ children }: DashboardProps) {
                 return (
                   <Tooltip
                     key={i}
-                    className="block group-open:hidden"
+                    // link-tooltip-wrapper class is targeted by aside peer-checked to hide
+                    className="link-tooltip-wrapper block" 
                     content={props.label}
                     position="right"
                   >
                     <DashboardLink
                       {...(props as any)}
                       style={{ "--position": `${i + 1}` } as any}
+                      // dashboard-link-item targeted for translate reset
                       className="
+                      dashboard-link-item
                       translate-y-[calc(var(--sfu)*var(--position))]
                       transition-all duration-[var(--duration-long)] ease-[var(--motion-steady)] md:transition-none
-                      group-open:translate-y-0
                       md:translate-0
                     "
                     />
@@ -247,7 +281,8 @@ export async function Dashboard({ children }: DashboardProps) {
               "
             >
               <Tooltip
-                className="hidden md:block md:group-open:hidden"
+                // link-tooltip-wrapper is hidden when sidebar is open
+                className="hidden md:block link-tooltip-wrapper"
                 content="Account"
                 position="right"
               >
@@ -256,7 +291,7 @@ export async function Dashboard({ children }: DashboardProps) {
                   className="
                   flex items-center justify-center 
                   md:transition-all md:duration-[var(--duration-long)] md:ease-[var(--motion-steady)]
-                  gap-[calc(var(--sfu)*0.5)]
+                  gap-[calc(var(--sfu)*0.46)]
                   md:gap-0
                 "
                 >
@@ -266,11 +301,11 @@ export async function Dashboard({ children }: DashboardProps) {
                         data-image
                         className="
                         overflow-hidden 
-                        rounded-[calc(var(--sfu)*0.3)]
+                        rounded-[calc(var(--sfu)*0.28)]
                         bg-[var(--color-bg-action)]
-                        text-[calc(var(--sfu)*1.4)]
+                        text-[calc(var(--sfu)*1.3)]
                         text-[var(--color-icon-muted)]
-                        p-[calc(var(--sfu)*0.7)_calc(var(--sfu)*0.8)]
+                        p-[calc(var(--sfu)*0.65)_calc(var(--sfu)*0.74)]
                       "
                       />
                     ) : (
@@ -278,11 +313,11 @@ export async function Dashboard({ children }: DashboardProps) {
                         data-image
                         className="
                         overflow-hidden
-                        rounded-[calc(var(--sfu)*0.3)]
+                        rounded-[calc(var(--sfu)*0.28)]
                         bg-[var(--color-bg-action)]
-                        text-[calc(var(--sfu)*1.25)]
+                        text-[calc(var(--sfu)*1.16)]
                         text-[var(--color-electric-lime)]
-                        p-[calc(var(--sfu)*0.7)_calc(var(--sfu)*0.8)]
+                        p-[calc(var(--sfu)*0.65)_calc(var(--sfu)*0.74)]
                       "
                       >
                         <FiUser strokeWidth={1.5} />
@@ -291,11 +326,11 @@ export async function Dashboard({ children }: DashboardProps) {
                   </div>
                   <div
                     className="
+                    user-name
                     text-ellipsis 
-                    md:ml-[calc(var(--sfu)*0.6175)]
+                    md:ml-[calc(var(--sfu)*0.57)]
                     md:max-w-0 md:overflow-hidden md:whitespace-nowrap
                     md:transition-all md:duration-[var(--duration-long)] md:ease-[var(--motion-steady)] 
-                    md:group-open:max-w-[calc(var(--sfu)*12.5)]
                   "
                   >
                     Farhan Ali
@@ -305,10 +340,11 @@ export async function Dashboard({ children }: DashboardProps) {
               <Link
                 href={"/app"}
                 className="
+                  mobile-logout
+                  hidden
                   md:hidden 
-                  text-[calc(var(--sfu)*1.125)] text-[var(--color-icon-rose)]
-                  md:group-open:block
-                  px-[calc(var(--sfu)*0.75)]
+                  text-[calc(var(--sfu)*1.05)] text-[var(--color-icon-rose)]
+                  px-[calc(var(--sfu)*0.7)]
                 "
               >
                 <FiLogOut strokeWidth={1.5} />
@@ -317,20 +353,20 @@ export async function Dashboard({ children }: DashboardProps) {
           </div>
         </aside>
 
-        {/* Overlay */}
-        <div
-          data-toggle-target-id="dashboard-sidebar"
+        {/* Overlay - now a LABEL to close the checkbox */}
+        <label
+          htmlFor="app-sidebar-toggle"
           className="
             hidden
             fixed inset-0 z-29
-            peer-[[open]]:block
+            peer-checked:block
             md:hidden
-            md:peer-[[open]]:hidden
+            md:peer-checked:hidden
           "
         />
 
-        {/* Main */}
-        <div className="flex-1 max-h-screen overflow-y-scoll overflow-x-auto px-[calc(var(--sfu)*1.5)] pt-[calc(var(--sfu)*0.5)]">
+        {/* Main Content */}
+        <div className="flex-1 max-h-screen overflow-y-scroll overflow-x-auto px-[calc(var(--sfu)*1.4)] pt-[calc(var(--sfu)*0.46)]">
           {children}
         </div>
       </div>

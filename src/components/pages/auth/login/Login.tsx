@@ -6,6 +6,7 @@ import { PasswordVisibilityToggleButton } from "@/components/UI/Form/PasswordTog
 import { FormLink } from "@/components/UI/Form/Formlink";
 import { LoginFormSubmitHandler } from "./LoginSubmitHandler";
 import { FrontendRoutes } from "@/config/urls";
+import { Badge } from "@/components/UI/Badge";
 
 const LoginForm = () => {
   return (
@@ -26,11 +27,7 @@ const LoginForm = () => {
           {/* OR Divider */}
           <div className="flex items-center">
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
-            <span className="px-[calc(var(--sfu)*0.4)] mx-[calc(var(--sfu)*0.4)] rounded-[calc(var(--sfu)*0.125)]
-            bg-[var(--color-electric-indigo)] text-[calc(var(--sfu)*0.75)]
-            text-[var(--color-text-action)]">
-              OR
-            </span>
+            <Badge className="bg-[var(--color-electric-indigo)] text-[var(--color-text-action)]">OR</Badge>
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
           </div>
 

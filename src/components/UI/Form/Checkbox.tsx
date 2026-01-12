@@ -8,11 +8,11 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'siz
 
 const sizeStyles = {
   small: {
-    divStyles: "w-[calc(var(--sfu)*1.5)] h-[calc(var(--sfu)*1.5)]",
+    divStyles: "w-[calc(var(--sfu)*1.25)] h-[calc(var(--sfu)*1.25)]",
     iconStyles: "text-[calc(var(--sfu)*0.7)]",
   },
   medium: {
-    divStyles: "w-[calc(var(--sfu)*2.25)] h-[calc(var(--sfu)*2.25)]",
+    divStyles: "w-[calc(var(--sfu)*2)] h-[calc(var(--sfu)*2)]",
     iconStyles: "text-[calc(var(--sfu)*1)]",
   },
 };
@@ -20,7 +20,7 @@ const sizeStyles = {
 export function Checkbox({ size = "small", border = true, ...props }: CheckboxProps) {
   const { divStyles, iconStyles } = sizeStyles[size];
   return (
-    <label className="relative inline-flex items-center cursor-pointer">
+    <label className="relative inline-flex items-center cursor-pointer rounded-full">
       {/* Hidden native checkbox */}
       <input type="checkbox" {...props} className="sr-only peer" />
 
@@ -33,7 +33,7 @@ export function Checkbox({ size = "small", border = true, ...props }: CheckboxPr
           flex items-center justify-center
           flex-shrink-0
           relative
-          border-[var(--color-border-surface)] ${border && `border-[calc(var(--sfu)*0.0625)]`}
+          border-[calc(var(--sfu)*0.0625)] ${border ? `border-[var(--color-border-surface)]` : `border-transparent not-peer-checked:hover:border-[var(--color-border-surface)]`}
           ${divStyles}
         `}
       >

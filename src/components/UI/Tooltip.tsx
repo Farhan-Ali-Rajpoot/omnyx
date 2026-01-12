@@ -25,43 +25,43 @@ export function Tooltip({
   const POSITION_CLASSES: Record<TooltipPosition, string> = {
     top: `
       bottom-full left-1/2 -translate-x-1/2 -translate-y-1/12
-      mb-[calc(var(--size-fluid-unit)*0.75)]
+      mb-[calc(var(--size-fluid-unit)*0.7)]
       group-hover/t:opacity-100 group-hover/t:-translate-y-0
     `,
     bottom: `
       top-full left-1/2 -translate-x-1/2 translate-y-1/12
-      mt-[calc(var(--size-fluid-unit)*0.75)]
+      mt-[calc(var(--size-fluid-unit)*0.7)]
       group-hover/t:opacity-100 group-hover/t:translate-y-0
     `,
     left: `
       right-full top-1/2 -translate-y-1/2 -translate-x-1/12
-      mr-[calc(var(--size-fluid-unit)*0.75)]
+      mr-[calc(var(--size-fluid-unit)*0.7)]
       group-hover/t:opacity-100 group-hover/t:-translate-x-0
     `,
     right: `
       left-full top-1/2 -translate-y-1/2 translate-x-1/12
-      ml-[calc(var(--size-fluid-unit)*0.75)]
+      ml-[calc(var(--size-fluid-unit)*0.7)]
       group-hover/t:opacity-100 group-hover/t:translate-x-0
     `,
   };
 
   const VARIANT_STYLES: Record<TooltipVariant, string> = {
     simple: `
-      px-[calc(var(--size-fluid-unit)*0.5)]
-      py-[calc(var(--size-fluid-unit)*0.25)]
-      rounded-[calc(var(--size-fluid-unit)*0.25)]
+      px-[calc(var(--size-fluid-unit)*0.46)]
+      py-[calc(var(--size-fluid-unit)*0.23)]
+      rounded-[calc(var(--size-fluid-unit)*0.23)]
       whitespace-nowrap
-      text-[calc(var(--sfu)*0.875)]
+      text-[calc(var(--sfu)*0.81)]
       font-medium
     `,
     rich: `
-      p-[calc(var(--size-fluid-unit)*1.25)]
-      w-[calc(var(--size-fluid-unit)*18)]
-      rounded-[calc(var(--size-fluid-unit)*0.5)]
+      p-[calc(var(--size-fluid-unit)*1.16)]
+      w-[calc(var(--size-fluid-unit)*16.7)]
+      rounded-[calc(var(--size-fluid-unit)*0.46)]
       whitespace-normal
       text-left
       shadow-xl
-      border-[calc(var(--sfu)*0.0625)]
+      border-[calc(var(--sfu)*0.058)]
       border-white/5
     `,
   };
@@ -124,23 +124,23 @@ export function Tooltip({
         {variant === "simple" ? (
           <span>{content}</span>
         ) : (
-          <div className="flex flex-col gap-[calc(var(--size-fluid-unit)*0.5)]">
+          <div className="flex flex-col gap-[calc(var(--size-fluid-unit)*0.46)]">
             {(title || icon) && (
-              <div className="flex items-center gap-[calc(var(--size-fluid-unit)*0.5)]">
+              <div className="flex items-center gap-[calc(var(--size-fluid-unit)*0.46)]">
                 {icon && (
-                  <span className="text-[calc(var(--sfu)*1.25)] opacity-90 shrink-0">
+                  <span className="text-[calc(var(--sfu)*1.16)] opacity-90 shrink-0">
                     {icon}
                   </span>
                 )}
                 {title && (
-                  <h4 className="font-bold text-[calc(var(--sfu)*1)] leading-none">
+                  <h4 className="font-bold text-[calc(var(--sfu)*0.93)] leading-none">
                     {title}
                   </h4>
                 )}
               </div>
             )}
 
-            <div className="text-[calc(var(--sfu)*0.875)] opacity-85 font-normal">
+            <div className="text-[calc(var(--sfu)*0.81)] opacity-85 font-normal">
               {content}
             </div>
           </div>

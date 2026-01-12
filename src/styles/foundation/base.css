@@ -17,30 +17,31 @@ html::-webkit-scrollbar {
 }
 
 body {
-  min-width: var(--size-container-min);
+  min-height: 100vh;
   width: 100%;
   margin: 0;
   line-height: 1.5;
   background: var(--color-bg-base);
   color: var(--color-text-base);
-  font-size: var(--size-fluid-unit);
+  font-size: calc(var(--size-fluid-unit)*0.93);
   font-family: var(--font-neue-montreal), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* *{ border: calc(var(--sfu)*0.0625) solid red;} */
+
 body .app {
   background-color: var(--color-bg-app);
 }
-
-/* Scrollbar - global styles for WebKit browsers */
+/* 
 ::-webkit-scrollbar {
   width:  4px;
   height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* keep the track invisible */
+  background: transparent; 
   cursor: pointer;
 }
 
@@ -63,4 +64,4 @@ body .app {
 ::-webkit-scrollbar-corner {
   background: red;
   display: none;
-}
+} */

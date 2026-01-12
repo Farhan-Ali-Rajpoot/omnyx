@@ -41,10 +41,9 @@ export default function GoogleSignInButton() {
     if (!clientId) {
         console.error('Google Client ID is missing from environment variables');
         return (
-            <div className="text-red-500 sm:text-[1.02vw] flex items-center justify-center gap-[clamp(8px,0.5vw,0.5vw)] py-[clamp(8px,0.55vw,0.55vw)] 
-                px-[clamp(12px,0.75vw,0.75vw)]
-                rounded-sm border border-red-400 bg-red-50 dark:bg-red-900/20
-                text-[clamp(14px,1.2vw,1.02vw)] w-full transition-all">
+            <div className="text-[calc(var(--color-text-action))] flex items-center justify-center gap-[calc(var(--sfu)*0.5)]
+                py-[calc(var(--sfu)*0.65)] px-[calc(var(--sfu)*0.9)]
+                rounded-[calc(var(--sfu)*0.25)] w-full transition-all">
                 Google sign-in currently not available
             </div>
         );
@@ -54,7 +53,7 @@ export default function GoogleSignInButton() {
         <div
             onClick={handleRedirect}
             className="flex items-center justify-center gap-[calc(var(--sfu)*0.5)]
-                py-[calc(var(--sfu)*0.75)] px-[calc(var(--sfu)*1)]
+                py-[calc(var(--sfu)*0.65)] px-[calc(var(--sfu)*0.9)]
                 rounded-[calc(var(--sfu)*0.25)] border border-[var(--color-border-surface)] 
                 bg-[var(--color-bg-input)]                
                 w-full transition-all focus:outline-none cursor-pointer
