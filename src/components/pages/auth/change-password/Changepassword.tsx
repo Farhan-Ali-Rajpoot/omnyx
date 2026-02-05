@@ -4,8 +4,6 @@ import { FaLock, FaArrowLeft, } from 'react-icons/fa'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Notify } from '@/components/UI/Notify/Notify'
-import ShowFormError from '@/components/UI/Form/FormError'
-import { FormSubmitLoader } from '@/components/UI/Form/FormSubmitButton'
 import { secFetch } from '@/libs/secFetch'
 
 const ChangePasswordPage = () => {
@@ -17,8 +15,6 @@ const ChangePasswordPage = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    ShowFormError({ state: false });
-    FormSubmitLoader({ state: true });
 
     const formData = new FormData(event.currentTarget)
     const currentPassword = formData.get('currentPassword') as string
@@ -27,20 +23,14 @@ const ChangePasswordPage = () => {
 
     // Client-side validation
     if (!currentPassword || !newPassword || !confirmPassword) {
-      ShowFormError({ error: 'All fields are required' })
-      FormSubmitLoader({ state: false });
       return
     }
 
     if (newPassword.length < 7) {
-      ShowFormError({ error: 'Password must be at least 7 characters' });
-      FormSubmitLoader({ state: false });
       return
     }
 
     if (newPassword !== confirmPassword) {
-      ShowFormError({ error: 'Passwords do not match' });
-      FormSubmitLoader({ state: false });
       return
     }
 
@@ -54,22 +44,9 @@ const ChangePasswordPage = () => {
       const res = await response.json();
 
       if (!response.ok) {
-        ShowFormError({ error: res.error || 'Password change failed' });
-        Notify({
-          type: 'error',
-          title: res.error || 'Password change failed',
-          message: '',
-          duration: 4000
-        });
         return
       };
 
-      Notify({
-        type: 'success',
-        title: 'Changed Password',
-        message: 'Your password have been changes',
-        duration: 4000
-      });
       event.currentTarget.reset()
 
       // Redirect after 2 seconds
@@ -78,14 +55,7 @@ const ChangePasswordPage = () => {
       }, 2000)
 
     } catch (err: any) {
-      Notify({
-        type: 'error',
-        title: 'Something went wrong',
-        message: 'Something went wrong Please try again later'
-      });
-      ShowFormError({ error: 'Something went wrong.' });
     } finally {
-      FormSubmitLoader({ state: false });
     }
   }
 

@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { BsStars } from 'react-icons/bs';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { FormSubmitLoader } from '@/components/UI/Form/FormSubmitButton'; 
-import { PasswordVisibilityHandler } from '@/components/UI/Form/PasswordToggleButton';
 import { secFetch } from '@/libs/secFetch';
 
 
@@ -53,7 +51,6 @@ export default function SetPassword() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        FormSubmitLoader({ state: true });
         try {
             const res = await secFetch('/api/auth/register/google', {
                 method: 'POST',
@@ -73,7 +70,6 @@ export default function SetPassword() {
             console.error('Submission error:', err);
             setError(err?.message || 'Something went wrong!');
         } finally{
-            FormSubmitLoader({ state: false });
         }
     };
 

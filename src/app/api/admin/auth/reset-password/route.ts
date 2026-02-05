@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/libs/db/connectDB";
-import verifyRequestSource from "@/libs/middleware/verifyRequestSource";
 import AdminModel from "@/models/admin.model";
 
 export async function POST(req: any) {
     try{
-        const check = await verifyRequestSource(req);
-        if(check) return check;
 
         await connectDB();
 
