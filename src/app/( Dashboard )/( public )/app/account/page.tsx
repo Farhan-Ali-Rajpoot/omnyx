@@ -1,4 +1,4 @@
-import Account from '@/components/pages/account/Account';
+// import Account from '@/components/pages/account/Account';
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 import { UserType } from '@/models/user.model';
@@ -91,7 +91,7 @@ const Page = async () => {
     return (
         <>
 
-            <Account user={user}  pathname={pathname} />
+            {/* <Account user={user}  pathname={pathname} /> */}
 
         </>
     )
