@@ -1,5 +1,5 @@
 import React from 'react';
-import ALogout from '@/components/admin/profile/settings/ALogout';
+// import ALogout from '@/components/admin/profile/settings/ALogout';
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -76,7 +76,7 @@ export const viewport: Viewport = {
 const page = () => {
   return (
     <>
-      <ALogout />
+      {/* <ALogout /> */}
     </>
   )
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import AChangePasswordPage from '@/components/admin/profile/settings/AChangePassword';
+// import AChangePasswordPage from '@/components/admin/profile/settings/AChangePassword';
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -77,7 +77,7 @@ const page = () => {
   return (
     <>
 
-      <AChangePasswordPage />
+      {/* <AChangePasswordPage /> */}
 
     </>
   )
