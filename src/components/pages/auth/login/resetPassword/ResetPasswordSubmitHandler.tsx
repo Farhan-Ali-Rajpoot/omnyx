@@ -34,7 +34,7 @@ export function ResetPasswordSubmitHandler() {
     };
 
     try {
-      const response = await secFetch(BackendRoutes.login.resetPassword.base, {
+      const response = await secFetch(BackendRoutes.auth.login.resetPassword.base, {
         method: "POST",
         service: "auth",
         body: JSON.stringify(payload),

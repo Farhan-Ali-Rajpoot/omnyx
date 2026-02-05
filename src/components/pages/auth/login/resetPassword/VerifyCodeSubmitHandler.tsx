@@ -33,7 +33,7 @@ export function VerifyCodeSubmitHandler() {
     };
 
     try {
-      const response = await secFetch(BackendRoutes.login.resetPassword.verifyCode, {
+      const response = await secFetch(BackendRoutes.auth.login.resetPassword.verifyCode, {
         method: 'POST',
         service: "auth",
         body: JSON.stringify(payload),
