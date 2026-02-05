@@ -1,5 +1,5 @@
 import React from 'react'
-import LogoutPage from '@/components/pages/auth/Logout/LogoutPage'
+// import LogoutPage from '@/components/pages/auth/Logout/LogoutPage'
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -80,7 +80,7 @@ const page = () => {
     return (
         <>
 
-            <LogoutPage />
+            {/* <LogoutPage /> */}
 
         </>
     )

@@ -1,5 +1,5 @@
 import React from 'react'
-import DeleteAccountPage from '@/components/pages/auth/delete-account/DeleteAccount'
+// import DeleteAccountPage from '@/components/pages/auth/delete-account/DeleteAccount'
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -79,7 +79,7 @@ const page = () => {
     return (
         <>
 
-            <DeleteAccountPage />
+            {/* <DeleteAccountPage /> */}
 
 
         </>

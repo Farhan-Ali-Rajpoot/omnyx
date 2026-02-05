@@ -1,5 +1,5 @@
-import React from 'react'
-import ChangePasswordPage from '@/components/pages/auth/change-password/Changepassword'
+// import React from 'react'
+// import ChangePasswordPage from '@/components/pages/auth/change-password/Changepassword'
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -77,7 +77,7 @@ const page = () => {
   return (
     <>
 
-      <ChangePasswordPage />
+      {/* <ChangePasswordPage /> */}
 
     </>
   )
