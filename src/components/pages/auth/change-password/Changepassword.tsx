@@ -35,7 +35,7 @@ const ChangePasswordPage = () => {
     }
 
     try {
-      const response = await secFetchfetch('/api/auth/change-password', {
+      const response = await secFetch('/api/auth/change-password', {
         method: 'POST',
         service: 'auth',
         body: JSON.stringify({ id, currentPassword, newPassword })
