@@ -3,9 +3,7 @@
 import { useEffect, useRef } from "react";
 import { secFetch } from "@/libs/secFetch";
 import { BackendRoutes, FrontendRoutes } from "@/config/urls";
-import { hideInputError, showInputError } from "@/components/UI/Form/FormInput";
 import { Notify } from "@/components/UI/Notify/Notify";
-import { FormSubmitLoader } from "@/components/UI/Form/FormSubmitButton";
 import { useRouter } from "next/navigation";
 
 const COOLDOWN_SECONDS = 120;
@@ -74,7 +72,7 @@ export function VerifyFormHandler() {
       resendButton.textContent = "Sending...";
 
       try {
-        const res = await secFetch(BackendRoutes.register.resendCode, {
+        const res = await secFetch(BackendRoutes.auth.register.resendCode, {
           service: "auth",
           method: "POST",
         });
@@ -131,19 +129,15 @@ export function VerifyFormHandler() {
     const handleFormSubmit = async (event: Event) => {
       event.preventDefault();
 
-      hideInputError("code");
-      FormSubmitLoader({ state: true });
       const formData = new FormData(form);
       const code = formData.get("code") as string;
 
       if (!code || code.length !== 6) {
-        FormSubmitLoader({ state: false });
-        showInputError("code", "Please enter a valid 6-digit code");
         return;
       }
 
       try {
-        const response: any = await secFetch(BackendRoutes.register.codeVerification, {
+        const response: any = await secFetch(BackendRoutes.auth.register.codeVerification, {
           service: "auth",
           method: "POST",
           body: JSON.stringify({ verificationCode: code }),
@@ -159,13 +153,7 @@ export function VerifyFormHandler() {
         }
 
         if (result.errorType === "EXPIRED") {
-          showInputError("code", "Verification Code expired ");
         } else {
-          showInputError(
-            "code",
-            result.error ||
-              "Verification failed. Please check the code and try again."
-          );
         }
       } catch (err) {
         Notify({
@@ -174,7 +162,6 @@ export function VerifyFormHandler() {
           message: "Unable to verify code. Please try again.",
         });
       } finally {
-        FormSubmitLoader({ state: false });
       }
     };
 

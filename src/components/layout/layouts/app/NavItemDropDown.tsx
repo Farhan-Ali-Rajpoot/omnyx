@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { FiChevronRight } from "react-icons/fi";
 import {
-  DashboardItemLink,
-  NavItemColors,
   NavItemProps,
   renderIcon,
 } from "./DashboardLink";
@@ -28,7 +26,6 @@ export function DashboardItemDropdown({
                 className={`text-[21px] 
                   transition-colors duration-400 ease-steady 
                   text-[var(--color-icon-muted)]
-                  ${color && `${NavItemColors[color]} ${NavItemColors[color]}` }
                    `}
               >
                 {renderIcon(icon)}
@@ -80,7 +77,7 @@ export function DashboardItemDropdown({
               >
                 {item.icon && (
                   <span
-                    className={`text-lg text-[var(--color-icon-muted)] ${item.active && item.color && `${NavItemColors[item.color]} }`}`}
+                    className={`text-lg text-[var(--color-icon-muted)]`}
                   >
                     {renderIcon(item.icon)}
                   </span>

@@ -1,14 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import type { JwtPayload } from "jsonwebtoken";
-import type { Admin } from "@/components/@types/admin/Layout";
 import { MdSpaceDashboard } from "react-icons/md";
 
 const ANavbar = async ({
   admin,
   className,
 }: {
-  admin: JwtPayload | Admin | null;
+  admin: JwtPayload | any | null;
   className?: string;
 }) => {
   return (

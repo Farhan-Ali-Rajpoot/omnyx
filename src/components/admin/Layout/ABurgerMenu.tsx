@@ -5,11 +5,10 @@ import type { JwtPayload } from "jsonwebtoken";
 import Link from "next/link";
 import { FaTools, FaUser } from "react-icons/fa";
 import { BsGear } from "react-icons/bs";
-import type { Admin } from "@/components/@types/admin/Layout";
 import { MdSpaceDashboard } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 
-const ABurgerMenu = ({ admin }: { admin: JwtPayload | Admin | null }) => {
+const ABurgerMenu = ({ admin }: any) => {
   const pathname = usePathname();
 
   const isActive = (href: string) => pathname.startsWith(href);

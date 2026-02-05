@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import VerifyEmailPage from '@/components/pages/auth/register/verifyEmail/VerifyEmail'
+// import VerifyEmailPage from '@/components/pages/auth/register/verifyEmail/VerifyEmail'
 import type { Metadata, Viewport } from 'next';
 import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
 
@@ -83,7 +83,8 @@ const page = () => {
     return (
         <>
             <Suspense fallback={<div>Loading...</div>}>
-                <VerifyEmailPage />
+                {/* <VerifyEmailPage /> */}
+                Hello
             </Suspense>
         </>
     )

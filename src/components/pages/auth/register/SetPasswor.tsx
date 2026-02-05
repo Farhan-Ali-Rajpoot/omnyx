@@ -145,7 +145,6 @@ export default function SetPassword() {
                                 onChange={handleChange}
                                 className="toggle-password py-2 px-3 text-sm rounded-md bg-neutral-200 focus:outline-none w-full border border-neutral-300 focus:ring-1 focus:ring-neutral-900 transition-all"
                             />
-                            <PasswordVisibilityHandler />
                         </div>
 
                         <button
