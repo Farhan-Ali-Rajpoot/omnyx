@@ -1,14 +1,14 @@
 import "@/styles/foundation/tokens.css";
 import "@/styles/foundation/scales.css";
 import "@/styles/foundation/motion.css";
-import "@/styles/foundation/base.css";
 import "@/styles/globals.css";
+import "@/styles/animation/parallax-spin.css";
+import "@/styles/animation/footer-svg.css";
 
 import type { Metadata, Viewport } from 'next';
 import { NotificationCard } from "@/components/UI/Notify/NotifyCard"; 
-import { hafferMonoRegular } from "./fonts/HafferMonoRegular";
+import { hafferMonoRegular, BrisaRegular } from "./fonts";
 import { ThemeScript } from "@/components/shared/colorTheme/ThemeScript";
-import { GlobalToggleManager } from "@/components/layout/GlobalToggleManager";
 import { AppMetadata, } from "@/config/meta/metadata/LayoutMetadata";
 import { AppViewport } from "@/config/meta/app";
 import { ThemeToggle } from "@/components/shared/colorTheme/ThemeToggle";
@@ -23,12 +23,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   
   return (
-    <html lang="en" className={`${hafferMonoRegular.className}`}>
+    <html lang="en" className={`${BrisaRegular.variable} ${hafferMonoRegular.variable} antialiased`}>
       <head>
         <meta name="google-site-verification" content="AWylW6M_1Cm_a0q0-3_nWk_qmcbrc6p7LUbfYCCnDq8" />
         <ThemeScript />
       </head>
-      <body className={`antialiased min-w-screen`}>
+      <body className={`min-w-screen min-h-screen margin-0 bg-[var(--color-bg-base)] text-[var(--color-text-base)] text-[calc(var(--sfu)*0.93)] font-haffer-montreal
+        overflow-x-hidden box-border scrollbar-none`}>
         {children}
         <CheckboxToggleManager />
         <NotificationCard />

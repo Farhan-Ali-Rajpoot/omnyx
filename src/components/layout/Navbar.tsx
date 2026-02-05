@@ -1,19 +1,17 @@
 import { ThemeToggle } from "@/components/shared/colorTheme/ThemeToggle";
-import { navLinks } from "@/config/links/navl";
+import { navLinks } from "@/config/component-links/navl";
 import { CSSProperties, HTMLAttributes } from "react";
 import Link from "next/link";
-import { AppIconJSX, AppNameTextSVG } from "@/config/icons/appIcons";
-import {
-  FounderSocialLinks,
-} from "@/config/links/FounderSocialLink";
+import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
+import { FounderSocialLinks } from "@/config/component-links/FounderSocialLink";
 import { FaGithub, FaUser } from "react-icons/fa";
 import { appName } from "@/config/meta/app";
-import { authLinks } from "@/config/links/auth";
+import { authLinks } from "@/config/component-links/auth";
 import Image from "next/image";
 
 import { JwtPayload } from "jsonwebtoken";
 import type { User } from "@/components/@types/Layout";
-import { aboutLinks } from "@/config/links/about";
+import { aboutLinks } from "@/config/component-links/about";
 import { FrontendRoutes } from "@/config/urls";
 import { UnderlineLink } from "../UI/UnderlineLink";
 import { Button } from "../UI/Button";
@@ -31,13 +29,9 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
   return (
     <div id="navbar" className={`relative mx-auto ${className}`} {...props}>
       {/* 1. THE TRIGGER STATE */}
-      <input 
-        type="checkbox" 
-        id="nav-toggle" 
-        className="peer hidden" 
-      />
+      <input type="checkbox" id="nav-toggle" className="peer hidden" />
 
-      <nav 
+      <nav
         className={` 
           fixed inset-x-0 top-0 z-30 mx-auto
           mt-[calc(var(--sfu)*0.5)] sm:mt-[calc(var(--sfu)*1)]
@@ -87,15 +81,17 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
           peer-checked:[&_.ham-line-2]:scale-x-70
           peer-checked:[&_.ham-line-2]:-rotate-45
           sm:peer-checked:[&_.ham-line-2]:-translate-y-[calc(var(--sfu)*0.15)]
-          peer-checked:[&_.text-slider]:-translate-y-[calc(var(--sfu)*1.5)]
+          peer-checked:[&_.text-slider]:-translate-y-full
           peer-checked:[&_.text-close]:translate-y-0
         `}
       >
         {/* Top bar */}
         <div className="flex h-full w-full items-center justify-between shrink-0">
-          
           {/* THE TRIGGER BUTTON */}
-          <label htmlFor="nav-toggle" className="cursor-pointer select-none z-30">
+          <label
+            htmlFor="nav-toggle"
+            className="cursor-pointer select-none z-30"
+          >
             <div
               className={`ham-wrapper group cursor-pointer flex items-center justify-center gap-[calc(var(--sfu)*0.625)] rounded-[calc(var(--sfu)*0.25)] 
                 py-[calc(var(--sfu)*0.4)] px-[calc(var(--sfu)*0.9)] hover:bg-[var(--color-bg-action-emphasis)]
@@ -103,18 +99,22 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
             >
               {/* Hamburger Lines */}
               <div className="flex flex-col gap-1.5 sm:gap-[0.3vw] 3xl:!gap-[5.76px]">
-                <div className="ham-line-1 h-[calc(var(--sfu)*0.1)] w-[calc(var(--sfu)*1.5)] bg-[var(--color-text-action)] rounded-full transition-transform 
-                duration-[var(--duration-long)] ease-[var(--motion-steady)] origin-center" />
-                <div className="ham-line-2 h-[calc(var(--sfu)*0.1)] w-[calc(var(--sfu)*1.5)] bg-[var(--color-text-action)] rounded-full transition-transform 
-                duration-[var(--duration-long)] ease-[var(--motion-steady)] origin-center" />
+                <div
+                  className="ham-line-1 h-[calc(var(--sfu)*0.1)] w-[calc(var(--sfu)*1.5)] bg-[var(--color-text-action)] rounded-full transition-transform 
+                duration-[var(--duration-long)] ease-[var(--motion-steady)] origin-center"
+                />
+                <div
+                  className="ham-line-2 h-[calc(var(--sfu)*0.1)] w-[calc(var(--sfu)*1.5)] bg-[var(--color-text-action)] rounded-full transition-transform 
+                duration-[var(--duration-long)] ease-[var(--motion-steady)] origin-center"
+                />
               </div>
 
               {/* Sliding Text */}
-              <div className="relative overflow-hidden text-[var(--color-text-action)] h-[calc(var(--sfu)*1.5)]">
+              <div className="relative overflow-hidden text-[var(--color-text-action)]">
                 <p className="text-slider transition-transform duration-[var(--duration-long)] ease-[var(--motion-steady)]">
                   Menu
                 </p>
-                <p className="text-close absolute inset-0 transition-transform duration-[var(--duration-long)] ease-[var(--ease-steady)] translate-y-[calc(var(--sfu)*1.5)]">
+                <p className="text-close absolute inset-0 transition-transform duration-[var(--duration-long)] ease-[var(--ease-steady)] translate-y-full">
                   Close
                 </p>
               </div>
@@ -144,21 +144,21 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
                   sizes="(max-width: 640px) 32px, (max-width: 1919px) 2.2vw, 40px"
                 />
               ) : (
-                <FaUser
-                  className="text-[var(--color-text-action)] h-[calc(var(--sfu)*1.25)] w-[calc(var(--sfu)*1.25)]"
-                />
+                <FaUser className="text-[var(--color-text-action)] h-[calc(var(--sfu)*1.25)] w-[calc(var(--sfu)*1.25)]" />
               )}
             </Link>
           ) : (
             <div className="flex gap-[calc(var(--sfu)*0.25)]">
               {authLinks.map((l, i) => {
                 return (
-                  <Button 
+                  <Button
                     key={i}
-                    href={l.href} 
-                    shape={i % 2 == 0 ? "rounded" : "box"} 
-                    className={` ${i % 2 == 0 ? "bg-[var(--color-action-secondary)] hidden sm:block text-[var(--color-text-action)]" : "text-[var(--color-bg-action)] bg-[var(--color-electric-lime)]"}`}
-                    > 
+                    href={l.href}
+                    shape={i % 2 == 0 ? "rounded" : "box"}
+                    className={` ${i % 2 == 0 ? 
+                      "bg-[var(--color-bg-action-secondary)] hidden sm:block text-[var(--color-text-action)]"
+                      : "text-[var(--color-bg-action)] bg-[var(--color-bg-action-light)]"}`}
+                  >
                     {l.label}
                   </Button>
                 );
@@ -184,20 +184,20 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
               bg-[var(--color-border-action)]
             `}
           />
-          
+
           <div
             className="flex flex-col h-fit sm:flex-row w-full pt-[calc(var(--sfu)*1.5)] sm:p-[calc(var(--sfu)*1)] 
             gap-[calc(var(--sfu)*1)] sm:gap-[calc(var(--sfu)*1.25)] text-[var(--color-text-action)]"
           >
             {[CardA, CardB, CardC].map((Card, i) => {
-                const index = i + 1;
-                const revIndex = 3 + 1 - index; 
-                return (
-                  <Card
-                    key={i}
-                    className={`
+              const index = i + 1;
+              const revIndex = 3 + 1 - index;
+              return (
+                <Card
+                  key={i}
+                  className={`
                       nav-card
-                      ${ i % 2 == 0 && "bg-[var(--color-bg-action-emphasis)]"}
+                      ${i % 2 == 0 && "bg-[var(--color-bg-action-surface-emphasis)]"}
                       relative w-full rounded-[calc(var(--sfu)*1)] overflow-hidden
                       transition-transform duration-[var(--duration-long)] ease-[var(--motion-steady)] transform
                       translate-y-[calc(var(--sfu)*var(--i)*2)]
@@ -205,14 +205,15 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
                       peer-checked:delay-[calc(var(--r-i)*50ms)]
                       delay-[calc(var(--i)*50ms)] p-[calc(var(--sfu)*2.25)]
                     `}
-                    style={{
+                  style={
+                    {
                       "--i": index.toString(),
                       "--r-i": revIndex.toString(),
-                    } as CSSProperties}
-                  />
-                );
-              })}
-
+                    } as CSSProperties
+                  }
+                />
+              );
+            })}
           </div>
         </div>
       </nav>
@@ -252,7 +253,7 @@ export function CardA({ className = "", ...props }: CardProps) {
         </p>
         <div className="flex flex-col">
           {navLinks.map((l, i) => (
-             <UnderlineLink
+            <UnderlineLink
               data-target-checkbox-id="nav-toggle"
               key={l.link}
               href={l.link}
@@ -260,7 +261,7 @@ export function CardA({ className = "", ...props }: CardProps) {
               className={`
                 w-full text-[calc(var(--sfu)*1.25)]
                 text-[var(--color-text-action)]
-                py-[calc(var(--sfu)*0.75)] ${ i !== 0 && "border-t-[calc(var(--sfu)*0.1)]" } border-[var(--color-border-action)]
+                py-[calc(var(--sfu)*0.75)] ${i !== 0 && "border-t-[calc(var(--sfu)*0.1)]"} border-[var(--color-border-action)]
               `}
             >
               {l.name}
@@ -288,7 +289,7 @@ function CardB({ className = "", ...props }: CardProps) {
         </p>
         <div className="flex flex-col gap-[calc(var(--sfu)*0.2)]">
           {aboutLinks.map((l, i) => (
-             <UnderlineLink
+            <UnderlineLink
               data-target-checkbox-id="nav-toggle"
               key={l.href}
               href={l.href}
@@ -296,7 +297,7 @@ function CardB({ className = "", ...props }: CardProps) {
               className={`
                 w-full text-[calc(var(--sfu)*1.25)]
                 text-[var(--color-text-action)]
-                py-[calc(var(--sfu)*0.75)] ${ i !== 0 && "border-t-[calc(var(--sfu)*0.1)]" } border-[var(--color-border-action)]
+                py-[calc(var(--sfu)*0.75)] ${i !== 0 && "border-t-[calc(var(--sfu)*0.1)]"} border-[var(--color-border-action)]
               `}
             >
               {l.name}
@@ -341,16 +342,16 @@ function CardC({ className = "", ...props }: any) {
           {appName}
         </div>
       </div>
-      
+
       <p className="text-[calc(var(--sfu)*1.75)] sm:text-[calc(var(--sfu)*1.5)] font-bold mb-[calc(var(--sfu)*2)] leading-tight text-neutral-200 group-hover/card:text-white transition-colors">
         Building next level projects
       </p>
-      
+
       <div className="flex gap-[calc(var(--sfu)*1)]">
         <FaGithub className="h-[calc(var(--sfu)*2.5)] w-[calc(var(--sfu)*2.5)] text-neutral-400 group-hover/card:text-white transition-colors duration-300" />
         <AppIconJSX className="h-[calc(var(--sfu)*2.5)] w-[calc(var(--sfu)*2.5)] text-neutral-400 group-hover/card:text-white transition-colors duration-300" />
       </div>
-      
+
       <p className="mt-[calc(var(--sfu)*2)] text-[calc(var(--sfu)*0.875)] text-neutral-500 group-hover/card:text-neutral-400 transition-colors">
         Check out the source code &rarr;
       </p>

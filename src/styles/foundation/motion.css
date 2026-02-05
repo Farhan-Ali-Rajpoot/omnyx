@@ -17,5 +17,5 @@
   --motion-pleasant-ease: ease;
   --motion-bouncy-ease: cubic-bezier(0.68, -0.55, 0.27, 1.55);
   --motion-premium-ease: ease-in-out;
-  --motion-steady: cubic-bezier(0.65, 0, 0.25, 1);
+ --motion-steady: cubic-bezier(0.4, 0.0, 0.2, 1);
 }

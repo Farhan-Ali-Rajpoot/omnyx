@@ -12,7 +12,7 @@ const sizeStyles = {
     iconStyles: "text-[calc(var(--sfu)*0.7)]",
   },
   medium: {
-    divStyles: "w-[calc(var(--sfu)*2)] h-[calc(var(--sfu)*2)]",
+    divStyles: "w-[calc(var(--sfu)*1.75)] h-[calc(var(--sfu)*1.75)]",
     iconStyles: "text-[calc(var(--sfu)*1)]",
   },
 };

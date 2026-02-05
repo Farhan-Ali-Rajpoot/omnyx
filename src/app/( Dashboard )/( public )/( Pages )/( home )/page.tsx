@@ -1,109 +1,110 @@
-import { Metadata, Viewport } from 'next';
-import { AnimButton } from '@/components/UI/AnimLink';
-import { wn, favicon, shortcutIcon, appleIcon, themeColor, ogImageUrl, ogTwitterImage, applicationName, authorName, category } from '@/app/Meta';
-import { FiCode, FiLayout, FiTrendingUp, FiZap } from 'react-icons/fi';
-import { BiCheckCircle } from 'react-icons/bi';
-import { SiNextdotjs, SiTailwindcss, SiNodedotjs, SiFirebase, SiMongodb, SiVercel, SiGit, SiReact } from "react-icons/si";
-
-
+import { Metadata, Viewport } from "next";
+import {
+  wn,
+  favicon,
+  shortcutIcon,
+  appleIcon,
+  themeColor,
+  ogImageUrl,
+  ogTwitterImage,
+  applicationName,
+  authorName,
+  category,
+} from "@/app/Meta";
+import { Hero } from "@/components/pages/landing/Hero";
+import { Intro } from "@/components/pages/landing/Intro";
+import { Tech } from "@/components/pages/landing/Tech";
+import { CreatedBy } from "@/components/pages/landing/CreatedBy";
+import { Qualities } from "@/components/pages/landing/Qualities";
+import { Reviews } from "@/components/pages/landing/Reviews";
 
 export const metadata: Metadata = {
-    title: 'Tendor - A Web Developer community that provides good desgined website.',
-    description:
-        `Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`
+  title:
+    "Tendor - A Web Developer community that provides good desgined website.",
+  description: `Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`,
 
-    ,
-    keywords: [
-        'Tendor',
-        'Web developer service',
-        'admin login page',
-        'Web developer',
-        'admin dashboard',
+  keywords: [
+    "Tendor",
+    "Web developer service",
+    "admin login page",
+    "Web developer",
+    "admin dashboard",
+  ],
+  metadataBase: new URL(wn), // already a URL object
+  applicationName: applicationName,
+  category: category,
+  authors: [{ name: authorName, url: wn.toString() }],
+  openGraph: {
+    title:
+      "Tendor - A Web Developer community that provides good desgined website.",
+    description: `Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`,
+    url: `${wn}/blog`,
+    siteName: applicationName,
+    images: [
+      {
+        url: `${wn}${ogImageUrl}`,
+        width: 736,
+        height: 727,
+        alt: "Admin Login Page - Tendor",
+      },
     ],
-    metadataBase: new URL(wn), // already a URL object
-    applicationName: applicationName,
-    category: category,
-    authors: [{ name: authorName, url: wn.toString() }],
-    openGraph: {
-        title: 'Tendor - A Web Developer community that provides good desgined website.',
-        description:
-            `Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`,
-        url: `${wn}/blog`,
-        siteName: applicationName,
-        images: [
-            {
-                url: `${wn}${ogImageUrl}`,
-                width: 736,
-                height: 727,
-                alt: 'Admin Login Page - Tendor',
-            },
-        ],
-        locale: 'en_US',
-        type: 'website',
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Tendor - A Web Developer community that provides good desgined website.",
+    description:
+      "`Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`",
+    images: [`${wn}${ogTwitterImage}`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      nocache: false,
     },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'Tendor - A Web Developer community that provides good desgined website.',
-        description:
-            '`Tendor is a vibrant web developer community dedicated to crafting beautifully designed, high-performance websites. We bring together designers, developers, and digital creators to share knowledge, collaborate on projects, and elevate web standards.`',
-        images: [`${wn}${ogTwitterImage}`],
-    },
-    robots: {
-        index: true,
-        follow: true,
-        nocache: false,
-        googleBot: {
-            index: true,
-            follow: true,
-            nocache: false,
-        },
-    },
-    icons: {
-        icon: favicon,
-        shortcut: shortcutIcon,
-        apple: appleIcon,
-    },
-    alternates: {
-        canonical: `${wn}/blog`,
-    },
+  },
+  icons: {
+    icon: favicon,
+    shortcut: shortcutIcon,
+    apple: appleIcon,
+  },
+  alternates: {
+    canonical: `${wn}/blog`,
+  },
 };
 
 export const viewport: Viewport = {
-    themeColor: `${themeColor}`,
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+  themeColor: `${themeColor}`,
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
-
 
 const page = () => {
-
-    return (
-        <>
-            <Hero />
-        </>
-    )
-
+  return (
+    <>
+      <Hero />
+      <Intro />
+      <CreatedBy />
+      <Qualities />
+      <Tech />
+      <Reviews />
+    </>
+  );
 };
 
-export default page
+export default page;
 
 
 
-const Hero = () => {
-    
 
-    return (
-        <>
-            <div className="min-h-screen mt-[25vh] flex flex-col items-center">
-                <div className="flex flex-col">
-                    <h1 className="text-[calc(var(--sfu)*5.5)] text-center leading-none">
-                        Building Websites <br /> that Flex
-                    </h1>
-                </div>
-            </div>
-        </>
-    );
 
-};
+
+

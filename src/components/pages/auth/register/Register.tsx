@@ -29,14 +29,14 @@ const RegisterForm = () => {
         </div>
 
         <form data-form="register" className="space-y-[calc(var(--sfu)*1.7)]">
-          <GoogleSignInButton />
+          {/* <GoogleSignInButton /> */}
 
           {/* OR Divider */}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
              <Badge className="bg-[var(--color-electric-indigo)] text-[var(--color-text-action)]">OR</Badge>
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
-          </div>
+          </div> */}
 
           {/* Inputs */}
           <div className="flex flex-col gap-[calc(var(--sfu)*1)]">
@@ -69,7 +69,7 @@ const RegisterForm = () => {
           <FormError />
 
           {/* Terms */}
-          <div className="flex items-center gap-[calc(var(--sfu)*0.75)]">
+          <div className="flex items-center gap-[calc(var(--sfu)*0.75)] text-[calc(var(--sfu)*0.8625)]">
             <Checkbox name={"terms"} size="medium" />
             <label
               htmlFor="terms"

@@ -1,4 +1,4 @@
-import { founderName } from "./founder"; 
+import { founderName } from "../founder"; 
 import { Viewport } from "next";
 
 export const appName: string = `Omnyx`;

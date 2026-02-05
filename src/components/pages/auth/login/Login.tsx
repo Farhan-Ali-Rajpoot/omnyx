@@ -22,14 +22,14 @@ const LoginForm = () => {
         </div>
 
         <form data-form="login" className="space-y-[calc(var(--sfu)*1.7)]">
-          <GoogleLoginButton />
+          {/* <GoogleLoginButton /> */}
 
           {/* OR Divider */}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
             <Badge className="bg-[var(--color-electric-indigo)] text-[var(--color-text-action)]">OR</Badge>
             <div className="flex-grow border-t border-[var(--color-border-surface)]"></div>
-          </div>
+          </div> */}
 
           {/* Inputs */}
           <div className="flex flex-col gap-[calc(var(--sfu)*1)]">

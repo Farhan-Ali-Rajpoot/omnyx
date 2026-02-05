@@ -8,11 +8,19 @@ export default function HandleThemeToggle() {
 
     const clickHandler = () => {
       const html = document.documentElement;
-      const isDark = html.classList.toggle("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
+      const currentTheme = html.getAttribute("data-theme") || "light";
+      const newTheme = currentTheme === "light" ? "dark" : "light";
 
       html.classList.add("no-transition");
-      requestAnimationFrame(() => html.classList.remove("no-transition"));
+
+      requestAnimationFrame(() => {
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+
+        requestAnimationFrame(() => {
+          html.classList.remove("no-transition");
+        });
+      });
     };
 
     btn.addEventListener("click", clickHandler);

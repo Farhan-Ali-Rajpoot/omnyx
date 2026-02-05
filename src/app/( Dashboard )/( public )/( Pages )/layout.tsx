@@ -11,8 +11,8 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="relative min-h-screen px-2 md:px-8 max-w-site mx-auto overflow-x-hidden ">
-        <Navbar user={user} />
+      <div className="">
+        {/* <Navbar user={user} /> */}
         {children}
       </div>
       <Footer />

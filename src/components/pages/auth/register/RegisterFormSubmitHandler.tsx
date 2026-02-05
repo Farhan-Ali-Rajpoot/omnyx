@@ -44,7 +44,7 @@ export function RegisterFormSubmitHandler() {
     };
 
     try {
-      const res = await secFetch(BackendRoutes.register.base, {
+      const res = await secFetch(BackendRoutes.auth.register.base, {
         service: "auth",
         method: "POST",
         body: JSON.stringify(payload),

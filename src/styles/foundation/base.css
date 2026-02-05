@@ -1,39 +1,5 @@
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-}
-
-html {
-  box-sizing: border-box;
-  font-size: 100%;
-  text-size-adjust: 100%;
-  scrollbar-gutter: stable;
-  overflow-x: hidden;
-}
-
-html::-webkit-scrollbar {
-  display: none;
-}
-
-body {
-  min-height: 100vh;
-  width: 100%;
-  margin: 0;
-  line-height: 1.5;
-  background: var(--color-bg-base);
-  color: var(--color-text-base);
-  font-size: calc(var(--size-fluid-unit)*0.93);
-  font-family: var(--font-neue-montreal), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 /* *{ border: calc(var(--sfu)*0.0625) solid red;} */
 
-body .app {
-  background-color: var(--color-bg-app);
-}
 /* 
 ::-webkit-scrollbar {
   width:  4px;

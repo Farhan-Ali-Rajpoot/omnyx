@@ -14,7 +14,7 @@ import {
   appManifest,
   appCategory,
 } from "../app";
-import { founderName } from "../founder";
+import { founderName } from "../../founder";
 
 export const AppMetadata: Metadata = {
   metadataBase: new URL(appBaseUrl),

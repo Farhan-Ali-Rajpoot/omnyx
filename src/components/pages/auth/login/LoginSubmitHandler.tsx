@@ -34,7 +34,7 @@ export function LoginFormSubmitHandler() {
     };
 
     try {
-      const res = await secFetch(BackendRoutes.login.base, {
+      const res = await secFetch(BackendRoutes.auth.login.base, {
         method: "POST",
         service: "auth",
         body: JSON.stringify(payload),

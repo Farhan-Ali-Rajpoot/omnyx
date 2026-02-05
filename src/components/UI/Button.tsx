@@ -17,7 +17,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const baseClass = `px-[calc(var(--sfu)*1)] py-[calc(var(--sfu)*0.65)] leading-none cursor-pointer`
 
-export function Button({ children, href ,className = "bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)]", shape = 'box', ...props }: ButtonProps) {
+export function Button({ children, href ,className = "bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)] w-fit", shape = 'box', ...props }: ButtonProps) {
     const attrs = {
         className:  `${baseClass} ${variants[shape]} ${className} `,
     };

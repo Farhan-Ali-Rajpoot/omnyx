@@ -1,6 +1,6 @@
 import { appName } from "@/config/meta/app";
-import { AppIconJSX, AppNameTextSVG } from "@/config/icons/appIcons";
-import { founderName } from "@/config/meta/founder";
+import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
+import { founderName } from "@/config/founder";
 import FormInput from "../UI/Form/FormInput";
 import { Checkbox } from "../UI/Form/Checkbox";
 import { Button } from "../UI/Button";
@@ -10,8 +10,9 @@ import { FiX } from "react-icons/fi";
 import { FrontendRoutes } from "@/config/urls";
 import Image from "next/image";
 import { SocialLinks } from "../UI/SocialLinks";
-import { FounderSocialLinks } from "@/config/links/FounderSocialLink";
+import { FounderSocialLinks } from "@/config/component-links/FounderSocialLink";
 import { FaInstagram, FaTiktok, FaTwitter } from "react-icons/fa";
+import { Images } from "@/config/images";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -85,10 +86,10 @@ export function Footer() {
                 className="py-[calc(var(--sfu)*0.75)] px-[calc(var(--sfu)*1)]"
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-[calc(var(--sfu)*2)] sm:gap-0 items-start sm:items-center justify-between">
-              <div className="flex items-center gap-[calc(var(--sfu)*0.5)]">
+            <div className="flex flex-col sm:flex-row gap-[calc(var(--sfu)*2)] sm:gap-0 items-start sm:items-center justify-between ">
+              <div className="flex items-center gap-[calc(var(--sfu)*0.5)] text-[calc(var(--sfu)*0.8625)]">
                 <Checkbox size="medium" border={false} />I agree to the
-                <UnderlineLink variant="persistent" href="/">
+                <UnderlineLink variant="persistent" href="/" className="">
                   Privacy Policy
                 </UnderlineLink>
               </div>
@@ -113,7 +114,7 @@ export function Footer() {
               />
 
               {sitemap.map(({ title, children }, i) => (
-                <div key={title} className="relative w-full sm:w-1/3">
+                <div key={title} className="relative w-full sm:w-1/3 border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)] sm:border-none">
                   {/* accordion control */}
                   <input
                     type="radio"
@@ -126,7 +127,6 @@ export function Footer() {
                   <div
                     className={`group block w-full
                   border-b-[calc(var(--sfu)*0.0625)]
-                  ${i == 0 && "border--[calc(var(--sfu)*0.0625)]"}
                   border-[var(--color-border-surface)]
                   sm:border-none`}
                   >
@@ -234,7 +234,8 @@ export function Footer() {
         <div className="flex flex-col">
           {/* Large SVG Text */}
           <AppNameTextSVG
-            className={"text-[20.1vw] text-[var(--color-bg-action)]"}
+            className={"footer-svg text-[20.1vw] text-[var(--color-bg-action)] overflow-visible"}
+           pathClassName="footer-svg-path relative transition-all duration-[var(--duration-long)]"
           />
 
           {/* Footer Bottom / Legal */}
@@ -311,7 +312,7 @@ export function AboutCard() {
                 <div className=" w-fit flex items-center justify-center gap-[calc(var(--sfu)*1)]">
                   <div className="relative h-[calc(var(--sfu)*4.75)] w-[calc(var(--sfu)*4.75)] rounded-full overflow-hidden">
                     <Image
-                      src="/images/farhanali.webp"
+                      src={Images.people.prtrait.farhanAli}
                       alt="Farhan Ali"
                       fill
                       sizes="calc(var(--sfu)*4.75)"

@@ -1,5 +1,5 @@
 "use client";
-import { AppIconJSX, AppNameTextSVG } from "@/config/icons/appIcons";
+import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
 import { appName } from "@/config/meta/app";
 import { ReactNode } from "react";
 import {
@@ -60,7 +60,7 @@ export async function Dashboard({ children }: DashboardProps) {
         2. Aside (peer-checked reacts to input)
         3. Labels inside/outside act as toggle buttons
       */}
-      <div className="flex app relative">
+      <div className="flex bg-[var(--color-bg-app)] relative">
         <input
           type="checkbox"
           id="app-sidebar-toggle"

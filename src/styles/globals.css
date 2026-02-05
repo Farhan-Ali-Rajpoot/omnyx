@@ -2,6 +2,8 @@
 @config "../../tailwind.config.ts";  
 
 
+/*  */
+/* @import "../styles/animation/parallax-spin.css"; */
 
 
 @layer utilities {
@@ -10,4 +12,8 @@
       display: none !important;
     }
   }
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
