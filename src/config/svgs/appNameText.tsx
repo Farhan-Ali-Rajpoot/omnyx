@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { CustomIconProps } from "../Icons";
 
-export function appNameTextSVG({ pathClassName, ...props }: CustomIconProps) {
+export default function appNameTextSVG({ pathClassName, ...props }: CustomIconProps) {
   return (
     <svg
       width={"auto"}

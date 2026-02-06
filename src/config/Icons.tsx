@@ -1,8 +1,8 @@
 import { CSSProperties, forwardRef, HTMLProps, SVGProps } from "react";
-import { radialDashCircle } from "./svgs/radialDash";
 import { diamondCircleIcon } from "./svgs/diomondCircle";
-import { appNameTextSVG } from "./svgs/appNameText";
-import { worldMap } from "./svgs/world-map";
+import appNameTextSVG from "./svgs/appNameText";
+import radialDashCircle from "./svgs/radialDash";
+import worldMap from "./svgs/world-map";
 
 
 

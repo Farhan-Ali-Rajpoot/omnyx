@@ -1,15 +1,24 @@
 import { Section } from "@/components/UI/Section";
-import { RadialDashCircle, WorldMap } from "@/config/Icons";
 import { FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { HTMLProps } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 
 export function Reviews() {
+  const RadialDashCircle = dynamic(() => import("@/config/svgs/radialDash"), {
+    // Options
+  });
+
+  const WorldMap = dynamic(() => import("@/config/svgs/world-map"), {
+    // Options
+  });
+
   const reviews = [
     // --- CLUSTER 1: EUROPE (Dense, Small Distance, High Zoom) ---
     // Strategy: Minimize camera movement by moving neighbor-to-neighbor.
     {
-      title: "Rock-Solid Security Architecture and Outstanding Platform Reliability",
+      title:
+        "Rock-Solid Security Architecture and Outstanding Platform Reliability",
       description:
         "Our data integrity has remained uncompromised. The platform’s stability under peak traffic during our UK rollout proved the strength of its engineering foundation.",
       image: "/images/avatars/james.jpg",
@@ -54,7 +63,8 @@ export function Reviews() {
       role: "Fintech Security",
     },
     {
-      title: "Revolutionizing Nordic User Experience with Minimalist Efficiency",
+      title:
+        "Revolutionizing Nordic User Experience with Minimalist Efficiency",
       description:
         "The codebase aligns perfectly with our philosophy of efficiency and simplicity. It significantly reduced our technical debt while enhancing the end-user experience across Scandinavia.",
       image: "/images/avatars/astrid.jpg",
@@ -62,11 +72,12 @@ export function Reviews() {
       country: "sweden", // Sweden (North, keeping within Europe region)
       role: "UX Strategy Head",
     },
-  
+
     // --- CLUSTER 2: THE AMERICAS (Large Landmasses) ---
     // Strategy: A single "hop" across the Atlantic, then stay zoomed out for big countries.
     {
-      title: "Driving Canadian Tech Innovation With Cutting-Edge Cloud Solutions",
+      title:
+        "Driving Canadian Tech Innovation With Cutting-Edge Cloud Solutions",
       description:
         "Our Canadian operations benefited from an ultra-optimized cloud infrastructure. The team’s technical rigor and proactive problem-solving accelerated project delivery and performance.",
       image: "/images/avatars/sophia.jpg",
@@ -75,7 +86,8 @@ export function Reviews() {
       role: "Cloud Architect",
     },
     {
-      title: "Driving Market-Leading Visibility With a Data-Driven SEO Strategy",
+      title:
+        "Driving Market-Leading Visibility With a Data-Driven SEO Strategy",
       description:
         "Their precision-focused technical SEO approach helped us secure top search positions across highly competitive U.S. markets far faster than expected.",
       image: "/images/avatars/john.jpg",
@@ -83,7 +95,7 @@ export function Reviews() {
       country: "united-states", // United States (Direct neighbor south)
       role: "Director of Growth",
     },
-  
+
     // --- CLUSTER 3: ASIA (Large & Distant) ---
     // Strategy: Hop to Asia, then sweep Eastward.
     {
@@ -124,7 +136,7 @@ export function Reviews() {
     },
   ];
 
-  const cards = [...reviews]; 
+  const cards = [...reviews];
 
   return (
     <>
@@ -145,7 +157,8 @@ export function Reviews() {
           ))}
 
           {/* Left Side: Map Panel */}
-          <div className="h-fit w-full lg:h-[calc(var(--sfu)*35)] lg:w-[calc(var(--sfu)*25)] 2xl:w-[calc(var(--sfu)*30)] 2xl:h-[calc(var(--sfu)*42.5)]
+          <div
+            className="h-fit w-full lg:h-[calc(var(--sfu)*35)] lg:w-[calc(var(--sfu)*25)] 2xl:w-[calc(var(--sfu)*30)] 2xl:h-[calc(var(--sfu)*42.5)]
            border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)]
 
             [--cu:0.5] lg:[--cu:1] 2xl:[--cu:1.25] 
@@ -190,7 +203,8 @@ export function Reviews() {
             peer-checked/south-korea:[&_.sm-state-KR]:[fill:var(--color-electric-red)]
             peer-checked/japan:[&_.sm-state-JP]:[fill:var(--color-electric-red)]
             
-            ">
+            "
+          >
             <div
               className="h-full w-full rounded-full flex flex-col items-center text-center justify-between bg-[var(--color-bg-contrast)] p-[calc(var(--sfu)*1)] py-[calc(var(--sfu)*2)]
                mt-[calc(var(--sfu)*1)]
@@ -205,7 +219,7 @@ export function Reviews() {
                   <div className="w-full aspect-square rounded-full relative">
                     <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
                     <div className="w-full h-full rounded-full overflow-hidden relative">
-                       <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
+                      <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
                     </div>
                   </div>
                 </div>
@@ -225,8 +239,6 @@ export function Reviews() {
     </>
   );
 }
-
-
 
 interface CardProps extends HTMLProps<HTMLDivElement> {
   title: string;
@@ -362,7 +374,7 @@ function ReviewCarasoul({ data }: { data: CardProps[] }) {
                 flex flex-col items-center justify-between relative rounded-[calc(var(--sfu)*1)]"
       >
         {/* INPUTS REMOVED FROM HERE */}
-        
+
         {/* Heading Section */}
         <div />
 
@@ -458,8 +470,8 @@ function Card({
       <div className="flex flex-col sm:flex-row items-start justify-between gap-[calc(var(--sfu)*1.5)]">
         <div className="flex flex-col items-start justify-start ">
           <div className="w-[calc(var(--sfu)*4)] aspect-square rounded-full bg-[var(--color-bg-base)] relative overflow-hidden">
-             {/* Added Image support */}
-             {/* <Image src={props.image} alt={name} fill className="object-cover" /> */}
+            {/* Added Image support */}
+            {/* <Image src={props.image} alt={name} fill className="object-cover" /> */}
           </div>
           <h3 className="font-brisa text-[calc(var(--sfu)*1.25)] pt-[calc(var(--sfu)*0.25)]">
             {name}

@@ -1,6 +1,6 @@
 import { CustomIconProps } from "../Icons";
 
-export function worldMap({ className = "" }: CustomIconProps) {
+export default function worldMap({ className = "" }: CustomIconProps) {
   return (
     <svg
       viewBox="0.34389990089197225 0.34389990089197225 701 299.98145193260655"

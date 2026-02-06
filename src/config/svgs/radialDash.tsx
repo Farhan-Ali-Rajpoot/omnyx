@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { CustomIconProps } from "../Icons";
 
-export function radialDashCircle({ ...props }: CustomIconProps) {
+export default function radialDashCircle({ ...props }: CustomIconProps) {
   return (
     <>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 459 459" {...props}>

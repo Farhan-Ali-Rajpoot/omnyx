@@ -1,7 +1,7 @@
 import { Section } from "@/components/UI/Section";
 import { founderName } from "@/config/founder";
-import { RadialDashCircle } from "@/config/Icons";
 import { Images } from "@/config/images";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { CSSProperties, HTMLProps, ReactNode } from "react";
 import {
@@ -17,6 +17,10 @@ import {
 import { IconType } from "react-icons";
 
 export function CreatedBy() {
+  const RadialDashCircle = dynamic(() => import("@/config/svgs/radialDash") ,{
+    // Options 
+  });
+
   const founderIdentity = [
     {
       title: "Caffeine Powered",
