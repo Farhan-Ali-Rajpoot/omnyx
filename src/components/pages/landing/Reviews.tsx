@@ -1,18 +1,12 @@
+"use client";
 import { Section } from "@/components/UI/Section";
 import { FiArrowDown, FiArrowUp } from "react-icons/fi";
-import { HTMLProps } from "react";
+import { HTMLProps, Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { RadialDashCircle, WorldMap } from "@/config/Icons";
 
 export function Reviews() {
-  const RadialDashCircle = dynamic(() => import("@/config/svgs/radialDash"), {
-    // Options
-  });
-
-  const WorldMap = dynamic(() => import("@/config/svgs/world-map"), {
-    // Options
-  });
-
   const reviews = [
     // --- CLUSTER 1: EUROPE (Dense, Small Distance, High Zoom) ---
     // Strategy: Minimize camera movement by moving neighbor-to-neighbor.
@@ -159,14 +153,13 @@ export function Reviews() {
           {/* Left Side: Map Panel */}
           <div
             className="h-fit w-full lg:h-[calc(var(--sfu)*35)] lg:w-[calc(var(--sfu)*25)] 2xl:w-[calc(var(--sfu)*30)] 2xl:h-[calc(var(--sfu)*42.5)]
-           border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)]
 
             [--cu:0.5] lg:[--cu:1] 2xl:[--cu:1.25] 
 
             peer-checked/canada:[&_.wm]:scale-275 peer-checked/canada:[&_.wm]:translate-y-[calc(var(--sfu)*15*var(--cu))] peer-checked/canada:[&_.wm]:translate-x-[calc(var(--sfu)*13*var(--cu))]
             peer-checked/south-korea:[&_.wm]:scale-675 peer-checked/south-korea:[&_.wm]:translate-y-[calc(var(--sfu)*18*var(--cu))] peer-checked/south-korea:[&_.wm]:-translate-x-[calc(var(--sfu)*46*var(--cu))]
             peer-checked/germany:[&_.wm]:scale-675 peer-checked/germany:[&_.wm]:translate-y-[calc(var(--sfu)*24.5*var(--cu))] peer-checked/germany:[&_.wm]:-translate-x-[calc(var(--sfu)*1.5*var(--cu))]
-            peer-checked/united-states:[&_.wm]:scale-275 peer-checked/united-states:[&_.wm]:translate-y-[calc(var(--sfu)*12*var(--cu))] peer-checked/united-states:[&_.wm]:translate-x-[calc(var(--sfu)*16*var(--cu))]
+            peer-checked/united-states:[&_.wm]:scale-275 peer-checked/united-states:[&_.wm]:translate-y-[calc(var(--sfu)*13*var(--cu))] peer-checked/united-states:[&_.wm]:translate-x-[calc(var(--sfu)*16*var(--cu))]
             peer-checked/japan:[&_.wm]:scale-675 peer-checked/japan:[&_.wm]:translate-y-[calc(var(--sfu)*18*var(--cu))] peer-checked/japan:[&_.wm]:-translate-x-[calc(var(--sfu)*49*var(--cu))]
 
             peer-checked/united-kingdom:[&_.wm]:scale-675 peer-checked/united-kingdom:[&_.wm]:translate-y-[calc(var(--sfu)*25.5*var(--cu))] 
@@ -217,9 +210,13 @@ export function Reviews() {
               <div className="w-auto lg:w-full aspect-square">
                 <div className="h-full w-full px-[calc(var(--sfu)*1)]">
                   <div className="w-full aspect-square rounded-full relative">
-                    <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
+                    <Suspense fallback={null}>
+                      <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
+                    </Suspense>
                     <div className="w-full h-full rounded-full overflow-hidden relative">
-                      <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
+                      <Suspense fallback={null}>
+                        <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
+                      </Suspense>
                     </div>
                   </div>
                 </div>
@@ -255,8 +252,7 @@ function ReviewCarasoul({ data }: { data: CardProps[] }) {
 
   return (
     <div
-      className="h-[calc(var(--sfu)*33)] lg:h-[calc(var(--sfu)*35)] 2xl:h-[calc(var(--sfu)*42.5)] w-full lg:w-2/3 border-t-[calc(var(--sfu)*0.0625)]
-        border-[var(--color-border-surface)]
+      className="h-[calc(var(--sfu)*33)] lg:h-[calc(var(--sfu)*35)] 2xl:h-[calc(var(--sfu)*42.5)] w-full lg:w-2/3
 
         /* Card active indicator */
         peer-checked/c1:[&_.line-1]:scale-x-200  peer-checked/c1:[&_.line-1]:bg-[var(--color-electric-indigo)]

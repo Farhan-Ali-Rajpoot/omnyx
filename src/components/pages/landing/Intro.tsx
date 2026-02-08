@@ -87,13 +87,6 @@ export function Intro() {
                     Show Less
                   </p>
                 </div>
-                <div className="relative">
-                  <div className="h-[calc(var(--sfu)*0.125)] w-[calc(var(--sfu)*0.6125)] rounded-full bg-[var(--color-bg-base)] " />
-                  <div
-                    className="h-[calc(var(--sfu)*0.125)] w-[calc(var(--sfu)*0.6125)] rounded-full bg-[var(--color-bg-base)] absolute inset-0 rotate-90
-                  group-peer-checked/ats:rotate-0 transition-transform duration-[var(--duration-long)] ease-[var(--ease-steady)]"
-                  />
-                </div>
               </Button>
             </label>
           </div>

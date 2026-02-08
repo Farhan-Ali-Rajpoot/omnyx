@@ -3,7 +3,7 @@ import { founderName } from "@/config/founder";
 import { Images } from "@/config/images";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { CSSProperties, HTMLProps, ReactNode } from "react";
+import { CSSProperties, HTMLProps, ReactNode, Suspense } from "react";
 import {
   FiArrowDown,
   FiArrowUp,
@@ -17,8 +17,8 @@ import {
 import { IconType } from "react-icons";
 
 export function CreatedBy() {
-  const RadialDashCircle = dynamic(() => import("@/config/svgs/radialDash") ,{
-    // Options 
+  const RadialDashCircle = dynamic(() => import("@/config/svgs/radialDash"), {
+    // Options
   });
 
   const founderIdentity = [
@@ -166,7 +166,9 @@ export function CreatedBy() {
                         />
                       </div>
                     </div>
-                    <RadialDashCircle className="plx-svg absolute inset-[calc(var(--sfu)*0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
+                    <Suspense fallback={null}>
+                      <RadialDashCircle className="plx-svg absolute inset-[calc(var(--sfu)*0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
+                    </Suspense>
                   </div>
                 </div>
               </div>
@@ -397,11 +399,11 @@ function Card({
   return (
     <div
       {...props}
-      className={`w-11/12 sm:w-2/3 h-fit p-[calc(var(--sfu)*1.5)] rounded-[calc(var(--sfu)*0.25)] 
+      className={`w-11/12 sm:w-2/3 h-fit p-[calc(var(--sfu)*1.75)] rounded-[calc(var(--sfu)*0.25)] 
         bg-[var(--color-electric-lime)] flex flex-col gap-[calc(var(--sfu)*1.25)] 
         text-[var(--color-bg-action)] ${className}`}
     >
-      <h3 className="text-[calc(var(--sfu)*2.5)] leading-tight tracking-tighter">
+      <h3 className="text-[calc(var(--sfu)*2.25)] leading-tight tracking-tighter">
         {title}
       </h3>
 

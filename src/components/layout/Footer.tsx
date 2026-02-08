@@ -13,6 +13,7 @@ import { SocialLinks } from "../UI/SocialLinks";
 import { FounderSocialLinks } from "@/config/component-links/FounderSocialLink";
 import { FaInstagram, FaTiktok, FaTwitter } from "react-icons/fa";
 import { Images } from "@/config/images";
+import { Suspense } from "react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -55,7 +56,9 @@ export function Footer() {
 
   return (
     <>
-      <AboutCard />
+      <Suspense>
+        <AboutCard />
+      </Suspense>
       <div
         className="w-full min-h-fit max-h-screen h-screen flex flex-col justify-between"
         id="footer"
@@ -114,7 +117,10 @@ export function Footer() {
               />
 
               {sitemap.map(({ title, children }, i) => (
-                <div key={title} className="relative w-full sm:w-1/3 border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)] sm:border-none">
+                <div
+                  key={title}
+                  className="relative w-full sm:w-1/3 border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)] sm:border-none"
+                >
                   {/* accordion control */}
                   <input
                     type="radio"
@@ -234,8 +240,10 @@ export function Footer() {
         <div className="flex flex-col">
           {/* Large SVG Text */}
           <AppNameTextSVG
-            className={"footer-svg text-[20.1vw] text-[var(--color-bg-action)] overflow-visible"}
-           pathClassName="footer-svg-path relative transition-all duration-[var(--duration-long)]"
+            className={
+              "footer-svg text-[20.1vw] text-[var(--color-bg-action)] overflow-visible"
+            }
+            pathClassName="footer-svg-path relative transition-all duration-[var(--duration-long)]"
           />
 
           {/* Footer Bottom / Legal */}
@@ -299,7 +307,7 @@ export function AboutCard() {
               </div>
             </label>
 
-            <div className="px-[calc(var(--sfu)*2)] border-b-[calc(var(--sfu)*0.0625)] border-[var(--color-border-action)]">
+            <div className="px-[calc(var(--sfu)*2)] pb-[calc(var(--sfu)*1)] border-b-[calc(var(--sfu)*0.0625)] border-[var(--color-border-action)]">
               <div className="flex items-center justify-center w-fit py-[calc(var(--sfu)*3)]">
                 <AppIconJSX className="text-[calc(var(--sfu)*2.5)] text-[var(--color-electric-indigo)]" />
                 <AppNameTextSVG className="text-[calc(var(--sfu)*1.5)]" />
@@ -345,7 +353,7 @@ export function AboutCard() {
               </div>
             </div>
 
-            <div className="w-full flex flex-col gap-[calc(var(--sfu)*1)]">
+            <div className="w-full flex flex-col gap-[calc(var(--sfu)*1)] ">
               <div className="relative w-full aspect-[2/1] overflow-hidden rounded-b-full  shadow-inner">
                 <Image
                   src="/images/maps/pakistan-globe-map.svg"
