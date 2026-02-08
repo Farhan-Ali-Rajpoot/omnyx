@@ -223,8 +223,8 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
         htmlFor="nav-toggle"
         className="h-screen w-screen z-29
           fixed top-0 left-0
-          bg-neutral-900/40 
-          opacity-0 pointer-events-none
+          bg-[var(--color-bg-overlay)]
+          opacity-0 pointer-events-none cursor-pointer
           transition-opacity duration-[var(--duration-long)] delay-75
           
           peer-checked:opacity-100

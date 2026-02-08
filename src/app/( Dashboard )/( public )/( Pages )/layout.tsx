@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { decodeJwtTokenFromRequest } from "@/libs/DecodeJwtTokenFromCookies"; 
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/components/layout/layouts/Footer/Footer";
 import { JwtPayload } from "jsonwebtoken";
 import type { User } from "@/components/@types/Layout";
 import { Tokens } from "@/config/tokens";
