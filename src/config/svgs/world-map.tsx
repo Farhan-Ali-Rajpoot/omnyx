@@ -1,3 +1,4 @@
+'use client';
 import { CustomIconProps } from "../Icons";
 
 export default function worldMap({ className = "" }: CustomIconProps) {

@@ -1,9 +1,7 @@
-"use client";
 import { Section } from "@/components/UI/Section";
 import { FiArrowDown, FiArrowUp } from "react-icons/fi";
-import { HTMLProps, Suspense } from "react";
+import { HTMLProps } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { RadialDashCircle, WorldMap } from "@/config/Icons";
 
 export function Reviews() {
@@ -210,13 +208,9 @@ export function Reviews() {
               <div className="w-auto lg:w-full aspect-square">
                 <div className="h-full w-full px-[calc(var(--sfu)*1)]">
                   <div className="w-full aspect-square rounded-full relative">
-                    <Suspense fallback={null}>
                       <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
-                    </Suspense>
                     <div className="w-full h-full rounded-full overflow-hidden relative">
-                      <Suspense fallback={null}>
                         <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
-                      </Suspense>
                     </div>
                   </div>
                 </div>
