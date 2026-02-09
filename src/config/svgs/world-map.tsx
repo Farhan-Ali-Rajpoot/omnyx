@@ -8,7 +8,7 @@ export default function worldMap({ className = "" }: CustomIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMinYMin meet"
       className={`${className} [&_path]:fill-[#363333] [&_path]:stroke-[#201d1d] 
-      [&_path]:stroke-[0.6] [&_path]:linejoin-round
+      [&_path]:stroke-[0.4] [&_path]:linejoin-round
       [&_path]:cursor-pointer hover:[&_path]:fill-blue-500`}
       fill="currentColor"
       aria-hidden="true"

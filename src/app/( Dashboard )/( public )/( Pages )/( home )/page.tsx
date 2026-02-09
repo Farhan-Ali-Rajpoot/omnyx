@@ -90,11 +90,11 @@ export const viewport: Viewport = {
 const page = () => {
   return (
     <>
-      <Hero />
-      <Intro />
-      <CreatedBy />
-      <Qualities />
-      <Tech />
+      {/* <Hero /> */}
+      {/* <Intro /> */}
+      {/* <CreatedBy /> */}
+      {/* <Qualities /> */}
+      {/* <Tech /> */}
       <Reviews />
     </>
   );

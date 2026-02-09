@@ -15,7 +15,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
         {/* <Navbar user={user} /> */}
         {children}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

@@ -20,7 +20,7 @@
   --color-bg-contrast: #151313;
   --color-bg-input: var(--color-bg-app);
   --color-bg-press: oklch(0.92 0.04 220);
-  --color-bg-overlay: color-mix(in oklab, oklch(20.5% 0 0) 40%, transparent);;
+  --color-bg-overlay: color-mix(in oklab, oklch(0% 0 0) 40%, transparent);;
 
 
   /* Text Colors */

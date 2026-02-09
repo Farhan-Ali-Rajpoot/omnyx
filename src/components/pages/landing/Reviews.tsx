@@ -150,49 +150,49 @@ export function Reviews() {
 
           {/* Left Side: Map Panel */}
           <div
-            className="h-fit w-full lg:h-[calc(var(--sfu)*35)] lg:w-[calc(var(--sfu)*25)] 2xl:w-[calc(var(--sfu)*30)] 2xl:h-[calc(var(--sfu)*42.5)]
+            className="h-fit w-full lg:max-w-1/3 lg:h-[calc(var(--sfu)*35)] 2xl:h-[calc(var(--sfu)*42.5)]
 
-            [--cu:0.5] lg:[--cu:1] 2xl:[--cu:1.25] 
+            [--cu:0.8] sm:[--cu:1.6] md:[--cu:2] lg:[--cu:0.8] xl:[--cu:1.03125] 2xl:[--cu:1.3] 
 
             peer-checked/canada:[&_.wm]:scale-275 peer-checked/canada:[&_.wm]:translate-y-[calc(var(--sfu)*15*var(--cu))] peer-checked/canada:[&_.wm]:translate-x-[calc(var(--sfu)*13*var(--cu))]
-            peer-checked/south-korea:[&_.wm]:scale-675 peer-checked/south-korea:[&_.wm]:translate-y-[calc(var(--sfu)*18*var(--cu))] peer-checked/south-korea:[&_.wm]:-translate-x-[calc(var(--sfu)*46*var(--cu))]
-            peer-checked/germany:[&_.wm]:scale-675 peer-checked/germany:[&_.wm]:translate-y-[calc(var(--sfu)*24.5*var(--cu))] peer-checked/germany:[&_.wm]:-translate-x-[calc(var(--sfu)*1.5*var(--cu))]
+            peer-checked/south-korea:[&_.wm]:scale-900 peer-checked/south-korea:[&_.wm]:translate-y-[calc(var(--sfu)*22*var(--cu))] peer-checked/south-korea:[&_.wm]:-translate-x-[calc(var(--sfu)*60*var(--cu))]
+            peer-checked/germany:[&_.wm]:scale-900 peer-checked/germany:[&_.wm]:translate-y-[calc(var(--sfu)*30*var(--cu))] peer-checked/germany:[&_.wm]:-translate-x-[calc(var(--sfu)*1.5*var(--cu))]
             peer-checked/united-states:[&_.wm]:scale-275 peer-checked/united-states:[&_.wm]:translate-y-[calc(var(--sfu)*13*var(--cu))] peer-checked/united-states:[&_.wm]:translate-x-[calc(var(--sfu)*16*var(--cu))]
             peer-checked/japan:[&_.wm]:scale-675 peer-checked/japan:[&_.wm]:translate-y-[calc(var(--sfu)*18*var(--cu))] peer-checked/japan:[&_.wm]:-translate-x-[calc(var(--sfu)*49*var(--cu))]
 
-            peer-checked/united-kingdom:[&_.wm]:scale-675 peer-checked/united-kingdom:[&_.wm]:translate-y-[calc(var(--sfu)*25.5*var(--cu))] 
+            peer-checked/united-kingdom:[&_.wm]:scale-900 peer-checked/united-kingdom:[&_.wm]:translate-y-[calc(var(--sfu)*32*var(--cu))] 
             peer-checked/united-kingdom:[&_.wm]:translate-x-[calc(var(--sfu)*3*var(--cu))]
 
             peer-checked/china:[&_.wm]:scale-475 peer-checked/china:[&_.wm]:translate-y-[calc(var(--sfu)*14*var(--cu))] 
             peer-checked/china:[&_.wm]:-translate-x-[calc(var(--sfu)*25*var(--cu))]
 
-            peer-checked/switzerland:[&_.wm]:scale-875 peer-checked/switzerland:[&_.wm]:translate-y-[calc(var(--sfu)*28*var(--cu))] 
-            peer-checked/switzerland:[&_.wm]:-translate-x-[calc(var(--sfu)*1*var(--cu))]
+            peer-checked/switzerland:[&_.wm]:scale-1600 peer-checked/switzerland:[&_.wm]:translate-y-[calc(var(--sfu)*45*var(--cu))] 
+            peer-checked/switzerland:[&_.wm]:-translate-x-[calc(var(--sfu)*3*var(--cu))]
 
             peer-checked/sweden:[&_.wm]:scale-875 peer-checked/sweden:[&_.wm]:translate-y-[calc(var(--sfu)*35*var(--cu))] 
             peer-checked/sweden:[&_.wm]:-translate-x-[calc(var(--sfu)*4*var(--cu))]
 
-            peer-checked/netherlands:[&_.wm]:scale-875 peer-checked/netherlands:[&_.wm]:translate-y-[calc(var(--sfu)*30*var(--cu))] 
+            peer-checked/netherlands:[&_.wm]:scale-1600 peer-checked/netherlands:[&_.wm]:translate-y-[calc(var(--sfu)*50*var(--cu))] 
             peer-checked/netherlands:[&_.wm]:-translate-x-[calc(var(--sfu)*0*var(--cu))]
 
             peer-checked/india:[&_.wm]:scale-475 peer-checked/india:[&_.wm]:translate-y-[calc(var(--sfu)*10*var(--cu))] 
             peer-checked/india:[&_.wm]:-translate-x-[calc(var(--sfu)*21*var(--cu))]
 
-            peer-checked/belgium:[&_.wm]:scale-1275 peer-checked/belgium:[&_.wm]:translate-y-[calc(var(--sfu)*40*var(--cu))] 
+            peer-checked/belgium:[&_.wm]:scale-1600 peer-checked/belgium:[&_.wm]:translate-y-[calc(var(--sfu)*48*var(--cu))] 
             peer-checked/belgium:[&_.wm]:-translate-x-[calc(var(--sfu)*0*var(--cu))]
 
             peer-checked/united-kingdom:[&_.sm-state-GB]:[fill:var(--color-electric-lime)]
-            peer-checked/belgium:[&_.sm-state-BE]:[fill:var(--color-electric-lime)]
-            peer-checked/netherlands:[&_.sm-state-NL]:[fill:var(--color-electric-lime)]
-            peer-checked/germany:[&_.sm-state-DE]:[fill:var(--color-electric-lime)]
-            peer-checked/switzerland:[&_.sm-state-CH]:[fill:var(--color-electric-lime)]
-            peer-checked/sweden:[&_.sm-state-SE]:[fill:var(--color-electric-lime)]
-            peer-checked/canada:[&_.sm-state-CA]:[fill:var(--color-electric-indigo)]
-            peer-checked/united-states:[&_.sm-state-US]:[fill:var(--color-electric-indigo)]
-            peer-checked/india:[&_.sm-state-IN]:[fill:var(--color-electric-red)]
-            peer-checked/china:[&_.sm-state-CN]:[fill:var(--color-electric-red)]
-            peer-checked/south-korea:[&_.sm-state-KR]:[fill:var(--color-electric-red)]
-            peer-checked/japan:[&_.sm-state-JP]:[fill:var(--color-electric-red)]
+            peer-checked/belgium:[&_.sm-state-BE]:[fill:var(--color-electric-lime)] peer-checked/belgium:[&_path]:stroke-[0.1]
+            peer-checked/netherlands:[&_.sm-state-NL]:[fill:var(--color-electric-lime)] peer-checked/netherlands:[&_path]:stroke-[0.1]
+            peer-checked/germany:[&_.sm-state-DE]:[fill:var(--color-electric-lime)] 
+            peer-checked/switzerland:[&_.sm-state-CH]:[fill:var(--color-electric-lime)] peer-checked/switzerland:[&_path]:stroke-[0.1]
+            peer-checked/sweden:[&_.sm-state-SE]:[fill:var(--color-electric-lime)] 
+            peer-checked/canada:[&_.sm-state-CA]:[fill:var(--color-electric-indigo)] 
+            peer-checked/united-states:[&_.sm-state-US]:[fill:var(--color-electric-indigo)] peer-
+            peer-checked/india:[&_.sm-state-IN]:[fill:var(--color-electric-red)] 
+            peer-checked/china:[&_.sm-state-CN]:[fill:var(--color-electric-red)] 
+            peer-checked/south-korea:[&_.sm-state-KR]:[fill:var(--color-electric-red)] peer-
+            peer-checked/japan:[&_.sm-state-JP]:[fill:var(--color-electric-red)] 
             
             "
           >
@@ -205,12 +205,15 @@ export function Reviews() {
                 Working <br /> Worldwide
               </p>
 
-              <div className="w-auto lg:w-full aspect-square">
+              <div className="w-full aspect-square py-[calc(var(--sfu)*2)]">
                 <div className="h-full w-full px-[calc(var(--sfu)*1)]">
                   <div className="w-full aspect-square rounded-full relative">
-                      <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
+                    <RadialDashCircle className="absolute inset-[calc(var(--sfu)*-0.25)] z-10 text-[var(--color-text-action)] ease-[var(--motion-steady)]" />
                     <div className="w-full h-full rounded-full overflow-hidden relative">
-                        <WorldMap className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]" />
+                      <WorldMap
+                        className="wm absolute inset-0 transition-all duration-[var(--duration-extra-long)] ease-[var(--motion-steady)]]
+                        [&_path]:transition-all [&_path]:duration-[var(--duration-short)] [&_path]:ease-[var(--motion-steady)] [&_path]:stroke-[0.2]"
+                      />
                     </div>
                   </div>
                 </div>
@@ -392,11 +395,11 @@ function ReviewCarasoul({ data }: { data: CardProps[] }) {
         {/* Navigation Controls - Extended to 12 */}
         {/* Labels here trigger the INPUTS present in the parent 'Reviews' component via global ID matching */}
         <div
-          className="flex gap-[calc(var(--sfu)*0.5)] 
+          className="flex gap-[calc(var(--sfu)*0.5)] mt-[calc(var(--sfu)*1)] sm:mt-0 
                   "
         >
           {/* Up Button */}
-          <div className="p-[calc(var(--sfu)*1.25)] rounded-full bg-[var(--color-bg-base)] text-[var(--color-text-base)] relative active:scale-95 transition-transform">
+          <div className="p-[calc(var(--sfu)*1.25)] rounded-full bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)] relative active:scale-95 transition-transform">
             <FiArrowUp strokeWidth={1.5} />
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
               <label
@@ -407,7 +410,7 @@ function ReviewCarasoul({ data }: { data: CardProps[] }) {
             ))}
           </div>
           {/* Down Button */}
-          <div className="p-[calc(var(--sfu)*1.25)] rounded-full bg-[var(--color-bg-base)] text-[var(--color-text-base)] relative active:scale-95 transition-transform">
+          <div className="p-[calc(var(--sfu)*1.25)] rounded-full bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)] relative active:scale-95 transition-transform">
             <FiArrowDown strokeWidth={1.5} />
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
               <label
@@ -449,31 +452,33 @@ function Card({
   return (
     <div
       {...props}
-      className={`w-11/12 sm:w-3/4 h-fit p-[calc(var(--sfu)*3)] rounded-[calc(var(--sfu)*0.75)] 
+      className={`w-11/12 lg:w-3/4 h-fit p-[calc(var(--sfu)*1.5)] sm:p-[calc(var(--sfu)*3)] rounded-[calc(var(--sfu)*0.75)] 
         bg-[var(--color-electric-indigo)] flex flex-col gap-[calc(var(--sfu)*2)] 
         text-[var(--color-text-action)] ${className}`}
     >
-      <h3 className="text-[calc(var(--sfu)*2)] leading-tight tracking-tighter">
+      <h3 className="text-[calc(var(--sfu)*1.25)] sm:text-[calc(var(--sfu)*2)] leading-tight tracking-tighter">
         {title}
       </h3>
 
-      <div className="flex flex-col sm:flex-row items-start justify-between gap-[calc(var(--sfu)*1.5)]">
-        <div className="flex flex-col items-start justify-start ">
-          <div className="w-[calc(var(--sfu)*4)] aspect-square rounded-full bg-[var(--color-bg-base)] relative overflow-hidden">
+      <div className="flex flex-col-reverse lg:flex-row items-start justify-between gap-[calc(var(--sfu)*1.5)]">
+        <div className="flex flex-row gap-[calc(var(--sfu)*1)] lg:gap-0 lg:flex-col items-center lg:items-start justify-start ">
+          <div className="w-[calc(var(--sfu)*3.25)] sm:w-[calc(var(--sfu)*4)] aspect-square rounded-full bg-[var(--color-bg-base)] relative overflow-hidden">
             {/* Added Image support */}
             {/* <Image src={props.image} alt={name} fill className="object-cover" /> */}
           </div>
-          <h3 className="font-brisa text-[calc(var(--sfu)*1.25)] pt-[calc(var(--sfu)*0.25)]">
-            {name}
-          </h3>
-          <h4
-            className="py-[calc(var(--sfu)*0.125)] px-[calc(var(--sfu)*0.25)] font-mono leading-none bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)]
+          <div className="flex flex-col">
+            <h3 className="font-brisa text-[calc(var(--sfu)*1.25)] pt-[calc(var(--sfu)*0.25)]">
+              {name}
+            </h3>
+            <h4
+              className="py-[calc(var(--sfu)*0.125)] px-[calc(var(--sfu)*0.25)] font-mono leading-none bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)]
             text-[calc(var(--sfu)*0.75)]"
-          >
-            {role}
-          </h4>
+            >
+              {role}
+            </h4>
+          </div>
         </div>
-        <p className="leading-normal font-medium opacity-90 max-w-2/3 leading-[0.95]">
+        <p className="leading-normal font-medium opacity-90 max-w-full xl:max-w-2/3 leading-[0.95]">
           {description}
         </p>
       </div>
