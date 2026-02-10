@@ -208,14 +208,14 @@ export function Footer() {
           {/* Footer Bottom / Legal */}
           <div className="w-full max-w-[var(--size-container)] mx-auto flex flex-rwo justify-between relative px-[calc(var(--sfu)*1.5)] py-[calc(var(--sfu)*1.75)] font-mono uppercase text-[calc(var(--sfu)*0.7)]">
             <div className="text-[var(--color-text-action)] flex">
-              {legalPagesLinks.map(({ label, href }, i) => (
+              {legalPagesLinks.map(({ label, href, shortName }, i) => (
                 <Badge
                   key={i}
                   href={href}
                   shape={i % 2 == 1 ? "rounded" : "box"}
                   className="bg-[var(--color-text-base)] text-[var(--color-text-contrast)]"
                 >
-                  {label}
+                  {shortName}
                 </Badge>
               ))}
             </div>
