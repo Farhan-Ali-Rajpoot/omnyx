@@ -1,6 +1,6 @@
 'use client';
 import { SocialLinks } from "@/components/UI/SocialLinks";
-import { FounderSocialLinks } from "@/config/component-links/FounderSocialLink";
+import { FounderSocialLinks } from "@/config/links/FounderSocialLink"; 
 import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
 import { Images } from "@/config/images";
 import Image from "next/image";

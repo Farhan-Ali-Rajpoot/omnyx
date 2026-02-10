@@ -30,7 +30,9 @@ export const FrontendRoutes = {
   },
   legal: {
     terms: `${FrontedLegalRoute}/terms`,
-    privacy: `${FrontedLegalRoute}/privact`,
+    privacy: `${FrontedLegalRoute}/privacy`,
+    cookies: `${FrontedLegalRoute}/cookies`,
+    license: `${FrontedLegalRoute}/license`,
   },
   help: {
     contact: `${FrontedHelpRoute}/contact`,

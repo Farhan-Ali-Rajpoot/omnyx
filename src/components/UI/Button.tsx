@@ -1,5 +1,5 @@
 import Link, { LinkProps } from "next/link"
-import { ButtonHTMLAttributes, ComponentProps, ReactNode } from "react"
+import { ButtonHTMLAttributes, ComponentProps, HTMLProps, ReactNode } from "react"
 
 type shape = 'rounded' | 'box';
 
@@ -8,18 +8,23 @@ const variants = {
     box: `rounded-[calc(var(--sfu)*0.1)]`
 }
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps {
+  type?: HTMLButtonElement["type"],
+  className?: string,
   children: ReactNode,
   shape?: shape,
   href?: LinkProps['href'],
-  textColor?: string 
+  textColor?: string,
+  style?: HTMLProps<HTMLButtonElement>["style"], 
 }
 
 const baseClass = `px-[calc(var(--sfu)*1)] py-[calc(var(--sfu)*0.65)] leading-none cursor-pointer`
 
-export function Button({ children, href ,className = "bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)] w-fit", shape = 'box', ...props }: ButtonProps) {
+export function Button({ children, href, type, style = {}, className = "bg-[var(--color-bg-contrast)] text-[var(--color-text-contrast)] w-fit", shape = 'box', ...props }: ButtonProps) {
     const attrs = {
         className:  `${baseClass} ${variants[shape]} ${className} `,
+        style: style,
+        ...props
     };
     if (href) {
       return (
@@ -29,5 +34,5 @@ export function Button({ children, href ,className = "bg-[var(--color-bg-contras
       )
     }
 
-    return <div {...attrs}>{children}</div>
+    return <button type={type} {...attrs}>{children}</button>
 }

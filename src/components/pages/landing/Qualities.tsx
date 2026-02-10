@@ -23,18 +23,18 @@ export function Qualities() {
   return (
     <>
       <Section className="pt-[calc(var(--sfu)*8)] pb-[calc(var(--sfu)*4)]">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col w-fit text-center">
+        <div className="flex justify-end xl:justify-between items-start">
+          <div className="hidden xl:flex flex-col w-fit text-center">
             <AppNameTextSVG className="text-[calc(var(--sfu)*1)]" />
             <p className="text-[calc(var(--sfu)*0.75)]">Fast & Robust</p>
           </div>
-          <div className="max-w-[calc(var(--sfu)*42)] mr-[calc(var(--sfu)*8)]">
-            <p className="text-[calc(var(--sfu)*3)] leading-[1] relative ">
+          <div className="max-w-[calc(var(--sfu)*42)] md:mx-[calc(var(--sfu)*4)] lg:ml-0 lg:mr-[calc(var(--sfu)*8)]">
+            <p className="text-[calc(var(--sfu)*1.75)] sm:text-[calc(var(--sfu)*3)] leading-[1] relative flex flex-col-reverse">
               Scale your presence online with a lightweight website fusing
               high-velocity speed and technical precision.
               <span
-                className="font-brisa absolute top-0 left-0 -translate-x-full text-[calc(var(--sfu)*1.5)] text-[var(--color-electric-red)]
-               pr-[calc(var(--sfu)*1)] pb-[calc(var(--sfu)*1)] flex flex-col justify-center"
+                className="font-brisa relative lg:absolute top-0 left-0 lg:-translate-x-full text-[calc(var(--sfu)*1.5)] text-[var(--color-electric-red)]
+               lg:pr-[calc(var(--sfu)*1)] pb-[calc(var(--sfu)*1)] flex flex-col justify-center"
               >
                 Why choose us
                 <svg
@@ -42,6 +42,7 @@ export function Qualities() {
                     height: "calc(var(--sfu) * 1.5)",
                     width: "auto",
                   }}
+                  className="hidden sm:block"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 32 32"
                 >
@@ -59,7 +60,7 @@ export function Qualities() {
                 <div
                   key={i}
                   className="border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)]
-                    flex items-start justify-between py-[calc(var(--sfu)*1.25)] "
+                    flex flex-col sm:flex-row items-start justify-between gap-[calc(var(--sfu)*2)] sm:gap-0 py-[calc(var(--sfu)*1.25)] "
                 >
                   <h3
                     style={{

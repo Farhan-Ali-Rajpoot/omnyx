@@ -12,10 +12,10 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <div className="">
-        {/* <Navbar user={user} /> */}
+        <Navbar user={user} />
         {children}
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };

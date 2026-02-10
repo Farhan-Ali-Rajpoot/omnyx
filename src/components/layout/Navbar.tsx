@@ -1,17 +1,17 @@
 import { ThemeToggle } from "@/components/shared/colorTheme/ThemeToggle";
-import { navLinks } from "@/config/component-links/navl";
+import { navLinks } from "@/config/links/navl";
 import { CSSProperties, HTMLAttributes } from "react";
 import Link from "next/link";
 import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
-import { FounderSocialLinks } from "@/config/component-links/FounderSocialLink";
+import { FounderSocialLinks } from "@/config/links/FounderSocialLink"; 
 import { FaGithub, FaUser } from "react-icons/fa";
 import { appName } from "@/config/meta/app";
-import { authLinks } from "@/config/component-links/auth";
+import { authLinks } from "@/config/links/auth"; 
 import Image from "next/image";
 
 import { JwtPayload } from "jsonwebtoken";
 import type { User } from "@/components/@types/Layout";
-import { aboutLinks } from "@/config/component-links/about";
+import { aboutLinks } from "@/config/links/about"; 
 import { FrontendRoutes } from "@/config/urls";
 import { UnderlineLink } from "../UI/UnderlineLink";
 import { Button } from "../UI/Button";
@@ -200,7 +200,7 @@ export function Navbar({ user, className = "", ...props }: NavbarProps) {
                       ${i % 2 == 0 && "bg-[var(--color-bg-action-surface-emphasis)]"}
                       relative w-full rounded-[calc(var(--sfu)*1)] overflow-hidden
                       transition-transform duration-[var(--duration-long)] ease-[var(--motion-steady)] transform
-                      translate-y-[calc(var(--sfu)*var(--i)*2)]
+                      translate-y-[calc(var(--sfu)*6)]
                       peer-checked:translate-y-0
                       peer-checked:delay-[calc(var(--r-i)*50ms)]
                       delay-[calc(var(--i)*50ms)] p-[calc(var(--sfu)*2.25)]

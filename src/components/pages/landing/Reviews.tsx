@@ -395,7 +395,7 @@ function ReviewCarasoul({ data }: { data: CardProps[] }) {
         {/* Navigation Controls - Extended to 12 */}
         {/* Labels here trigger the INPUTS present in the parent 'Reviews' component via global ID matching */}
         <div
-          className="flex gap-[calc(var(--sfu)*0.5)] mt-[calc(var(--sfu)*1)] sm:mt-0 
+          className="flex gap-[calc(var(--sfu)*0.5)] sm:mt-0 translate-y-[calc(var(--sfu)*2)] sm:translate-y-0 
                   "
         >
           {/* Up Button */}

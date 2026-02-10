@@ -4,7 +4,7 @@ import { Section } from "@/components/UI/Section";
 export function Hero() {
   return (
     <>
-      <Section className="min-h-[600px] h-screen max-h-[1080px] flex flex-col items-center py-[calc(var(--sfu)*1.5)]">
+      <Section className="min-h-[600px] h-screen max-h-[1080px] flex flex-col items-center justify-center py-[calc(var(--sfu)*1.5)]">
         <div className="w-full h-full flex items-center justify-center">
           <div className="flex flex-col items-center gap-[calc(var(--sfu)*1.75)]">
             <h1 className="text-[calc(var(--sfu)*5.5)] text-center tracking-tight leading-none pt-[calc(var(--sfu)*2)]">

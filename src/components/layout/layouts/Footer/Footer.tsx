@@ -1,5 +1,5 @@
 import { appName } from "@/config/meta/app";
-import { AppIconJSX, AppNameTextSVG } from "@/config/Icons";
+import { AppNameTextSVG } from "@/config/Icons";
 import { founderName } from "@/config/founder";
 import FormInput from "../../../UI/Form/FormInput";
 import { Checkbox } from "../../../UI/Form/Checkbox";
@@ -9,45 +9,11 @@ import { Badge } from "../../../UI/Badge";
 import { FiX } from "react-icons/fi";
 import { FrontendRoutes } from "@/config/urls";
 import AboutModal from "./AboutModal";
+import { legalPagesLinks } from "@/config/links/legalPagesLinks";
+import { footerSitemap } from "@/config/links/FooterSitemapLinks";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-
-  const sitemap = [
-    {
-      title: "Product",
-      children: [
-        { label: "The Vault", href: "/the-vault" },
-        { label: "Page Transition Course", href: "/course" },
-        { label: "Icon Library", href: "/icons" },
-        { label: "Easings", href: "/easings" },
-      ],
-    },
-    {
-      title: "Community",
-      children: [
-        { label: "Showcase", href: "/showcase" },
-        { label: `About ${appName}`, htmlFor: "about-modal" },
-        { label: "Slack Community", href: "/slack" },
-      ],
-    },
-    {
-      title: "Membership",
-      children: [
-        { label: "Updates", href: "/updates" },
-        { label: "Pricing", href: "/pricing" },
-        { label: "FAQs", href: "/faqs" },
-        { label: "Support", href: "/support" },
-      ],
-    },
-  ];
-
-  const FooterSubLinks = [
-    { label: "Licensing", href: "/" },
-    { label: "T&CS", href: "/" },
-    { label: "Privacy", href: "/" },
-    { label: "Cookies", href: "/" },
-  ];
 
   return (
     <>
@@ -109,7 +75,7 @@ export function Footer() {
                 className="hidden"
               />
 
-              {sitemap.map(({ title, children }, i) => (
+              {footerSitemap.map(({ title, children }, i) => (
                 <div
                   key={title}
                   className="relative w-full sm:w-1/3 border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)] sm:border-none"
@@ -242,7 +208,7 @@ export function Footer() {
           {/* Footer Bottom / Legal */}
           <div className="w-full max-w-[var(--size-container)] mx-auto flex flex-rwo justify-between relative px-[calc(var(--sfu)*1.5)] py-[calc(var(--sfu)*1.75)] font-mono uppercase text-[calc(var(--sfu)*0.7)]">
             <div className="text-[var(--color-text-action)] flex">
-              {FooterSubLinks.map(({ label, href }, i) => (
+              {legalPagesLinks.map(({ label, href }, i) => (
                 <Badge
                   key={i}
                   href={href}
