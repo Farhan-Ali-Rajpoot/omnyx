@@ -120,7 +120,7 @@ const page = () => {
         className="w-full pt-[calc(var(--sfu)*1.5)] border-t-[calc(var(--sfu)*0.0625)] border-[var(--color-border-surface)]
        flex items-start justify-center gap-[calc(var(--sfu)*1.5)] pb-[calc(var(--sfu)*15)]"
       >
-        <LegalPageLinks active="licensing-agreement" />
+        <LegalPageLinks active="cookies-policy" />
 
         <div className="max-w-xl flex flex-col items-start mx-auto text-[calc(var(--sfu)*0.85)]">
           <Paragraph>
