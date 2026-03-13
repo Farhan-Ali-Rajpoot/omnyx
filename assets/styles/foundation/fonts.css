@@ -1,0 +1,21 @@
+
+:root {
+  --font-haffer-montreal: 'HafferMono';
+  --font-brisa: 'Brisa';
+}
+
+@font-face {
+  font-family: 'HafferMono';
+  src: url('/public/fonts/HafferMonoRegular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; 
+}
+
+@font-face {
+  font-family: 'Brisa';
+  src: url('/public/fonts/BrisaPro-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; 
+}

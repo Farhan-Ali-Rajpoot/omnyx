@@ -1,0 +1,41 @@
+/* Foundation */
+@import "./foundation/fonts.css";
+@import "./foundation/base.css";
+@import "./foundation/motion.css";
+@import "./foundation/scales.css";
+@import "./foundation/tokens.css";
+
+/* Layout */
+@import "./layout/section.css";
+
+/* Animation */
+@import "./animation/footer-svg.css";
+@import "./animation/parallax-spin.css";
+@import "./animation/google-dash.css";
+@import "./animation/navigation.css";
+
+/* Tailwindcss */
+@import "tailwindcss";
+
+/* Content scanning */
+@source "../../src/components/**/*.rs";
+@source "../../src/config/**/*.rs";
+@source "../../src/main.rs";
+
+
+/* Themes */
+@theme {
+  --font-brisa: "var(--font-brisa)", serif;
+  --font-haffer-montreal: "var(--font-haffer-montreal)", sans-serif;
+
+  --font-haffer-mono: var(--font-haffer-mono), monospace;
+}
+
+/* Custom Utilities*/
+@utility no-transition {
+  transition: none !important;
+  & *, & *::before, & *::after {
+    transition: none !important;
+  }
+}
+

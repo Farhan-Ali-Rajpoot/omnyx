@@ -1,0 +1,97 @@
+/* Base — Mobile (< sm) */
+:root {
+  --size-unit: 16;
+  --size-container-ideal: 375;   /* smaller for realistic phone screens */
+  --size-container-min: 320px;
+  --size-container-max: 639px;
+
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-fluid-unit: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+  --sfu: var(--size-fluid-unit);
+}
+
+/* sm — Small screens */
+@media (min-width: 640px) {
+  :root {
+    --size-container-ideal: 640;
+    --size-container-min: 640px;
+    --size-container-max: 767px;
+  }
+}
+
+/* md — Medium screens */
+@media (min-width: 768px) {
+  :root {
+    --size-container-ideal: 768;
+    --size-container-min: 768px;
+    --size-container-max: 1023px;
+  }
+}
+
+/* lg — Large screens */
+@media (min-width: 1024px) {
+  :root {
+    --size-container-ideal: 1024;
+    --size-container-min: 1024px;
+    --size-container-max: 1279px;
+  }
+}
+
+/* xl — Extra large screens */
+@media (min-width: 1280px) {
+  :root {
+    --size-container-ideal: 1280;
+    --size-container-min: 1280px;
+    --size-container-max: 1535px;
+  }
+}
+
+/* 2xl — Extra extra large screens */
+@media (min-width: 1536px) {
+  :root {
+    --size-container-ideal: 1536;
+    --size-container-min: 1536px;
+    --size-container-max: 1920px;
+  }
+}
+
+/* 3xl — Ultra wide screens */
+/* @media (min-width: 1920px) {
+  :root {
+    --size-container-ideal: 1920;
+    --size-container-min: 1920px;
+    --size-container-max: 2559px;  
+  }
+} */
+
+/* 4xl — Super ultra wide screens */
+/* @media (min-width: 2560px) {
+  :root {
+    --size-container-ideal: 2560;
+    --size-container-min: 2560px;
+    --size-container-max: 3200px;  
+  }
+}
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

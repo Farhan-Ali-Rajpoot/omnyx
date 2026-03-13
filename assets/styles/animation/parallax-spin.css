@@ -1,0 +1,99 @@
+:root {
+  --plx-deg: 45deg; /* How much they rotate */
+  --plx-speed: 0.05s; /* How fast the rotation happens */
+  --plx-stagger: calc(1s + var(--plx-speed)); /* Delay between each circle starting */
+  --plx-total-dur: 8s; /* Total loop time (must be long enough for all to finish) */
+}
+
+/* 6.6666% to rotate a circle,  */
+@keyframes plx-fifo-spin {
+  /* Animation In */
+  0% {
+    transform: rotate(0deg);
+  }
+  6.6666% {
+    transform: rotate(calc(var(--i) * var(--plx-deg)));
+  }
+  /* 6.6666% * 3 (time to rotate 3 circles) + 6.6666% * 3 (Time to rest before rotating ) */
+  40% {
+    transform: rotate(calc(var(--i) * var(--plx-deg)));
+  }
+  /* Animation out */
+  46.6666% {
+    transform: rotate(0deg);
+  }
+  /* 6.6666% * 3 (time to rotate 3 circles) + 6.6666% * 3 (Time to rest before rotating ) */
+  80% {
+    transform: rotate(0deg);
+  }
+  /* 20% (Rest after rotating back all circles) */
+}
+
+.plx-circles {
+  animation-name: plx-fifo-spin;
+  animation-duration: var(--plx-total-dur);
+  animation-iteration-count: infinite;
+  animation-delay: calc(var(--i) * var(--plx-stagger));
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+
+/* The Animation for the SVG */
+@keyframes plx-svg-sync {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  6.6666% {
+    transform: scale(1) rotate(calc(var(--plx-deg) * 1)); /* Spin with Circle 1 */
+  }
+  13.3333% {
+    transform: scale(0.75) rotate(calc(var(--plx-deg) * 1)); /* Reset rotation, ready for Circle 2 */
+  }
+  20% {
+    transform: scale(0.75) rotate(calc(var(--plx-deg) * 2)); /* Spin with Circle 2 */
+  }
+  26.6666% {
+    transform: scale(0.5) rotate(calc(var(--plx-deg) * 2)); /* Reset rotation, ready for Circle 3 */
+  }
+  33.3333% {
+    transform: scale(0.5) rotate(calc(var(--plx-deg) * 3)); /* Spin with Circle 3 */
+  }
+  40% {
+    transform: scale(1) rotate(calc(var(--plx-deg) * 3));
+  }
+  46.6666% {
+    transform: scale(1) rotate(calc(var(--plx-deg) * 2));
+  }
+  53.3333% {
+    transform: scale(0.75) rotate(calc(var(--plx-deg) * 2));
+  }
+  60% {
+    transform: scale(0.75) rotate(calc(var(--plx-deg) * 1));
+  }
+  66.6666% {
+    transform: scale(0.5) rotate(calc(var(--plx-deg) * 1));
+  }
+  73.3333% {
+    transform: scale(0.5) rotate(0deg);
+  }
+
+
+  93.3333% {
+    transform: scale(0.5) rotate(0deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.plx-svg {
+  animation-name: plx-svg-sync;
+  animation-duration: var(--plx-total-dur); 
+  animation-delay: calc(var(--plx-stagger));
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: var(--motion-steady);
+}
+
+

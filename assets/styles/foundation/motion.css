@@ -1,0 +1,21 @@
+:root {
+  /* Durations + perceived motion */
+  --duration-short: 0.15s;
+  --duration-medium: 0.3s;
+  --duration-long: 0.6s;
+  --duration-extra-long: 1s;
+
+  /* Delay + perceived motion */
+  --delay-short: 0.15s;
+  --delay-medium: 0.3s;
+  --delay-long: 0.6s;
+  --delay-extra-long: 1s;
+
+  /* Easing curves */
+  --motion-snappy-ease: ease-out;
+  --motion-smooth-ease: ease-in-out;
+  --motion-pleasant-ease: ease;
+  --motion-bouncy-ease: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --motion-premium-ease: ease-in-out;
+ --motion-steady: cubic-bezier(0.4, 0.0, 0.2, 1);
+}

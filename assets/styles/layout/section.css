@@ -1,0 +1,13 @@
+@layer base {
+  section {
+    padding: 0 calc(var(--sfu) * 1.5); 
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  section div[data-section-content] {
+    margin-inline: auto; 
+    max-width: var(--size-container-max);
+  }
+}

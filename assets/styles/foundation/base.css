@@ -1,0 +1,37 @@
+/* *{ border: calc(var(--sfu)*0.0625) solid red;} */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* 
+::-webkit-scrollbar {
+  width:  4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 20px;
+  background-color: var(--color-scrollbar-thumb);
+  border-radius: 6px;
+  cursor: grab;
+  transition: background-color var(--duration-short) var(--motion-steady);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+::-webkit-scrollbar-corner {
+  background: red;
+  display: none;
+} */

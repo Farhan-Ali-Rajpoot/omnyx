@@ -1,0 +1,27 @@
+/* This is the wrapper that gets swapped */
+.container {
+    /* Ensure the container stays in place during animation */
+    width: 100%;
+    will-change: opacity, transform; 
+}
+
+/* State 1: Leaving the page */
+.leave {
+    animation: out 1s var(--motion-steady) forwards;
+    pointer-events: none; /* Prevent double-clicks during the animation */
+}
+
+/* State 2: New page just arrived (Initial state) */
+.enter {
+    animation: in 1s var(--motion-steady) forwards;
+}
+
+@keyframes out {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20vh); } /* Added a subtle lift */
+}
+
+@keyframes in {
+    0% { opacity: 0; transform: translateY(100vh); } /* Start slightly lower */
+    100% { opacity: 1; transform: translateY(0); }
+}

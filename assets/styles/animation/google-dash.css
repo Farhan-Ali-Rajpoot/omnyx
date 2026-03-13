@@ -1,0 +1,11 @@
+.animate-google-dash {
+    animation: google-dash 1.5s ease-in-out infinite;
+
+}
+
+/* Keyframes */
+  @keyframes google-dash {
+    0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+    50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+    100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+  }
