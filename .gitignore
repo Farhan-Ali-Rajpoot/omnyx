@@ -4,3 +4,4 @@ target/
 /tailwindcss
 /.env
 /.git
+/.gitignore
