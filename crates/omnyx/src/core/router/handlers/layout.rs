@@ -7,9 +7,8 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 use crate::core::router::logic::RouteMetadata;
-use crate::core::router::io::{Response, FrameworkContext, IntoResponse};
+use crate::core::router::io::{Response, Request, IntoResponse};
 use crate::error::RouteError;
-
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LayoutProps {
@@ -36,54 +35,27 @@ impl LayoutProps {
 }
 
 #[async_trait]
-pub trait FromContext: Sized {
-    fn from_context(ctx: &FrameworkContext) -> Result<Self, Response>;
-}
-
-impl FromContext for LayoutProps {
-    fn from_context(ctx: &FrameworkContext) -> Result<Self, Response> {
-        Ok(ctx.layout_props.unwrap_or(Arc::new(LayoutProps::default())))
-    }
-}
-
-impl FromContext for FrameworkContext {
-    fn from_context(ctx: &FrameworkContext) -> Result<Self, Response> {
-        Ok(ctx.clone())
-    }
-}
-
-pub type LayoutFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'static>>;
-
-#[async_trait]
-pub trait LayoutComponent: Send + Sync + 'static {
-    type Args;
-    
-    async fn render(&self, ctx: FrameworkContext) -> LayoutFuture<'static, Response>;
+pub trait ErasedLayoutComponent: Send + Sync + 'static {
+    async fn call_erased(&self, request: &mut Request) -> Response;
 }
 
 #[async_trait]
-impl<F, Fut, R, T1, T2> LayoutComponent for F
+pub trait LayoutComponent<Args>: Clone + Send + Sync + 'static {
+    async fn call(self, request: Request) -> Response;
+}
+
+#[async_trait]
+impl<H, Args> ErasedLayoutComponent for LayoutComponent<H, Args>
 where
-    F: Fn(T1, T2) -> Fut + Sync + Send + 'static,
-    Fut: Future<Output = R> + Send + 'static,
-    R: IntoResponse + Send + 'static,
-
-    T1: FromContext + Send,
-    T2: FromContext + Send,
+    H: LayoutComponent<Args> + Clone + Send + Sync + 'static,
+    Args: Send + Sync + 'static,
 {
-    type Args = (T1, T2);
-
-    async fn render(&self, ctx: FrameworkContext) -> LayoutFuture<'static, Response> {
-        let arg1 = match T1::from_context(&ctx) {
-            Ok(v) => v,
-            Err(e) => return e,
-        };
-        
-        let arg2 = match T2::from_context(&ctx) {
-            Ok(v) => v,
-            Err(e) => return e,
-        };
-
-        (self)(arg1, arg2)
+    async fn call_erased(&self, request: &mut Request) -> Response {
+        let owned_req = request.clone();
+        self.clone().call(request).await
     }
 }
+
+impl_handler!(LayoutComponent, call; );
+impl_handler!(LayoutComponent, call; T1);
+impl_handler!(LayoutComponent, call; T1, T2);

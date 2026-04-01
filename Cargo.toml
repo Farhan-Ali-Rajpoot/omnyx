@@ -13,11 +13,7 @@ edition = "2024"
 [dependencies]
 omnyx = { path = "crates/omnyx" }
 
-axum = "0.8.8"
 const_format = "0.2.35"
 rscx = "0.1.14"
 chrono = "0.4.44"
-async-trait = "0.1.89"
-matchit = "0.9.1"
-bytes = "1.11.1"
 

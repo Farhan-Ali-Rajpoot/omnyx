@@ -1,20 +1,33 @@
 use std::future::Future;
+use std::marker::PhantomData;
 use async_trait::async_trait;
-use crate::core::router::io::{RequestContext, Response, IntoResponse};
+use crate::core::router::io::{Response, IntoResponse, Request};
 
 #[async_trait]
-pub trait ErrorComponent: Send + Sync + 'static {
-    async fn render(&self, ctx: RequestContext) -> Response;
+pub trait ErasedErrorComponent: Send + Sync + 'static {
+    async fn call_erased(&self, request: Request) -> Response;
 }
 
 #[async_trait]
-impl<F, Fut, R> ErrorComponent for F 
+pub trait ErrorComponent<Args>: Clone + Send + Sync + 'static {
+    async fn call(self, request: Request) -> Response;
+}
+
+pub struct ErrorComponentWrapper<H, Args> {
+    pub handler: H,
+    pub _marker: PhantomData<Args>,
+}
+
+#[async_trait]
+impl<H, Args> ErasedErrorComponent for ErrorComponentWrapper<H, Args>
 where
-    F: Fn(RequestContext) -> Fut + Sync + Send + 'static,
-    Fut: Future<Output = R> + Send + 'static,
-    R: IntoResponse + Send + 'static, 
+    H: ErrorComponent<Args> + Clone + Send + Sync + 'static,
+    Args: Send + Sync + 'static,
 {
-    async fn render(&self, ctx: RequestContext) -> Response {
-        (self)(ctx).await.into_response()
+    async fn call_erased(&self, request: Request) -> Response {
+        self.handler.clone().call(request).await
     }
 }
+
+impl_handler!(ErrorComponent, call; );
+impl_handler!(ErrorComponent, call; T1);

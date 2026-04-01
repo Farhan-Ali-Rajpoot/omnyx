@@ -11,8 +11,8 @@ use crate::core::router::MatchitMatcher;
 use crate::plugin::OmnyxPlugin;
 use crate::island::IslandConfig;
 use crate::realtime::RealtimeAdapter;
-use crate::builder::code::core::CodeRouteBuilder;
-use crate::builder::route_tree_builder::{RouteTreeBuilder, RouteTreeBuilderInfo};
+use crate::builder::router::RouterBuilder;
+use crate::builder::router::{RouteTreeBuilder, RouteTreeBuilderInfo};
 use crate::render::RenderMode;
 use crate::render::ModeConfig;
 use crate::edge::EdgeConfig;
@@ -21,7 +21,7 @@ use crate::diagnostics::DiagnosticsConfig;
 
 #[derive(Default)]
 pub struct OmnyxBuilder {
-    code_builders: Vec<Arc<CodeRouteBuilder>>,
+    route_builders: Vec<RouterBuilder>,
 
     plugins: Vec<Arc<dyn OmnyxPlugin>>,
     realtime_adapters: Vec<Arc<dyn RealtimeAdapter>>,
@@ -39,11 +39,11 @@ impl OmnyxBuilder {
 
     pub fn code<F>(mut self, f: F) -> Self
     where
-        F: FnOnce(&mut CodeRouteBuilder) + Send + Sync + 'static,
+        F: FnOnce(&mut RouterBuilder) + Send + Sync + 'static,
     {
-        let mut cb = CodeRouteBuilder::new();
+        let mut cb = RouterBuilder::new();
         f(&mut cb);
-        // self.code_builders.push(Arc::new(cb));
+        self.route_builders.push(cb);
         self
     }
 }

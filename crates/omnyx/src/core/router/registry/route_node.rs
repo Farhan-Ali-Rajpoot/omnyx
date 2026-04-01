@@ -7,8 +7,12 @@ use crate::core::router::logic::metadata::RouteMetadata;
 use crate::core::router::logic::Middleware;
 use crate::core::router::logic::DataLoader;
 use crate::core::router::tree::Path;
-use crate::core::router::handlers::{ApiHandler, PageComponent, SpecialComponent, LayoutComponent, ErrorComponent};
+use crate::core::router::handlers::{
+    ErasedApiHandler, ErasedPageComponent, ErasedSpecialComponent, ErasedLayoutComponent, 
+    ErasedErrorComponent, ErasedLoaderComponent
+};
 
+use super::ParallelRouteNode;
 
 #[derive(Clone, Debug)]
 pub enum SpecialNodeKind {
@@ -23,51 +27,49 @@ pub enum SpecialNodeKind {
 pub enum RouteNode {
     Page {
         path: Path,
-        handlers: HashMap<Method, Arc<dyn PageComponent>>,
-        error_handlers: HashMap<Method, Arc<dyn ErrorComponent>>,
+        controllers: HashMap<Method, Arc<dyn ErasedPageComponent>>,
+        error_controller: Option<Arc<dyn ErasedErrorComponent>>,
+        loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
         metadata: RouteMetadata,
         children: Vec<RouteNode>,
-        loaders: Vec<Arc<dyn DataLoader>>,
         middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        extensions: HashMap<String, Value>,
+        extensions: http::Extensions,
     },
     
     Api {
         path: Path,
-        handlers: HashMap<Method, Arc<dyn ApiHandler>>,
+        controllers: HashMap<Method, Arc<dyn ErasedApiHandler>>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        extensions: HashMap<String, Value>,
-        loaders: Vec<Arc<dyn DataLoader>>,
+        extensions: http::Extensions,
     },
 
     Layout {
         id: String,
-        component: Option<Arc<dyn LayoutComponent>>,
-        error_component: Option<Arc<dyn ErrorComponent>>,
+        controller: Option<Arc<dyn ErasedLayoutComponent>>,
+        error_controller: Option<Arc<dyn ErasedErrorComponent>>,
+        loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
         metadata: RouteMetadata,
         children: Vec<RouteNode>,
-        slots: HashMap<String, Vec<RouteNode>>, 
-        extensions: HashMap<String, Value>,
+        parallel_routes: HashMap<String, ParallelRouteNode>, 
+        extensions: http::Extensions,
         middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        loaders: Vec<Arc<dyn DataLoader>>,
     },
 
     Group {
         id: String,
         children: Vec<RouteNode>,
-        extensions: HashMap<String, Value>,
+        metadata: RouteMetadata,
+        extensions: http::Extensions,
         middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        loaders: Vec<Arc<dyn DataLoader>>,
     },
 
     Special {
         kind: SpecialNodeKind,
-        component: Option<Arc<dyn SpecialComponent>>,
+        component: Option<Arc<dyn ErasedSpecialComponent>>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        loaders: Vec<Arc<dyn DataLoader>>,
-        extensions: HashMap<String, Value>,
+        extensions: http::Extensions,
     },
 }
 

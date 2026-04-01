@@ -94,7 +94,6 @@ impl IntoResponse for StatusCode {
     }
 }
 
-// The conversion to Axum (This is where you had the E0034 error)
 impl AxumIntoResponse for Response {
     fn into_response(self) -> axum::response::Response {
         let mut res = match self.body {

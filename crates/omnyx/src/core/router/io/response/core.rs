@@ -1,5 +1,8 @@
 use axum::http::{HeaderMap, StatusCode};
+use axum_extra::extract::cookie::{Cookie, CookieJar};
 use serde_json::Value;
+
+use crate::core::router::logic::RouteMetadata;
 
 #[derive(Debug, Clone)]
 pub enum Body {
@@ -14,7 +17,9 @@ pub enum Body {
 #[derive(Debug, Clone)]
 pub struct Response {
     pub status: StatusCode,
+    pub metadata: Option<RouteMetadata>,
     pub headers: HeaderMap,
+    pub cookies: CookieJar,
     pub body: Body,
 }
 
@@ -23,6 +28,8 @@ impl Response {
         Self {
             status: StatusCode::OK,
             headers: HeaderMap::new(),
+            metadata: None,
+            cookies: CookieJar::new(),
             body,
         }
     }

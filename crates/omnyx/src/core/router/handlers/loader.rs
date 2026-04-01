@@ -1,28 +1,27 @@
 use async_trait::async_trait;
-use std::future::Future;
 use std::marker::PhantomData;
 
-use crate::core::router::io::{Response, Request};
+use crate::core::router::io::{Request, Response};
 
 #[async_trait]
-pub trait ErasedApiHandler: Send + Sync + 'static {
+pub trait ErasedLoaderComponent: Send + Sync + 'static {
     async fn call_erased(&self, request: Request) -> Response;
 }
 
 #[async_trait]
-pub trait ApiHandler<Args>: Clone + Send + Sync + 'static {
+pub trait LoaderComponent<Args>: Clone + Send + Sync + 'static {
     async fn call(self, request: Request) -> Response;
 }
 
-pub struct ApiHandlerWrapper<H, Args> {
+pub struct LoaderHandlerWrapper<H, Args> {
     pub handler: H,
     pub _marker: PhantomData<Args>,
 }
 
 #[async_trait]
-impl<H, Args> ErasedApiHandler for ApiHandlerWrapper<H, Args>
+impl<H, Args> ErasedLoaderComponent for LoaderHandlerWrapper<H, Args>
 where
-    H: ApiHandler<Args> + Clone + Send + Sync + 'static,
+    H: LoaderComponent<Args> + Clone + Send + Sync + 'static,
     Args: Send + Sync + 'static,
 {
     async fn call_erased(&self, request: Request) -> Response {
@@ -30,5 +29,5 @@ where
     }
 }
 
-impl_handler!(ApiHandler, call; );
-impl_handler!(ApiHandler, call; T1);
+impl_handler!(LoaderComponent, call; );
+impl_handler!(LoaderComponent, call; T1);
