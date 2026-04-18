@@ -1,5 +1,5 @@
 use axum::http::{HeaderMap, StatusCode};
-use axum_extra::extract::cookie::{Cookie, CookieJar};
+use axum_extra::extract::cookie::{CookieJar};
 use serde_json::Value;
 
 use crate::core::router::logic::RouteMetadata;

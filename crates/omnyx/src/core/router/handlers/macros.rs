@@ -1,32 +1,25 @@
-use crate::core::router::io::Request;
-use crate::core::router::io::IntoResponse;
-use crate::core::router::handlers::FromContext;
-
-
 #[macro_export]
 macro_rules! impl_handler {
     ( $trait:ident, $method:ident; $($ty:ident),* ) => {
-        #[async_trait]
         impl<F, Fut, R, $($ty,)*> $trait<($($ty,)*)> for F
         where
-            F: Fn($($ty,)*) -> Fut + Clone + Send + Sync + 'static,
-            Fut: Future<Output = R> + Send,
-            R: $crate::core::router::io::IntoResponse + Send + 'static,
+            F: Fn($($ty,)*) -> Fut + Clone + std::fmt::Debug + Send + Sync + 'static,
+            Fut: std::future::Future<Output = R> + Send + 'static,
+            R: $crate::core::router::io::IntoResponse + Send,
             $( $ty: $crate::core::router::handlers::FromContext + Send, )* {
-            async fn $method(self, request: $crate::core::router::io::Request) -> $crate::core::router::io::Response {
-                let req = request;
+            fn $method(self, request: $crate::core::router::io::Request) 
+                -> std::pin::Pin<std::boxed::Box<dyn std::future::Future<Output = $crate::core::router::io::Response> + Send>> 
+            {
+                std::boxed::Box::pin(async move {
+                    $(
+                        let $ty = <$ty as $crate::core::router::handlers::FromContext>::from_request(&request).await;
+                    )*
 
-                $(
-                    let $ty = <$ty as $crate::core::router::handlers::FromContext>::from_context(req.clone()).await;
-                )*
-
-                let result = (self)($($ty,)*).await;
-
-                $crate::core::router::io::IntoResponse::into_response(result)
+                    let result = (self)($($ty,)*).await;
+                    
+                    result.into_response()
+                })
             }
         }
     };
 }
-
-// impl_handler!(PageHandler, call; );
-// impl_handler!(PageHandler, call; T1, T2, T3);

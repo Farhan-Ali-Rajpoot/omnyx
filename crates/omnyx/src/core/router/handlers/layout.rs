@@ -1,16 +1,9 @@
-use std::borrow::Cow;
 use std::collections::HashMap;
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
 
-use crate::core::router::logic::RouteMetadata;
-use crate::core::router::io::{Response, Request, IntoResponse};
-use crate::error::RouteError;
+use crate::core::router::io::{Response, Request};
+use crate::types::BoxFuture;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct LayoutProps {
     pub children: String,                  
     pub slots: HashMap<String, String>,      
@@ -34,25 +27,28 @@ impl LayoutProps {
     }
 }
 
-#[async_trait]
-pub trait ErasedLayoutComponent: Send + Sync + 'static {
-    async fn call_erased(&self, request: &mut Request) -> Response;
+
+pub trait ErasedLayoutComponent: std::fmt::Debug + Send + Sync + 'static {
+    fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
-#[async_trait]
-pub trait LayoutComponent<Args>: Clone + Send + Sync + 'static {
-    async fn call(self, request: Request) -> Response;
+pub trait LayoutComponent<Args>: Send + Sync + 'static {
+    fn call(self, request: Request) -> impl Future<Output = Response> + Send;
 }
 
-#[async_trait]
-impl<H, Args> ErasedLayoutComponent for LayoutComponent<H, Args>
+#[derive(Debug)]
+pub struct LayoutComponentWrapper<H, Args> {
+    pub handler: H,
+    pub _marker: std::marker::PhantomData<Args>
+}
+
+impl<H, Args> LayoutComponent<Args> for LayoutComponentWrapper<H, Args>
 where
     H: LayoutComponent<Args> + Clone + Send + Sync + 'static,
     Args: Send + Sync + 'static,
 {
-    async fn call_erased(&self, request: &mut Request) -> Response {
-        let owned_req = request.clone();
-        self.clone().call(request).await
+    fn call(self, request: Request) -> impl Future<Output = Response> + Send {
+        self.handler.call(request)
     }
 }
 

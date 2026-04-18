@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-use serde_json::Value;
 use axum::http::StatusCode;
 use axum::response::IntoResponse as AxumIntoResponse;
 use super::{Response, Body};

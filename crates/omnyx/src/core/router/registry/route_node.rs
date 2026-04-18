@@ -1,47 +1,38 @@
 use std::sync::Arc;
 use std::collections::HashMap;
-use serde_json::Value;
-use axum::http::{self, Method};
 
+use crate::core::router::registry::Extensions;
 use crate::core::router::logic::metadata::RouteMetadata;
 use crate::core::router::logic::Middleware;
-use crate::core::router::logic::DataLoader;
-use crate::core::router::tree::Path;
+use crate::core::router::utils::Path;
 use crate::core::router::handlers::{
     ErasedApiHandler, ErasedPageComponent, ErasedSpecialComponent, ErasedLayoutComponent, 
     ErasedErrorComponent, ErasedLoaderComponent
 };
+use crate::collections::LinearMap;
 
 use super::ParallelRouteNode;
 
-#[derive(Clone, Debug)]
-pub enum SpecialNodeKind {
-    Loading,
-    Error,
-    NotFound,
-    Redirect,
-    Forbidden,
-}
 
 #[derive(Clone)]
 pub enum RouteNode {
     Page {
         path: Path,
-        controllers: HashMap<Method, Arc<dyn ErasedPageComponent>>,
+        controllers: LinearMap<http::Method, Arc<dyn ErasedPageComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        metadata: RouteMetadata,
+        metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
-        middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        extensions: http::Extensions,
+        middlewares: Vec<Arc<dyn Middleware>>,
+        extensions: Extensions,
     },
     
     Api {
         path: Path,
-        controllers: HashMap<Method, Arc<dyn ErasedApiHandler>>,
+        controllers: LinearMap<http::Method, Arc<dyn ErasedApiHandler>>,
         children: Vec<RouteNode>,
-        middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        extensions: http::Extensions,
+        middlewares: Vec<Arc<dyn Middleware>>,
+        extensions: Extensions,
     },
 
     Layout {
@@ -49,27 +40,19 @@ pub enum RouteNode {
         controller: Option<Arc<dyn ErasedLayoutComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        metadata: RouteMetadata,
+        metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
         parallel_routes: HashMap<String, ParallelRouteNode>, 
-        extensions: http::Extensions,
-        middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
+        extensions: Extensions,
+        middlewares: Vec<Arc<dyn Middleware>>,
     },
 
     Group {
         id: String,
         children: Vec<RouteNode>,
-        metadata: RouteMetadata,
-        extensions: http::Extensions,
-        middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-    },
-
-    Special {
-        kind: SpecialNodeKind,
-        component: Option<Arc<dyn ErasedSpecialComponent>>,
-        children: Vec<RouteNode>,
-        middlewares: Vec<Arc<dyn Middleware + Send + Sync>>,
-        extensions: http::Extensions,
+        metadata: Option<RouteMetadata>,
+        extensions: Extensions,
+        middlewares: Vec<Arc<dyn Middleware>>,
     },
 }
 
@@ -77,38 +60,31 @@ pub enum RouteNode {
 impl std::fmt::Debug for RouteNode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            RouteNode::Page { path, metadata, children, handlers, .. } => {
+            RouteNode::Page { path, metadata, children, controllers, .. } => {
                 f.debug_struct("RouteNode::Page")
                     .field("path", path)
                     .field("metadata", metadata)
-                    .field("methods", &handlers.keys().collect::<Vec<_>>())
+                    // .field("methods", &controllers.keys().collect::<Vec<_>>())
                     .field("children", children)
                     .finish()
             }
-            RouteNode::Api { path, handlers, children, .. } => {
+            RouteNode::Api { path, controllers, children, .. } => {
                 f.debug_struct("RouteNode::Api")
                     .field("path", path)
-                    .field("methods", &handlers.keys().collect::<Vec<_>>())
+                    // .field("methods", &controllers.keys().collect::<Vec<_>>())
                     .field("children", children)
                     .finish()
             }
-            RouteNode::Layout { id, metadata, children, slots, .. } => {
+            RouteNode::Layout { id, metadata, children, .. } => {
                 f.debug_struct("RouteNode::Layout")
                     .field("id", id)
                     .field("metadata", metadata)
-                    .field("slots", &slots.keys().collect::<Vec<_>>())
                     .field("children", children)
                     .finish()
             }
             RouteNode::Group { id, children, .. } => {
                 f.debug_struct("RouteNode::Group")
                     .field("id", id)
-                    .field("children", children)
-                    .finish()
-            }
-            RouteNode::Special { kind, children, .. } => {
-                f.debug_struct("RouteNode::Special")
-                    .field("kind", kind)
                     .field("children", children)
                     .finish()
             }

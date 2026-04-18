@@ -17,7 +17,6 @@ tower-http = { version = "0.5", features = ["full"] }
 http = "1.4.0"
 async-trait = "0.1.89"
 
-# For UI & State
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.149"
 futures = "0.3"
@@ -35,3 +34,8 @@ percent-encoding = "2.3.2"
 
 rkyv = "0.8.15"
 bumpalo = { version = "3.20.2", features = ["collections", "boxed", "serde"] }
+chrono = "0.4.44"
+pingora = { version = "0.8.0", features = [ "lb" ] }
+cookie = "0.18.1"
+parking_lot = "0.12.5"
+bumpalo-herd = "0.1.2"

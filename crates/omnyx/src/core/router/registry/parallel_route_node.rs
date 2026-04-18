@@ -2,8 +2,9 @@ use std::sync::Arc;
 use std::collections::HashMap;
 
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedPageComponent, ErasedErrorComponent, ErasedLoaderComponent};
-use crate::core::router::tree::{Path};
+use crate::core::router::utils::Path;
 
+#[derive(Clone)]
 pub enum ParallelRouteNode {
     Page {
         path: Path,

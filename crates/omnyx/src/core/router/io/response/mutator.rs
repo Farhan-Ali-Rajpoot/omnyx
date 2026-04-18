@@ -1,6 +1,5 @@
 use axum::{
     http::{header, HeaderMap, HeaderName, HeaderValue, StatusCode},
-    response::IntoResponse,
 };
 use axum_extra::extract::cookie::Cookie;
 

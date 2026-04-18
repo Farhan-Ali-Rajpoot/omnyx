@@ -1,116 +1,165 @@
-use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
-use percent_encoding::percent_decode_str;
-use axum::body::Body;
-use axum::http::{header, HeaderMap, HeaderName, HeaderValue, request::Parts, Uri};
-use axum_extra::extract::cookie::{Cookie, CookieJar};
-use bytes::Bytes;
-use serde_json::Value;
-use http::Method;
+use std::any::{TypeId, Any};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use parking_lot::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use http::{HeaderMap, Method, Uri};
 
 use crate::core::router::handlers::LayoutProps;
 use crate::core::router::logic::RouteMetadata;
+use crate::collections::LinearMap; 
 
 #[derive(Debug, Clone)]
 pub struct Request {
-    pub id: Arc<str>,
+    pub(crate) inner: Arc<RequestInner>,
+}
+
+#[derive(Debug)]
+pub struct RequestInner {
+    // Thread-safe state tracking
+    pub(crate) is_dynamic: AtomicBool,
+    pub(crate) is_modified: AtomicBool,
+    
+    // Read-only identifiers (accessible directly via Deref)
+    pub id: String,
     pub method: Method,
     pub uri: Uri,
-    pub path: String,
-    pub url: String,
-    
-    pub params: HashMap<String, String>,
-    pub query: HashMap<String, String>,
-    pub headers: HeaderMap,
-    pub cookies: CookieJar,             
-    pub body: Option<Bytes>,
+    pub layout_props: LayoutProps,
 
-    pub extensions: Arc<RwLock<http::Extensions>>,
-    pub metadata: Arc<RouteMetadata>,
-    
-    pub layout_props: Arc<RwLock<LayoutProps>>,
+    // Thread-safe mutable jars using owned Strings
+    params: RwLock<LinearMap<String, String>>,
+    query: RwLock<LinearMap<String, String>>,
+    headers: RwLock<HeaderMap>,
+    cookies: RwLock<cookie::CookieJar>,
+    extensions: RwLock<LinearMap<TypeId, Arc<dyn Any + Send + Sync>>>,
+    metadata: RwLock<RouteMetadata>,
+}
+
+// Automatically forwards `req.method` to `req.inner.method`
+impl std::ops::Deref for Request {
+    type Target = RequestInner;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
 }
 
 impl Request {
-   pub fn new(
-        http_req: axum::http::Request<axum::body::Body>,
-        params: HashMap<String, String>,
-        request_id: Arc<str>,
-        metadata: Arc<RouteMetadata>,
+    pub(crate) fn new(
+        header: &pingora::http::RequestHeader,
+        params_iter: matchit::Params<'_, '_>,
+        request_id: &str,
+        owned_metadata: RouteMetadata,
+        owned_layout_props: LayoutProps,
+        initial_extensions: LinearMap<TypeId, Arc<dyn Any + Send + Sync>>,
     ) -> Self {
-        let (parts, _body) = http_req.into_parts();  
+        let mut query_map = LinearMap::new();
+        let mut param_map = LinearMap::new();
+        let mut cookies = cookie::CookieJar::new();
 
-        let uri = parts.uri.clone();
-        let url = uri.to_string();
-        let path = uri.path().to_string();
-
-        // Parse cookies once at the start
-        let cookies = CookieJar::from_headers(&parts.headers);
-
-        // Query parsing
-        let mut query = HashMap::new();
-        if let Some(q) = uri.query() {
+        // 1. Parse Cookies
+        if let Some(cookie_header) = header.headers.get("Cookie") {
+            if let Ok(cookie_str) = cookie_header.to_str() {
+                for c in cookie::Cookie::split_parse(cookie_str).flatten() {
+                    cookies.add_original(c.into_owned());
+                }
+            }
+        }
+        
+        // 2. Parse Query parameters into owned Strings
+        if let Some(q) = header.uri.query() {
             for pair in q.split('&') {
                 let (k, v) = pair.split_once('=').unwrap_or((pair, ""));
-                let k_decoded = percent_decode_str(k).decode_utf8_lossy().into_owned();
-                let v_decoded = percent_decode_str(v).decode_utf8_lossy().into_owned();
-                query.insert(k_decoded, v_decoded);
+                query_map.insert(k.to_string(), v.to_string());
             }
         }
 
+        // 3. Parse Route Params into owned Strings
+        for (k, v) in params_iter.iter() {
+            param_map.insert(k.to_string(), v.to_string());
+        }
+
+        let inner = RequestInner {
+            is_dynamic: AtomicBool::new(false),
+            is_modified: AtomicBool::new(false),
+            id: request_id.to_string(),
+            method: header.method.clone(),
+            uri: header.uri.clone(),
+            layout_props: owned_layout_props,
+            
+            // Wrap in RwLocks for shared async mutation
+            params: RwLock::new(param_map),
+            query: RwLock::new(query_map),
+            headers: RwLock::new(header.headers.clone()),
+            cookies: RwLock::new(cookies),
+            extensions: RwLock::new(initial_extensions),
+            metadata: RwLock::new(owned_metadata),
+        };
+
         Self {
-            id: request_id,
-            method: parts.method,
-            uri: parts.uri.clone(),
-            url: parts.uri.to_string(),
-            path: parts.uri.path().to_string(),
-            params,
-            query, 
-            cookies: CookieJar::from_headers(&parts.headers),
-            headers: parts.headers,
-            body: None,
-            extensions: Arc::new(RwLock::new(parts.extensions)),
-            metadata,
-            // Initialize with default props
-            layout_props: Arc::new(RwLock::new(LayoutProps::default())),
+            inner: Arc::new(inner)
         }
     }
 
     #[inline]
-    pub fn get_param(&self, key: &str) -> Option<&str> {
-        self.params.get(key).map(|v| v.as_str())
+    fn mark_dynamic(&self) {
+        self.inner.is_dynamic.store(true, Ordering::Relaxed);
     }
 
     #[inline]
-    pub fn get_query(&self, key: &str) -> Option<&str> {
-        self.query.get(key).map(|v| v.as_str())
+    fn mark_modified(&self) {
+        self.inner.is_modified.store(true, Ordering::Relaxed);
+        self.inner.is_dynamic.store(true, Ordering::Relaxed);
     }
 
-    pub fn insert<T: Send + Clone + Sync + 'static>(&self, val: T) {
-        if let Ok(mut ext) = self.extensions.write() {
-            ext.insert(val);
-        }
+    // --- Public API ---
+
+    pub fn cookies(&self) -> RwLockReadGuard<'_, cookie::CookieJar> {
+        self.mark_dynamic();
+        self.inner.cookies.read()
     }
 
-    pub fn get<T: Send + Sync + Clone + 'static>(&self) -> Option<T> 
-    where T: Clone {
-        self.extensions.read().ok()?.get::<T>().cloned()
+    pub fn cookies_mut(&self) -> RwLockWriteGuard<'_, cookie::CookieJar> {
+        self.mark_modified();
+        self.inner.cookies.write()
     }
 
-    pub fn get_cookie(&self, name: &str) -> Option<Cookie<'static>> {
-        self.cookies.get(name).cloned()
+    pub fn headers(&self) -> RwLockReadGuard<'_, HeaderMap> {
+        self.inner.headers.read()
     }
 
-    pub fn get_header_str(&self, name: impl AsRef<str>) -> Option<&str> {
-        self.headers.get(name.as_ref()).and_then(|v| v.to_str().ok())
+    pub fn headers_mut(&self) -> RwLockWriteGuard<'_, HeaderMap> {
+        self.mark_modified();
+        self.inner.headers.write()
     }
 
-    pub fn bearer_token(&self) -> Option<&str> {
-        self.get_header_str(header::AUTHORIZATION)
-            .and_then(|auth| auth.strip_prefix("Bearer ").map(str::trim))
+    pub fn query(&self) -> RwLockReadGuard<'_, LinearMap<String, String>> {
+        self.mark_dynamic();
+        self.inner.query.read()
+    }
+    
+    // Note: Returns Option<String> instead of Option<&str> because 
+    // the RwLockReadGuard drops at the end of the function.
+    pub fn param(&self, key: &str) -> Option<String> {
+        self.mark_dynamic();
+        self.inner.params.read().get(key).cloned()
     }
 
-    pub fn set_body(&mut self, body: Bytes) {
-        self.body = Some(body);
+    pub fn extensions(&self) -> RwLockReadGuard<'_, LinearMap<TypeId, Arc<dyn Any + Send + Sync>>> {
+        self.mark_dynamic();
+        self.inner.extensions.read()
+    }
+
+    pub fn extensions_mut(&self) -> RwLockWriteGuard<'_, LinearMap<TypeId, Arc<dyn Any + Send + Sync>>> {
+        self.mark_dynamic(); 
+        self.inner.extensions.write()
+    }
+
+    pub fn metadata(&self) -> RwLockReadGuard<'_, RouteMetadata> {
+        self.inner.metadata.read()
+    }
+
+    pub fn metadata_mut(&self) -> RwLockWriteGuard<'_, RouteMetadata> {
+        self.mark_modified();
+        self.inner.metadata.write()
     }
 }

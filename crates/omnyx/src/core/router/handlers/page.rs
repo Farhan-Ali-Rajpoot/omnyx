@@ -1,31 +1,31 @@
-use async_trait::async_trait;
 use std::marker::PhantomData;
 
 use crate::core::router::io::{Request, Response};
+use crate::types::BoxFuture;
 
-#[async_trait]
-pub trait ErasedPageComponent: Send + Sync + 'static {
-    async fn call_erased(&self, request: Request) -> Response;
+
+pub trait ErasedPageComponent: std::fmt::Debug + Send + Sync + 'static {
+    fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
-#[async_trait]
 pub trait PageComponent<Args>: Clone + Send + Sync + 'static {
-    async fn call(self, request: Request) -> Response;
+    fn call(self, request: Request) -> impl Future<Output = Response> + Send;
 }
 
-pub struct PageHandlerWrapper<H, Args> {
+#[derive(Debug)]
+
+pub struct PageComponentWrapper<H, Args> {
     pub handler: H,
     pub _marker: PhantomData<Args>,
 }
 
-#[async_trait]
-impl<H, Args> ErasedPageComponent for PageHandlerWrapper<H, Args>
+impl<H, Args> ErasedPageComponent for PageComponentWrapper<H, Args>
 where
-    H: PageComponent<Args> + Clone + Send + Sync + 'static,
-    Args: Send + Sync + 'static,
+    H: PageComponent<Args> + std::fmt::Debug + Clone + Send + Sync + 'static,
+    Args: std::fmt::Debug + Send + Sync + 'static,
 {
-    async fn call_erased(&self, request: Request) -> Response {
-        self.handler.clone().call(request).await
+    fn call_erased(&self, request: Request) -> BoxFuture<Response> {
+        Box::pin(self.handler.clone().call(request))
     }
 }
 

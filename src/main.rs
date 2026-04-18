@@ -1,71 +1,55 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-use omnyx::{
-    OmnyxBuilder,
-    core::{
-        router::{
-            Response ,RouteMetadata, MatchitMatcher, RouteNode, Path,
-            response::IntoResponse,
-        },
-    },
-};
-use omnyx::prelude::*;
-use axum::http::Method;
 use async_trait::async_trait;
-use rscx::{html};
+use pingora::prelude::*;
+use pingora::proxy::{ProxyHttp, http_proxy_service, Session};
+use pingora::http::ResponseHeader;
+use bytes::Bytes;
 
+pub struct MyServer;
 
-fn main () {
-   let mut router = MatchitMatcher::new();
-   let ctx = RequestContext::default();
+#[async_trait]
+impl ProxyHttp for MyServer {
+    type CTX = ();
+    fn new_ctx(&self) -> Self::CTX {}
 
-   let settings_page = RouteNode::Page {
-        path: Path::from_str("/[...settings]"),
-        handlers: HashMap::from([(Method::GET, Arc::new(Home) as Arc<dyn PageComponent>)]),
-        error_handlers: HashMap::new(),
-        metadata: RouteMetadata::default(),
-        children: vec![],
-        loaders: vec![],
-        middlewares: vec![],
-        extensions: HashMap::new(),
-    };
+    async fn request_filter(&self, session: &mut Session, _ctx: &mut Self::CTX) -> Result<bool> {
+        let body_str: String = format!("<html>
+            <body>
+                {:#?}
+            </body>
+        </html>", session.req_header());
+        let body = Bytes::from(body_str); 
 
-    let user_profile_page = RouteNode::Page {
-        path: Path::from_str("/[slug]"),
-        handlers: HashMap::from([(Method::GET, Arc::new(Home) as Arc<dyn PageComponent>)]),
-        error_handlers: HashMap::new(),
-        metadata: RouteMetadata::default(),
-        children: vec![settings_page], // Nesting the settings page here
-        loaders: vec![],
-        middlewares: vec![],
-        extensions: HashMap::new(),
-    };
+        let mut header = ResponseHeader::build(200, Some(3)).unwrap();
+        header.insert_header("Content-Type", "text/json").unwrap();
+        header.insert_header("Content-Length", body.len().to_string()).unwrap();
 
-    let user_root = RouteNode::Page {
-        path: Path::from_str("/user"),
-        handlers: HashMap::from([(Method::GET, Arc::new(Home) as Arc<dyn PageComponent>)]),
-        error_handlers: HashMap::new(),
-        metadata: RouteMetadata::default(),
-        children: vec![user_profile_page],
-        loaders: vec![],
-        middlewares: vec![],
-        extensions: HashMap::new(),
-    };
+        // FIX: In 0.8.0, write_response_header takes (Header, end_of_stream)
+        // We pass 'false' because we are about to send the body next.
+        session.write_response_header(Box::new(header), false).await?;
+        
+        // Send the body and mark the stream as finished (true)
+        session.write_response_body(Some(body), true).await?;
 
+        Ok(true) 
+    }
 
-    router.register(&user_root);
-
-    if let Some(matched) = router.match_route("/user/farhan/settings", Method::GET) {
-        println!("{:#?}", matched)
-    }else {
-        println!("Not Found")
+    async fn upstream_peer(&self, _session: &mut Session, _ctx: &mut Self::CTX) -> Result<Box<HttpPeer>> {
+        Err(Error::create(
+            ErrorType::InternalError,
+            ErrorSource::Internal, 
+            None,
+            None
+        ))
     }
 }
 
+fn main() {
+    let mut my_server = Server::new(None).unwrap();
+    my_server.bootstrap();
 
-pub async fn Home(ctx: RequestContext) -> Option<String> {
-    Some(html! { <div> {ctx.params.get("id")} </div>})
+    let mut service = http_proxy_service(&my_server.configuration, MyServer);
+    service.add_tcp("0.0.0.0:8080");
+
+    my_server.add_service(service);
+    my_server.run_forever();
 }
-
-
-

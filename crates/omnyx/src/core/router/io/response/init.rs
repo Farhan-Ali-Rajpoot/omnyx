@@ -1,6 +1,5 @@
 use axum::{
     http::{HeaderMap, StatusCode},
-    response::IntoResponse,
 };
 use axum_extra::extract::cookie::CookieJar;
 use serde::Serialize;

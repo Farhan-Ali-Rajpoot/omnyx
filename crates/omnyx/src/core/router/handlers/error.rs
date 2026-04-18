@@ -1,31 +1,30 @@
-use std::future::Future;
 use std::marker::PhantomData;
-use async_trait::async_trait;
-use crate::core::router::io::{Response, IntoResponse, Request};
 
-#[async_trait]
-pub trait ErasedErrorComponent: Send + Sync + 'static {
-    async fn call_erased(&self, request: Request) -> Response;
+use crate::core::router::io::{Response, Request};
+use crate::types::BoxFuture;
+
+
+pub trait ErasedErrorComponent: std::fmt::Debug + Send + Sync + 'static {
+    fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
-#[async_trait]
 pub trait ErrorComponent<Args>: Clone + Send + Sync + 'static {
-    async fn call(self, request: Request) -> Response;
+    fn call(self, request: Request) -> impl Future<Output = Response> + Send;
 }
 
+#[derive(Debug)]
 pub struct ErrorComponentWrapper<H, Args> {
     pub handler: H,
     pub _marker: PhantomData<Args>,
 }
 
-#[async_trait]
 impl<H, Args> ErasedErrorComponent for ErrorComponentWrapper<H, Args>
 where
-    H: ErrorComponent<Args> + Clone + Send + Sync + 'static,
-    Args: Send + Sync + 'static,
+    H: ErrorComponent<Args> + std::fmt::Debug + Clone + Send + Sync + 'static,
+    Args: std::fmt::Debug + Send + Sync + 'static,
 {
-    async fn call_erased(&self, request: Request) -> Response {
-        self.handler.clone().call(request).await
+    fn call_erased(&self, request: Request) -> BoxFuture<Response> {
+        Box::pin(self.handler.clone().call(request))
     }
 }
 

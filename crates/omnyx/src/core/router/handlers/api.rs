@@ -1,32 +1,30 @@
-use async_trait::async_trait;
 use std::future::Future;
 use std::marker::PhantomData;
 
 use crate::core::router::io::{Response, Request};
+use crate::types::BoxFuture;
 
-#[async_trait]
-pub trait ErasedApiHandler: Send + Sync + 'static {
-    async fn call_erased(&self, request: Request) -> Response;
+pub trait ErasedApiHandler: std::fmt::Debug + Send + Sync + 'static {
+    fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
-#[async_trait]
 pub trait ApiHandler<Args>: Clone + Send + Sync + 'static {
-    async fn call(self, request: Request) -> Response;
+    fn call(self, request: Request) -> impl Future<Output = Response> + Send ;
 }
 
+#[derive(Debug)]
 pub struct ApiHandlerWrapper<H, Args> {
     pub handler: H,
     pub _marker: PhantomData<Args>,
 }
 
-#[async_trait]
 impl<H, Args> ErasedApiHandler for ApiHandlerWrapper<H, Args>
 where
-    H: ApiHandler<Args> + Clone + Send + Sync + 'static,
-    Args: Send + Sync + 'static,
+    H: ApiHandler<Args> + std::fmt::Debug + Clone + Send + Sync + 'static,
+    Args: std::fmt::Debug + Send + Sync + 'static,
 {
-    async fn call_erased(&self, request: Request) -> Response {
-        self.handler.clone().call(request).await
+    fn call_erased(&self, request: Request) -> BoxFuture<Response> {
+        Box::pin(self.handler.clone().call(request))
     }
 }
 

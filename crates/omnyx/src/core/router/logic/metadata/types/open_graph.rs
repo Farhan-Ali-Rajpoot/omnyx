@@ -1,5 +1,4 @@
 use super::{TagDescriptor, TagProp};
-use const_format::formatcp;
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 

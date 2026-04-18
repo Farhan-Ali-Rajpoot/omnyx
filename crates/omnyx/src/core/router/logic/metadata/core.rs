@@ -4,7 +4,6 @@ use super::types::{
 
     TagDescriptor, TagProp,
 };
-use const_format::formatcp;
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 use std::collections::HashMap;

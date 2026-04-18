@@ -1,26 +1,18 @@
 use std::sync::Arc;
-use std::pin::Pin;
-use std::task::{Context, Poll};
-use async_trait::async_trait;
-use axum::http::{Response as AxumResponse, StatusCode};
-use axum::response::IntoResponse;
-use tower::Layer;
 
-use crate::core::router::io::{Request, Response};
+use crate::core::router::io::{Request};
 
-#[async_trait]
-pub trait Middleware: Send + Sync + 'static {
-    async fn handle(
+pub trait Middleware: std::fmt::Debug + Send + Sync + 'static {
+    fn handle(
         &self,
         request: Request,
         next: Next,
     );
 }
 
-#[async_trait]
 impl<F> Middleware for F 
 where 
-    F: Fn(Request, Next) 
+    F: Fn(Request, Next) + std::fmt::Debug + Send + Sync + 'static
 {
     fn handle(&self, request: Request, next: Next) {
         (self)(request, next);
@@ -29,10 +21,9 @@ where
 
 pub struct MiddlewareService<S> {
     pub(crate) middleware: Arc<dyn Middleware>,
-    pub(crate) next: S, // This is the inner doll (the next service)
+    pub(crate) next: S, 
 }
 
-// Implement Clone so Tower can scale this across threads
 impl<S: Clone> Clone for MiddlewareService<S> {
     fn clone(&self) -> Self {
         Self {
@@ -48,7 +39,7 @@ pub struct Next {
 }
 
 impl Next {
-    pub async fn run(mut self, request: &Request)  {
-        (self.inner)(request).await;
+    pub fn run(mut self, request: &Request)  {
+        (self.inner)(request);
     }
 }
