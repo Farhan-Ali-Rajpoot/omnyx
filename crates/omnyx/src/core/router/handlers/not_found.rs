@@ -3,24 +3,24 @@ use std::marker::PhantomData;
 use crate::core::router::io::{Request, Response};
 use crate::types::BoxFuture;
 
-pub trait ErasedLoaderComponent: Send + Sync + 'static {
+pub trait ErasedNotFoundComponent: Send + Sync + 'static {
     fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
 
-pub trait LoaderComponent<Args>: Clone + Send + Sync + 'static {
+pub trait NotFoundComponent<Args>: Clone + Send + Sync + 'static {
     fn call(self, request: Request) -> impl Future<Output = Response> + Send;
 }
 
-pub struct LoaderComponentWrapper<H, Args> {
+pub struct NotFoundComponentWrapper<H, Args> {
     pub handler: H,
     pub _marker: PhantomData<Args>,
 }
 
 
-impl<H, Args> ErasedLoaderComponent for LoaderComponentWrapper<H, Args>
+impl<H, Args> ErasedNotFoundComponent for NotFoundComponentWrapper<H, Args>
 where
-    H: LoaderComponent<Args> + Clone + Send + Sync + 'static,
+    H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
     Args: Send + Sync + 'static,
 {
     fn call_erased(&self, request: Request) -> BoxFuture<Response> {
@@ -28,5 +28,5 @@ where
     }
 }
 
-impl_handler!(LoaderComponent, call; );
-impl_handler!(LoaderComponent, call; T1);
+impl_handler!(NotFoundComponent, call; );
+impl_handler!(NotFoundComponent, call; T1);

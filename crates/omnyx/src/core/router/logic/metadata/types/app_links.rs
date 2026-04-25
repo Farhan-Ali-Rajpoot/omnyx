@@ -1,7 +1,6 @@
-use super::{TagDescriptor, TagProp}; 
+use super::{TagDescriptor, TagProp};
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
-
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct IosAppLink {
@@ -25,21 +24,7 @@ impl IosAppLink {
     }
 
     pub fn collect_tags(&self, tags: &mut Vec<TagDescriptor>) {
-        let mut props = Vec::new();
-        if let Some(url) = &self.url {
-            props.push(TagProp { key: "property".to_string(), value: "al:ios:url".to_string() });
-            props.push(TagProp { key: "content".to_string(), value: url.to_string() });
-        }
-        if let Some(app_store_id) = &self.app_store_id {
-            props.push(TagProp { key: "property".to_string(), value: "al:ios:app_store_id".to_string() });
-            props.push(TagProp { key: "content".to_string(), value: app_store_id.to_string() });
-        }
-        if let Some(app_name) = &self.app_name {
-            props.push(TagProp { key: "property".to_string(), value: "al:ios:app_name".to_string() });
-            props.push(TagProp { key: "content".to_string(), value: app_name.to_string() });
-        }
-        // Group by same tag? Each property is a separate meta tag.
-        // We need to push one TagDescriptor per meta tag.
+        // (original implementation unchanged)
         if let Some(url) = &self.url {
             tags.push(TagDescriptor {
                 r#type: "meta".to_string(),
@@ -72,11 +57,18 @@ impl IosAppLink {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone().or_else(|| parent.url.clone()),
-            app_store_id: self.app_store_id.clone().or_else(|| parent.app_store_id.clone()),
-            app_name: self.app_name.clone().or_else(|| parent.app_name.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.url.is_some() {
+            self.url = child.url.clone();
+        }
+        if child.app_store_id.is_some() {
+            self.app_store_id = child.app_store_id.clone();
+        }
+        if child.app_name.is_some() {
+            self.app_name = child.app_name.clone();
         }
     }
 }
@@ -148,12 +140,18 @@ impl AndroidAppLink {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone().or_else(|| parent.url.clone()),
-            package: self.package.clone().or_else(|| parent.package.clone()),
-            class: self.class.clone().or_else(|| parent.class.clone()),
-            app_name: self.app_name.clone().or_else(|| parent.app_name.clone()),
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.url.is_some() {
+            self.url = child.url.clone();
+        }
+        if child.package.is_some() {
+            self.package = child.package.clone();
+        }
+        if child.class.is_some() {
+            self.class = child.class.clone();
+        }
+        if child.app_name.is_some() {
+            self.app_name = child.app_name.clone();
         }
     }
 }
@@ -212,11 +210,15 @@ impl WindowsAppLink {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone().or_else(|| parent.url.clone()),
-            app_id: self.app_id.clone().or_else(|| parent.app_id.clone()),
-            app_name: self.app_name.clone().or_else(|| parent.app_name.clone()),
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.url.is_some() {
+            self.url = child.url.clone();
+        }
+        if child.app_id.is_some() {
+            self.app_id = child.app_id.clone();
+        }
+        if child.app_name.is_some() {
+            self.app_name = child.app_name.clone();
         }
     }
 }
@@ -268,10 +270,12 @@ impl WebAppLink {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone().or_else(|| parent.url.clone()),
-            should_fallback: self.should_fallback.or(parent.should_fallback),
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.url.is_some() {
+            self.url = child.url.clone();
+        }
+        if child.should_fallback.is_some() {
+            self.should_fallback = child.should_fallback;
         }
     }
 }
@@ -323,32 +327,42 @@ impl AppLinks {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            ios: match (&self.ios, &parent.ios) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            android: match (&self.android, &parent.android) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            windows: match (&self.windows, &parent.windows) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            web: match (&self.web, &parent.web) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
+    /// Merges `child` into `self` (mutates self).  
+    /// For each optional nested struct:
+    /// - If `child` has `Some` for a field, that child struct is merged into `self`'s corresponding field (creating it if missing).
+    /// - If `child` has `None`, `self`'s field remains unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        // iOS
+        if let Some(child_ios) = &child.ios {
+            if let Some(self_ios) = &mut self.ios {
+                self_ios.update_from_child(child_ios);
+            } else {
+                self.ios = Some(child_ios.clone());
+            }
+        }
+        // Android
+        if let Some(child_android) = &child.android {
+            if let Some(self_android) = &mut self.android {
+                self_android.update_from_child(child_android);
+            } else {
+                self.android = Some(child_android.clone());
+            }
+        }
+        // Windows
+        if let Some(child_windows) = &child.windows {
+            if let Some(self_windows) = &mut self.windows {
+                self_windows.update_from_child(child_windows);
+            } else {
+                self.windows = Some(child_windows.clone());
+            }
+        }
+        // Web
+        if let Some(child_web) = &child.web {
+            if let Some(self_web) = &mut self.web {
+                self_web.update_from_child(child_web);
+            } else {
+                self.web = Some(child_web.clone());
+            }
         }
     }
 }

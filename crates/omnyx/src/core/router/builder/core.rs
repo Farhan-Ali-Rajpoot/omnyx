@@ -1,10 +1,9 @@
-use std::collections::HashMap;
-
 use crate::collections::LinearMap;
 use crate::core::router::Path;
 use crate::core::router::RouteNode;
 use crate::core::router::builder::types::{LayoutDefinition, ApiDefinition, PageDefinition, GroupDefinition};
 
+#[derive(Clone, Debug)]
 pub struct Router {
     pub root_nodes: Vec<RouteNode>,
 }
@@ -24,6 +23,7 @@ impl Router {
             controllers: LinearMap::new(),
             error_controller: None,
             loader_controller: None,
+            not_found_controller: None,
             middlewares: Vec::new(),
             metadata: None,
             children: Vec::new(),
@@ -63,7 +63,8 @@ impl Router {
             controller: None,
             error_controller: None,
             loader_controller: None,
-            parallel_routes: HashMap::new(),
+            not_found_controller: None,
+            parallel_routes: LinearMap::new(),
             metadata: None,
             children: Vec::new(),
             extensions: crate::core::router::registry::Extensions::new(),

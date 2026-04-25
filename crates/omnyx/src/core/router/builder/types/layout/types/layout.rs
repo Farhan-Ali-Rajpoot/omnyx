@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::marker::PhantomData;
 use std::sync::Arc;
 
+use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper};
 use crate::core::router::registry::{ParallelRouteNode};
 use crate::core::router::builder::types::layout::{ParallelRouteBuilder, ParallelRouteCollection, ParallelRouteRoot};
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedLoaderComponent, ErasedErrorComponent};
@@ -8,27 +10,71 @@ use crate::core::router::handlers::{ErasedLayoutComponent, ErasedLoaderComponent
 
 
 pub struct ParallelRouteLayoutDefination {
-    pub id: String,
-    pub controller: Option<Arc<dyn ErasedLayoutComponent>>,
-    pub error_controller: Option<Arc<dyn ErasedErrorComponent>>,
-    pub loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub parallel_routes: HashMap<String, ParallelRouteNode>, 
-    pub children: Vec<ParallelRouteNode>,
+    pub(crate) id: String,
+    pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
+    pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
+    pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
+    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
+    pub(crate) parallel_routes: HashMap<String, ParallelRouteNode>, 
+    pub(crate) children: Vec<ParallelRouteNode>,
 }
 
 impl ParallelRouteLayoutDefination {
-     pub fn handler<F: ErasedLayoutComponent + 'static>(mut self, f: F) -> Self {
-        self.controller = Some(Arc::new(f));
+    pub fn handler<F, Args>(mut self, f: F) -> Self 
+    where
+        F: LayoutComponent<Args> + Clone + Send + Sync + 'static,
+        Args: Send + Sync + Clone + 'static,
+    {
+        let wrapped = LayoutComponentWrapper {
+            handler: f,
+            _marker: PhantomData,
+        };
+
+        // Erase the type into the Arc'd trait object
+        self.controller = Some(Arc::new(wrapped));
         self
     }
 
-    pub fn error_handler<H: ErasedErrorComponent + 'static>(mut self, f: H) -> Self {
-        self.error_controller = Some(Arc::new(f));
+    
+    pub fn error_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: ErrorComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = ErrorComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.error_controller = Some(Arc::new(wrapper));
         self
     }
 
-    pub fn loader_handler<H: ErasedLoaderComponent + 'static>(mut self, f: H) -> Self {
-        self.loader_controller = Some(Arc::new(f));
+    pub fn loader_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: LoaderComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = LoaderComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.loader_controller = Some(Arc::new(wrapper));
+        self
+    }
+
+    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = NotFoundComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.not_found_controller = Some(Arc::new(wrapper));
         self
     }
     
@@ -44,7 +90,7 @@ impl ParallelRouteLayoutDefination {
         self
     }
 
-    pub fn children<F>(mut self, f: F) -> Self 
+    pub(crate) fn children<F>(mut self, f: F) -> Self 
     where 
         F: FnOnce(ParallelRouteBuilder<ParallelRouteCollection>) -> ParallelRouteBuilder<ParallelRouteCollection> 
     {

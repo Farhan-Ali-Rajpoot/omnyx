@@ -2,7 +2,6 @@ use super::{TagDescriptor, TagProp};
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 
-
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AppleWebApp {
     /// Enables standalone (full‑screen) mode. Values: "yes", "no".
@@ -64,12 +63,18 @@ impl AppleWebApp {
         }
     }
 
-    /// Merges with parent: current fields override parent's if present, otherwise inherit from parent.
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            capable: self.capable.clone().or_else(|| parent.capable.clone()),
-            title: self.title.clone().or_else(|| parent.title.clone()),
-            status_bar_style: self.status_bar_style.clone().or_else(|| parent.status_bar_style.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.capable.is_some() {
+            self.capable = child.capable.clone();
+        }
+        if child.title.is_some() {
+            self.title = child.title.clone();
+        }
+        if child.status_bar_style.is_some() {
+            self.status_bar_style = child.status_bar_style.clone();
         }
     }
 }

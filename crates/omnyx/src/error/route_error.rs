@@ -20,6 +20,9 @@ pub enum RouteError {
     #[error("Route registration error: {0}")]
     RegistrationFailed(Cow<'static, str>),
 
+    #[error("Route registration error: {0}")]
+    InvalidRoute(Cow<'static, str>),
+
     #[error("Unexpected route error: {0}")]
     Other(Cow<'static, str>),
 

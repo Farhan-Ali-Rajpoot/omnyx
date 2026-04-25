@@ -2,6 +2,10 @@ use super::{TagDescriptor, TagProp};
 use serde::{Serialize, Deserialize};
 use std::borrow::Cow;
 
+// Note: The following nested types (OgImage, OgVideo, OgAudio, ArticleMetadata,
+// BookMetadata, ProfileMetadata) are assumed to have their own `update_from_child` methods.
+// If they don't, you'll need to implement them similarly.
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OpenGraph {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -187,41 +191,73 @@ impl OpenGraph {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            title: self.title.clone().or_else(|| parent.title.clone()),
-            description: self.description.clone().or_else(|| parent.description.clone()),
-            url: self.url.clone().or_else(|| parent.url.clone()),
-            site_name: self.site_name.clone().or_else(|| parent.site_name.clone()),
-            locale: self.locale.clone().or_else(|| parent.locale.clone()),
-            alternate_locales: self.alternate_locales.clone().or_else(|| parent.alternate_locales.clone()),
-            determiner: self.determiner.clone().or_else(|| parent.determiner.clone()),
-            og_type: self.og_type.clone().or_else(|| parent.og_type.clone()),
-            images: self.images.clone().or_else(|| parent.images.clone()),
-            videos: self.videos.clone().or_else(|| parent.videos.clone()),
-            audio: self.audio.clone().or_else(|| parent.audio.clone()),
-            article: match (&self.article, &parent.article) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            book: match (&self.book, &parent.book) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            profile: match (&self.profile, &parent.profile) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
+    /// Merges `child` into `self` (mutates self).  
+    /// - For simple `Option` fields: if `child` has `Some(v)`, assign `v` to `self`.  
+    /// - For `Option<Vec<T>>`: if `child` has `Some(vec)`, replace `self`’s vec with `child`’s vec (full override).  
+    /// - For nested structs (`article`, `book`, `profile`): if `child` has `Some`, either update the existing
+    ///   inner struct (if `self` already has one) or clone `child`'s inner struct.
+    pub fn update_from_child(&mut self, child: &Self) {
+        // Simple optional primitives
+        if child.title.is_some() {
+            self.title = child.title.clone();
+        }
+        if child.description.is_some() {
+            self.description = child.description.clone();
+        }
+        if child.url.is_some() {
+            self.url = child.url.clone();
+        }
+        if child.site_name.is_some() {
+            self.site_name = child.site_name.clone();
+        }
+        if child.locale.is_some() {
+            self.locale = child.locale.clone();
+        }
+        if child.determiner.is_some() {
+            self.determiner = child.determiner.clone();
+        }
+        if child.og_type.is_some() {
+            self.og_type = child.og_type.clone();
+        }
+
+        // Optional vectors (full replacement)
+        if child.alternate_locales.is_some() {
+            self.alternate_locales = child.alternate_locales.clone();
+        }
+        if child.images.is_some() {
+            self.images = child.images.clone();
+        }
+        if child.videos.is_some() {
+            self.videos = child.videos.clone();
+        }
+        if child.audio.is_some() {
+            self.audio = child.audio.clone();
+        }
+
+        // Nested optional structs: update in place if both exist, otherwise clone
+        if let Some(child_article) = &child.article {
+            if let Some(self_article) = &mut self.article {
+                self_article.update_from_child(child_article);
+            } else {
+                self.article = Some(child_article.clone());
+            }
+        }
+        if let Some(child_book) = &child.book {
+            if let Some(self_book) = &mut self.book {
+                self_book.update_from_child(child_book);
+            } else {
+                self.book = Some(child_book.clone());
+            }
+        }
+        if let Some(child_profile) = &child.profile {
+            if let Some(self_profile) = &mut self.profile {
+                self_profile.update_from_child(child_profile);
+            } else {
+                self.profile = Some(child_profile.clone());
+            }
         }
     }
 }
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OgImage {
     pub url: Cow<'static, str>,
@@ -331,8 +367,24 @@ impl OgImage {
         }
     }
 
-    // No inherit_from needed? It's not present, but if needed we could add.
-    // However the user hasn't asked to add inherit_from for these.
+    /// Merges `child` into `self` (mutates self).  
+    /// Non‑optional fields always take `child`’s value.  
+    /// Optional fields are overwritten only if `child` has `Some`.
+    pub fn update_from_child(&mut self, child: &Self) {
+        // Non‑optional fields: always overwrite
+        self.url = child.url.clone();
+        self.width = child.width;
+        self.height = child.height;
+        self.alt = child.alt.clone();
+
+        // Optional fields: only if child has value
+        if child.secure_url.is_some() {
+            self.secure_url = child.secure_url.clone();
+        }
+        if child.media_type.is_some() {
+            self.media_type = child.media_type.clone();
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -434,8 +486,32 @@ impl OgVideo {
             });
         }
     }
-}
 
+    /// Merges `child` into `self` (mutates self).  
+    /// Non‑optional `url` always takes `child`’s value.  
+    /// Optional fields are overwritten only if `child` has `Some`.
+    pub fn update_from_child(&mut self, child: &Self) {
+        // Non‑optional field
+        self.url = child.url.clone();
+
+        // Optional fields
+        if child.secure_url.is_some() {
+            self.secure_url = child.secure_url.clone();
+        }
+        if child.media_type.is_some() {
+            self.media_type = child.media_type.clone();
+        }
+        if child.width.is_some() {
+            self.width = child.width;
+        }
+        if child.height.is_some() {
+            self.height = child.height;
+        }
+        if child.alt.is_some() {
+            self.alt = child.alt.clone();
+        }
+    }
+}
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OgAudio {
     pub url: Cow<'static, str>,
@@ -484,6 +560,19 @@ impl OgAudio {
                     TagProp { key: "content".to_string(), value: media_type.to_string() },
                 ],
             });
+        }
+    }
+
+    /// Merges `child` into `self` (mutates self).  
+    /// Non‑optional `url` always takes `child`’s value.  
+    /// Optional fields are overwritten only if `child` has `Some`.
+    pub fn update_from_child(&mut self, child: &Self) {
+        self.url = child.url.clone();
+        if child.secure_url.is_some() {
+            self.secure_url = child.secure_url.clone();
+        }
+        if child.media_type.is_some() {
+            self.media_type = child.media_type.clone();
         }
     }
 }
@@ -596,18 +685,31 @@ impl ArticleMetadata {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            published_time: self.published_time.clone().or_else(|| parent.published_time.clone()),
-            modified_time: self.modified_time.clone().or_else(|| parent.modified_time.clone()),
-            expiration_time: self.expiration_time.clone().or_else(|| parent.expiration_time.clone()),
-            authors: self.authors.clone().or_else(|| parent.authors.clone()),
-            section: self.section.clone().or_else(|| parent.section.clone()),
-            tags: self.tags.clone().or_else(|| parent.tags.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.  
+    /// For vectors (`authors`, `tags`), `child`'s vector fully replaces `self`'s if present.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.published_time.is_some() {
+            self.published_time = child.published_time.clone();
+        }
+        if child.modified_time.is_some() {
+            self.modified_time = child.modified_time.clone();
+        }
+        if child.expiration_time.is_some() {
+            self.expiration_time = child.expiration_time.clone();
+        }
+        if child.authors.is_some() {
+            self.authors = child.authors.clone();
+        }
+        if child.section.is_some() {
+            self.section = child.section.clone();
+        }
+        if child.tags.is_some() {
+            self.tags = child.tags.clone();
         }
     }
 }
-
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct BookMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -690,12 +792,22 @@ impl BookMetadata {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            isbn: self.isbn.clone().or_else(|| parent.isbn.clone()),
-            release_date: self.release_date.clone().or_else(|| parent.release_date.clone()),
-            tags: self.tags.clone().or_else(|| parent.tags.clone()),
-            authors: self.authors.clone().or_else(|| parent.authors.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.  
+    /// For vectors (`tags`, `authors`), `child`'s vector fully replaces `self`'s if present.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.isbn.is_some() {
+            self.isbn = child.isbn.clone();
+        }
+        if child.release_date.is_some() {
+            self.release_date = child.release_date.clone();
+        }
+        if child.tags.is_some() {
+            self.tags = child.tags.clone();
+        }
+        if child.authors.is_some() {
+            self.authors = child.authors.clone();
         }
     }
 }
@@ -767,12 +879,21 @@ impl ProfileMetadata {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            first_name: self.first_name.clone().or_else(|| parent.first_name.clone()),
-            last_name: self.last_name.clone().or_else(|| parent.last_name.clone()),
-            username: self.username.clone().or_else(|| parent.username.clone()),
-            gender: self.gender.clone().or_else(|| parent.gender.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.first_name.is_some() {
+            self.first_name = child.first_name.clone();
+        }
+        if child.last_name.is_some() {
+            self.last_name = child.last_name.clone();
+        }
+        if child.username.is_some() {
+            self.username = child.username.clone();
+        }
+        if child.gender.is_some() {
+            self.gender = child.gender.clone();
         }
     }
 }

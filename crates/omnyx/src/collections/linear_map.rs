@@ -82,6 +82,18 @@ impl<K, V> LinearMap<K, V> {
     }
 }
 
+impl<K, V> LinearMap<K, V> {
+    #[inline]
+    pub fn contains_key<Q>(&self, key: &Q) -> bool
+    where
+        K: Borrow<Q>,
+        Q: PartialEq + ?Sized,
+    {
+        self.storage.iter().any(|(k, _)| k.borrow() == key)
+    }
+}
+
+
 impl<K, V> Clone for LinearMap<K, V>
 where
     K: Clone,

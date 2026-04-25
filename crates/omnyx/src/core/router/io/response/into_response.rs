@@ -33,12 +33,7 @@ impl IntoResponse for Cow<'static, str> {
 
 impl IntoResponse for Vec<u8> {
     fn into_response(self) -> Response {
-        let mut res = Response::new(Body::Bytes(self));
-        res.headers.insert(
-            axum::http::header::CONTENT_TYPE, 
-            axum::http::HeaderValue::from_static("application/octet-stream")
-        );
-        res
+        Response::new(Body::Bytes(self))
     }
 }
 
@@ -57,17 +52,13 @@ impl IntoResponse for () {
 impl<T, E> IntoResponse for Result<T, E>
 where
     T: IntoResponse,
-    E: IntoResponse, 
+    E: Into<String>, 
 {
     fn into_response(self) -> Response {
         match self {
             Ok(value) => value.into_response(),
             Err(err) => {
-                let mut res = err.into_response();
-                if res.status == StatusCode::OK {
-                    res.status = StatusCode::INTERNAL_SERVER_ERROR;
-                }
-                res
+                Response::error(err.into())   
             }
         }
     }
@@ -88,24 +79,6 @@ where
 impl IntoResponse for StatusCode {
     fn into_response(self) -> Response {
         let mut res = Response::new(Body::Empty);
-        res.status = self;
-        res
-    }
-}
-
-impl AxumIntoResponse for Response {
-    fn into_response(self) -> axum::response::Response {
-        let mut res = match self.body {
-            Body::Html(c) | Body::Fragment(c) => axum::response::Html(c).into_response(),
-            Body::Json(v) => axum::response::Json(v).into_response(),
-            Body::Bytes(b) => axum::response::IntoResponse::into_response(b),
-            Body::Redirect(url) => axum::response::Redirect::to(&url).into_response(),
-            // FIX E0034: Explicitly call Axum's trait for the unit type
-            Body::Empty => axum::response::IntoResponse::into_response(()),
-        };
-
-        *res.status_mut() = self.status;
-        res.headers_mut().extend(self.headers);
         res
     }
 }

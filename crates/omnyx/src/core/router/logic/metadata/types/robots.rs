@@ -118,19 +118,39 @@ impl Robots {
         });
     }
 
-    /// Merges with parent: current fields override parent's if present, otherwise inherit from parent.
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            index: self.index.or(parent.index),
-            follow: self.follow.or(parent.follow),
-            noarchive: self.noarchive.or(parent.noarchive),
-            nosnippet: self.nosnippet.or(parent.nosnippet),
-            max_snippet: self.max_snippet.or(parent.max_snippet),
-            max_image_preview: self.max_image_preview.or(parent.max_image_preview),
-            max_video_preview: self.max_video_preview.or(parent.max_video_preview),
-            notranslate: self.notranslate.or(parent.notranslate),
-            noimageindex: self.noimageindex.or(parent.noimageindex),
-            unavailable_after: self.unavailable_after.clone().or_else(|| parent.unavailable_after.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.index.is_some() {
+            self.index = child.index;
+        }
+        if child.follow.is_some() {
+            self.follow = child.follow;
+        }
+        if child.noarchive.is_some() {
+            self.noarchive = child.noarchive;
+        }
+        if child.nosnippet.is_some() {
+            self.nosnippet = child.nosnippet;
+        }
+        if child.max_snippet.is_some() {
+            self.max_snippet = child.max_snippet;
+        }
+        if child.max_image_preview.is_some() {
+            self.max_image_preview = child.max_image_preview;
+        }
+        if child.max_video_preview.is_some() {
+            self.max_video_preview = child.max_video_preview;
+        }
+        if child.notranslate.is_some() {
+            self.notranslate = child.notranslate;
+        }
+        if child.noimageindex.is_some() {
+            self.noimageindex = child.noimageindex;
+        }
+        if child.unavailable_after.is_some() {
+            self.unavailable_after = child.unavailable_after.clone();
         }
     }
 }

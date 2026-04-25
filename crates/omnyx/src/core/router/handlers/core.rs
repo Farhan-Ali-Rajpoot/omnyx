@@ -19,7 +19,7 @@ impl FromContext for Request {
 impl FromContext for LayoutProps {
     fn from_request(request: &Request) -> impl Future<Output = Self> + Send {
         async move {
-            request.layout_props.clone()
+            request.layout_props.read().clone()
         }
     }
 }

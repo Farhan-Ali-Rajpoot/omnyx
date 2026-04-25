@@ -32,7 +32,7 @@ impl ParallelRouteContainer for ParallelRouteCollection {
 }
 
 pub struct ParallelRouteBuilder<C: ParallelRouteContainer> {
-    pub context: C
+    pub(crate) context: C
 }
 
 impl<C: ParallelRouteContainer> ParallelRouteBuilder<C> {
@@ -43,6 +43,7 @@ impl<C: ParallelRouteContainer> ParallelRouteBuilder<C> {
             controller: None,
             error_controller: None,
             loader_controller: None,
+            not_found_controller: None,
             children: Vec::new(),
         }
     }
@@ -53,6 +54,7 @@ impl<C: ParallelRouteContainer> ParallelRouteBuilder<C> {
             controller: None,
             loader_controller: None,
             error_controller: None,
+            not_found_controller: None,
             parallel_routes: HashMap::new(),
             children: Vec::new(), 
         }

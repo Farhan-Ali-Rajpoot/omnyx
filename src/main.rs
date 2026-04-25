@@ -1,55 +1,120 @@
-use async_trait::async_trait;
-use pingora::prelude::*;
-use pingora::proxy::{ProxyHttp, http_proxy_service, Session};
-use pingora::http::ResponseHeader;
-use bytes::Bytes;
+use omnyx::{
+    builder::{AppBuilder, Config}, 
+    request::Request, 
+    router::{LayoutProps, Router, RouteMetadata}
+};
+use rscx::{html};
 
-pub struct MyServer;
-
-#[async_trait]
-impl ProxyHttp for MyServer {
-    type CTX = ();
-    fn new_ctx(&self) -> Self::CTX {}
-
-    async fn request_filter(&self, session: &mut Session, _ctx: &mut Self::CTX) -> Result<bool> {
-        let body_str: String = format!("<html>
-            <body>
-                {:#?}
-            </body>
-        </html>", session.req_header());
-        let body = Bytes::from(body_str); 
-
-        let mut header = ResponseHeader::build(200, Some(3)).unwrap();
-        header.insert_header("Content-Type", "text/json").unwrap();
-        header.insert_header("Content-Length", body.len().to_string()).unwrap();
-
-        // FIX: In 0.8.0, write_response_header takes (Header, end_of_stream)
-        // We pass 'false' because we are about to send the body next.
-        session.write_response_header(Box::new(header), false).await?;
-        
-        // Send the body and mark the stream as finished (true)
-        session.write_response_body(Some(body), true).await?;
-
-        Ok(true) 
-    }
-
-    async fn upstream_peer(&self, _session: &mut Session, _ctx: &mut Self::CTX) -> Result<Box<HttpPeer>> {
-        Err(Error::create(
-            ErrorType::InternalError,
-            ErrorSource::Internal, 
-            None,
-            None
-        ))
-    }
-}
 
 fn main() {
-    let mut my_server = Server::new(None).unwrap();
-    my_server.bootstrap();
 
-    let mut service = http_proxy_service(&my_server.configuration, MyServer);
-    service.add_tcp("0.0.0.0:8080");
+    let router = Router::new()
+    .layout("root", |layout| {
+        layout
+        .metadata(RouteMetadata {
+            title: Some("Omnyx Test".into()),
+            ..Default::default()
+        })
+        .handler(|req: Request, props: LayoutProps| async move {
+                    let none = "None".to_string();
+                    let html = format!(r##"
+                    <!DOCTYPE html>
+                        <html lang="en">
+                            <head>
+                                {0}
+                                <meta charset="utf-8" />
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                                <style>
+                                    body {{
+                                        margin: 0;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        min-height: 100vh;
+                                        background-color: #f4f4f9;
+                                        gap: 30px; 
+                                    }}
+                                    .container {{
+                                        width: 300px;
+                                        height: 400px;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        border-radius: 15px;
+                                        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                                        color: white;
+                                        font-family: Arial, sans-serif;
+                                        padding: 20px;
+                                        text-align: center;
+                                    }}
+                                    .blue {{ background-color: #3498db; }}
+                                    .red {{ background-color: #e74c3c; }}
+                                    .green {{ background-color: #2ecc71; }}
+                                </style>
+                            </head>
+                            <body>
+                                <div class="container blue">
+                                    {1}
+                                </div>
+                                
+                                <div class="container red">{2}</div>
+                                <div class="container green">{3}</div>
+                            </body>
+                        </html>"##, 
+                        &req.metadata().render_html(),
+                        &props.children,
+                        &props.parallel_routes.get("@navbar").unwrap_or(&none),
+                        &props.parallel_routes.get("@sidebar").unwrap_or(&none)
+                    );
 
-    my_server.add_service(service);
-    my_server.run_forever();
-}
+                    println!("{:#?}", &props.parallel_routes);
+
+            html
+
+        })
+        .parallel_route("@sidebar", |route| {
+            route
+            .page("/user")
+            .handler(|| async move {
+                "Sidebar"
+            });
+            
+            route
+        })
+        .parallel_route("@navbar", |route| {
+            route
+            .page("/user")
+            .handler(|| async move {
+                "Navbar"
+            });
+            
+            route
+        })
+        .children(|router| {
+            router
+            .page("/user", |page| {
+                page
+               
+                .method("GET", |req: Request| async move {
+                    html! { 
+                        <h1>Hey there! My name is OMNYX</h1>
+                    }
+                })
+               
+            })
+        })
+    });
+
+
+    let config = Config {
+        address: "127.0.0.1:8080".into(),
+        public_dir: Some("/public".into()),
+    };
+
+    let app = AppBuilder::with_opt(config)
+        .with_router(router)
+        .build()
+        .unwrap();
+
+    app.run();
+}   

@@ -124,14 +124,27 @@ impl Verification {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            google: self.google.clone().or_else(|| parent.google.clone()),
-            yandex: self.yandex.clone().or_else(|| parent.yandex.clone()),
-            bing: self.bing.clone().or_else(|| parent.bing.clone()),
-            pinterest: self.pinterest.clone().or_else(|| parent.pinterest.clone()),
-            facebook: self.facebook.clone().or_else(|| parent.facebook.clone()),
-            other: self.other.clone().or_else(|| parent.other.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.google.is_some() {
+            self.google = child.google.clone();
+        }
+        if child.yandex.is_some() {
+            self.yandex = child.yandex.clone();
+        }
+        if child.bing.is_some() {
+            self.bing = child.bing.clone();
+        }
+        if child.pinterest.is_some() {
+            self.pinterest = child.pinterest.clone();
+        }
+        if child.facebook.is_some() {
+            self.facebook = child.facebook.clone();
+        }
+        if child.other.is_some() {
+            self.other = child.other.clone();
         }
     }
 }

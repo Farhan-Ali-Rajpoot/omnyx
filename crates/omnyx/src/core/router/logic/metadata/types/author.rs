@@ -43,10 +43,15 @@ impl Author {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            name: self.name.clone().or_else(|| parent.name.clone()),
-            url: self.url.clone().or_else(|| parent.url.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.name.is_some() {
+            self.name = child.name.clone();
+        }
+        if child.url.is_some() {
+            self.url = child.url.clone();
         }
     }
 }

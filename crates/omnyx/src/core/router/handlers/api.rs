@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use crate::core::router::io::{Response, Request};
 use crate::types::BoxFuture;
 
-pub trait ErasedApiHandler: std::fmt::Debug + Send + Sync + 'static {
+pub trait ErasedApiHandler: Send + Sync + 'static {
     fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
@@ -20,8 +20,8 @@ pub struct ApiHandlerWrapper<H, Args> {
 
 impl<H, Args> ErasedApiHandler for ApiHandlerWrapper<H, Args>
 where
-    H: ApiHandler<Args> + std::fmt::Debug + Clone + Send + Sync + 'static,
-    Args: std::fmt::Debug + Send + Sync + 'static,
+    H: ApiHandler<Args> + Clone + Send + Sync + 'static,
+    Args: Send + Sync + 'static,
 {
     fn call_erased(&self, request: Request) -> BoxFuture<Response> {
         Box::pin(self.handler.clone().call(request))

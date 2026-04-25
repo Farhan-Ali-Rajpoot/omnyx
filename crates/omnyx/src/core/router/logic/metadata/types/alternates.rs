@@ -1,6 +1,6 @@
-use super::{TagDescriptor, TagProp}; 
+use super::{TagDescriptor, TagProp};
 use serde::{Serialize, Deserialize};
-use std::borrow::{Cow};
+use std::borrow::Cow;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Alternates {
@@ -79,16 +79,27 @@ impl Alternates {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            canonical: self.canonical.clone().or_else(|| parent.canonical.clone()),
-            languages: self.languages.clone().or_else(|| parent.languages.clone()),
-            media: self.media.clone().or_else(|| parent.media.clone()),
-            types: self.types.clone().or_else(|| parent.types.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any non‑empty field in `child` overwrites the corresponding field in `self`.  
+    /// Empty fields (None) in `child` leave `self` unchanged.  
+    /// This is used for top‑down accumulation where the deepest (child) metadata wins.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.canonical.is_some() {
+            self.canonical = child.canonical.clone();
+        }
+        if child.languages.is_some() {
+            self.languages = child.languages.clone();
+        }
+        if child.media.is_some() {
+            self.media = child.media.clone();
+        }
+        if child.types.is_some() {
+            self.types = child.types.clone();
         }
     }
 }
 
+// The following structs remain unchanged.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct LanguageAlternate {
     pub href_lang: Cow<'static, str>,

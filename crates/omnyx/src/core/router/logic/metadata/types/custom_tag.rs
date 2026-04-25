@@ -56,7 +56,6 @@ impl MetaTag {
 
     /// Collects flat tag descriptors for this meta tag.
     pub fn collect_tags(&self, tags: &mut Vec<TagDescriptor>) {
-        // Build props from all present attributes.
         let mut props = Vec::new();
         if let Some(name) = &self.name {
             props.push(TagProp { key: "name".to_string(), value: name.to_string() });
@@ -83,14 +82,24 @@ impl MetaTag {
         }
     }
 
-    /// Merges with parent: current fields override parent's if present, otherwise inherit from parent.
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            name: self.name.clone().or_else(|| parent.name.clone()),
-            property: self.property.clone().or_else(|| parent.property.clone()),
-            http_equiv: self.http_equiv.clone().or_else(|| parent.http_equiv.clone()),
-            content: self.content.clone().or_else(|| parent.content.clone()),
-            charset: self.charset.clone().or_else(|| parent.charset.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.name.is_some() {
+            self.name = child.name.clone();
+        }
+        if child.property.is_some() {
+            self.property = child.property.clone();
+        }
+        if child.http_equiv.is_some() {
+            self.http_equiv = child.http_equiv.clone();
+        }
+        if child.content.is_some() {
+            self.content = child.content.clone();
+        }
+        if child.charset.is_some() {
+            self.charset = child.charset.clone();
         }
     }
 
@@ -197,18 +206,36 @@ impl LinkTag {
         }
     }
 
-    /// Merges with parent: current fields override parent's if present, otherwise inherit from parent.
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            rel: self.rel.clone().or_else(|| parent.rel.clone()),
-            href: self.href.clone().or_else(|| parent.href.clone()),
-            type_: self.type_.clone().or_else(|| parent.type_.clone()),
-            sizes: self.sizes.clone().or_else(|| parent.sizes.clone()),
-            media: self.media.clone().or_else(|| parent.media.clone()),
-            integrity: self.integrity.clone().or_else(|| parent.integrity.clone()),
-            crossorigin: self.crossorigin.clone().or_else(|| parent.crossorigin.clone()),
-            referrerpolicy: self.referrerpolicy.clone().or_else(|| parent.referrerpolicy.clone()),
-            as_: self.as_.clone().or_else(|| parent.as_.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// Any `Some` field in `child` overwrites the corresponding field in `self`.  
+    /// `None` fields in `child` leave `self` unchanged.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.rel.is_some() {
+            self.rel = child.rel.clone();
+        }
+        if child.href.is_some() {
+            self.href = child.href.clone();
+        }
+        if child.type_.is_some() {
+            self.type_ = child.type_.clone();
+        }
+        if child.sizes.is_some() {
+            self.sizes = child.sizes.clone();
+        }
+        if child.media.is_some() {
+            self.media = child.media.clone();
+        }
+        if child.integrity.is_some() {
+            self.integrity = child.integrity.clone();
+        }
+        if child.crossorigin.is_some() {
+            self.crossorigin = child.crossorigin.clone();
+        }
+        if child.referrerpolicy.is_some() {
+            self.referrerpolicy = child.referrerpolicy.clone();
+        }
+        if child.as_.is_some() {
+            self.as_ = child.as_.clone();
         }
     }
 

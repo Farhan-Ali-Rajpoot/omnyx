@@ -4,7 +4,7 @@ use crate::core::router::io::{Response, Request};
 use crate::types::BoxFuture;
 
 
-pub trait ErasedErrorComponent: std::fmt::Debug + Send + Sync + 'static {
+pub trait ErasedErrorComponent: Send + Sync + 'static {
     fn call_erased(&self, request: Request) -> BoxFuture<Response>;
 }
 
@@ -20,8 +20,8 @@ pub struct ErrorComponentWrapper<H, Args> {
 
 impl<H, Args> ErasedErrorComponent for ErrorComponentWrapper<H, Args>
 where
-    H: ErrorComponent<Args> + std::fmt::Debug + Clone + Send + Sync + 'static,
-    Args: std::fmt::Debug + Send + Sync + 'static,
+    H: ErrorComponent<Args> + Clone + Send + Sync + 'static,
+    Args: Send + Sync + 'static,
 {
     fn call_erased(&self, request: Request) -> BoxFuture<Response> {
         Box::pin(self.handler.clone().call(request))

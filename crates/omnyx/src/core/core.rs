@@ -1,13 +1,24 @@
 use std::sync::Arc;
 
-use crate::core::router::RouterService;
+use crate::core::{Config, router::RouterService};
 
-#[derive(Clone)]
-pub struct OmnyxState {
-    pub router: RouterService,
+
+pub struct AppState<T = ()> {
+    pub(crate) router: RouterService,
+    pub(crate) config: Config,
+    pub(crate) user_state: Arc<T>,
 }
 
-pub struct OmnyxCore {
-    pub state: Arc<OmnyxState>,
-    pub server: pingora::server::Server,
+pub struct App<T = ()> {
+    pub(crate) state: Arc<AppState<T>>,
+    pub(crate) server: pingora::server::Server,
+}
+
+impl<T> App<T> 
+where
+    T: Send + Sync + 'static 
+{
+    pub fn run(self) {
+        self.server.run_forever();
+    }
 }

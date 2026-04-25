@@ -1,6 +1,8 @@
+use std::marker::PhantomData;
 use std::sync::Arc;
-use std::collections::HashMap;
 
+use crate::collections::LinearMap;
+use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper};
 use crate::core::router::registry::{RouteNode, ParallelRouteNode};
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedErrorComponent, ErasedLoaderComponent};
 use crate::core::router::logic::{RouteMetadata, Middleware};
@@ -9,31 +11,75 @@ use crate::core::router::builder::types::layout::{ParallelRouteBuilder, Parallel
 
 
 pub struct LayoutDefinition {
-    pub id: String,
-    pub controller: Option<Arc<dyn ErasedLayoutComponent>>,
-    pub error_controller: Option<Arc<dyn ErasedErrorComponent>>,
-    pub loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub parallel_routes: HashMap<String, ParallelRouteNode>,
-    pub metadata: Option<RouteMetadata>,
-    pub children: Vec<RouteNode>,
-    pub extensions: crate::core::router::registry::Extensions,
-    pub middlewares: Vec<Arc<dyn Middleware>>,
+    pub(crate) id: String,
+    pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
+    pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
+    pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
+    pub(crate) not_found_controller: Option<Arc< dyn ErasedNotFoundComponent>>,
+    pub(crate) parallel_routes: LinearMap<String, ParallelRouteNode>,
+    pub(crate) metadata: Option<RouteMetadata>,
+    pub(crate) children: Vec<RouteNode>,
+    pub(crate) extensions: crate::core::router::registry::Extensions,
+    pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
 }
 
 impl LayoutDefinition {
     // Utility
-    pub fn handler<F: ErasedLayoutComponent + 'static>(mut self, f: F) -> Self {
-        self.controller = Some(Arc::new(f));
+    pub fn handler<F, Args>(mut self, f: F) -> Self 
+    where
+        F: LayoutComponent<Args> + Clone + Send + Sync + 'static,
+        Args: Send + Sync + Clone + 'static,
+    {
+        let wrapped = LayoutComponentWrapper {
+            handler: f,
+            _marker: PhantomData,
+        };
+
+        // Erase the type into the Arc'd trait object
+        self.controller = Some(Arc::new(wrapped));
         self
     }
 
-    pub fn error_handler<H: ErasedErrorComponent + 'static>(mut self, f: H) -> Self {
-        self.error_controller = Some(Arc::new(f));
+    
+    pub fn error_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: ErrorComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = ErrorComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.error_controller = Some(Arc::new(wrapper));
         self
     }
 
-    pub fn loader_handler<H: ErasedLoaderComponent + 'static>(mut self, f: H) -> Self {
-        self.loader_controller = Some(Arc::new(f));
+    pub fn loader_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: LoaderComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = LoaderComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.loader_controller = Some(Arc::new(wrapper));
+        self
+    }
+
+    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
+    where
+        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let wrapper = NotFoundComponentWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.not_found_controller = Some(Arc::new(wrapper));
         self
     }
 
@@ -86,6 +132,7 @@ impl LayoutDefinition {
             controller: self.controller,
             error_controller: self.error_controller,
             loader_controller: self.loader_controller,
+            not_found_controller: self.not_found_controller,
             parallel_routes: self.parallel_routes,
             metadata: self.metadata,
             children: self.children,

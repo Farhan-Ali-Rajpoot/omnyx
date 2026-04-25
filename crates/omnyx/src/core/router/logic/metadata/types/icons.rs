@@ -65,12 +65,20 @@ impl Icon {
         });
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            rel: self.rel.clone(),
-            url: self.url.clone(),
-            sizes: self.sizes.clone().or_else(|| parent.sizes.clone()),
-            type_: self.type_.clone().or_else(|| parent.type_.clone()),
+    /// Merges `child` into `self` (mutates self).  
+    /// For non‑`Option` fields (`rel`, `url`), the child's value always overwrites `self`  
+    /// (child has higher precedence). For `Option` fields, only `Some` in child overwrites.
+    pub fn update_from_child(&mut self, child: &Self) {
+        // Non-optional fields: always take child's value (they are always present)
+        self.rel = child.rel.clone();
+        self.url = child.url.clone();
+
+        // Optional fields: only overwrite if child has a value
+        if child.sizes.is_some() {
+            self.sizes = child.sizes.clone();
+        }
+        if child.type_.is_some() {
+            self.type_ = child.type_.clone();
         }
     }
 }

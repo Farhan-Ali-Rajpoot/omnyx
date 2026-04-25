@@ -1,12 +1,12 @@
 use std::sync::Arc;
-use std::collections::HashMap;
 
+use crate::core::ErasedNotFoundComponent;
 use crate::core::router::registry::Extensions;
 use crate::core::router::logic::metadata::RouteMetadata;
 use crate::core::router::logic::Middleware;
 use crate::core::router::utils::Path;
 use crate::core::router::handlers::{
-    ErasedApiHandler, ErasedPageComponent, ErasedSpecialComponent, ErasedLayoutComponent, 
+    ErasedApiHandler, ErasedPageComponent, ErasedLayoutComponent, 
     ErasedErrorComponent, ErasedLoaderComponent
 };
 use crate::collections::LinearMap;
@@ -21,6 +21,7 @@ pub enum RouteNode {
         controllers: LinearMap<http::Method, Arc<dyn ErasedPageComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
+        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware>>,
@@ -40,9 +41,10 @@ pub enum RouteNode {
         controller: Option<Arc<dyn ErasedLayoutComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
+        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
-        parallel_routes: HashMap<String, ParallelRouteNode>, 
+        parallel_routes: LinearMap<String, ParallelRouteNode>, 
         extensions: Extensions,
         middlewares: Vec<Arc<dyn Middleware>>,
     },
@@ -60,7 +62,7 @@ pub enum RouteNode {
 impl std::fmt::Debug for RouteNode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            RouteNode::Page { path, metadata, children, controllers, .. } => {
+            RouteNode::Page { path, metadata, children, .. } => {
                 f.debug_struct("RouteNode::Page")
                     .field("path", path)
                     .field("metadata", metadata)
@@ -68,7 +70,7 @@ impl std::fmt::Debug for RouteNode {
                     .field("children", children)
                     .finish()
             }
-            RouteNode::Api { path, controllers, children, .. } => {
+            RouteNode::Api { path, children, .. } => {
                 f.debug_struct("RouteNode::Api")
                     .field("path", path)
                     // .field("methods", &controllers.keys().collect::<Vec<_>>())

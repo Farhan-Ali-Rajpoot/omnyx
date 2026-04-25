@@ -1,5 +1,7 @@
+use std::marker::PhantomData;
 use std::sync::Arc;
 
+use crate::core::{ApiHandler, ApiHandlerWrapper};
 use crate::core::router::builder::Router;
 use crate::core::router::utils::Path;
 use crate::core::router::handlers::ErasedApiHandler;
@@ -8,11 +10,11 @@ use crate::core::router::logic::{Middleware};
 use crate::collections::LinearMap;
 
 pub struct ApiDefinition {
-    pub path: Path,
-    pub controllers: LinearMap<http::Method, Arc<dyn ErasedApiHandler>>,
-    pub children: Vec<RouteNode>,
-    pub middlewares: Vec<Arc<dyn Middleware>>,
-    pub extensions: crate::core::router::registry::Extensions,
+    pub(crate) path: Path,
+    pub(crate) controllers: LinearMap<http::Method, Arc<dyn ErasedApiHandler>>,
+    pub(crate) children: Vec<RouteNode>,
+    pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
+    pub(crate) extensions: crate::core::router::registry::Extensions,
     
 }
 
@@ -21,11 +23,20 @@ impl ApiDefinition {
 
     // Custom Methods
     // Usage: .method("FARHAN", handler)
-    pub fn method<H: ErasedApiHandler + 'static>(mut self, verb: &str, handler: H) -> Self {
-        let m = http::Method::from_bytes(verb.to_uppercase().as_bytes())
-            .expect("Invalid HTTP method string");
-            
-        self.controllers.insert(m, Arc::new(handler));
+    pub fn method<H, Args>(mut self, verb: &str, handler: H) -> Self
+    where
+        H: ApiHandler<Args> + Clone + Send + Sync + 'static,
+        Args: 'static + Clone + Send + Sync,
+    {
+        let m = http::Method::from_bytes(verb.to_uppercase().as_bytes()).unwrap();
+
+        // Wrap it!
+        let wrapper = ApiHandlerWrapper {
+            handler,
+            _marker: PhantomData,
+        };
+
+        self.controllers.insert(m, Arc::new(wrapper));
         self
     }
 
@@ -55,7 +66,7 @@ impl ApiDefinition {
         self
     }
 
-    pub fn into_route_node(self) -> RouteNode {
+    pub(crate) fn into_route_node(self) -> RouteNode {
         RouteNode::Api {
             path: self.path,
             controllers: self.controllers,

@@ -134,33 +134,52 @@ impl TwitterCard {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            card: self.card.clone().or_else(|| parent.card.clone()),
-            site: self.site.clone().or_else(|| parent.site.clone()),
-            site_id: self.site_id.clone().or_else(|| parent.site_id.clone()),
-            creator: self.creator.clone().or_else(|| parent.creator.clone()),
-            creator_id: self.creator_id.clone().or_else(|| parent.creator_id.clone()),
-            title: self.title.clone().or_else(|| parent.title.clone()),
-            description: self.description.clone().or_else(|| parent.description.clone()),
-            image: match (&self.image, &parent.image) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            player: match (&self.player, &parent.player) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            app: match (&self.app, &parent.app) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
+    /// Merges `child` into `self` (mutates self).  
+    /// Child's `Some` fields overwrite `self`. For nested structs, recursively call `update_from_child`.
+    pub fn update_from_child(&mut self, child: &Self) {
+        if child.card.is_some() {
+            self.card = child.card.clone();
+        }
+        if child.site.is_some() {
+            self.site = child.site.clone();
+        }
+        if child.site_id.is_some() {
+            self.site_id = child.site_id.clone();
+        }
+        if child.creator.is_some() {
+            self.creator = child.creator.clone();
+        }
+        if child.creator_id.is_some() {
+            self.creator_id = child.creator_id.clone();
+        }
+        if child.title.is_some() {
+            self.title = child.title.clone();
+        }
+        if child.description.is_some() {
+            self.description = child.description.clone();
+        }
+
+        // Nested option structs: if child has Some, either update existing or clone
+        if let Some(child_img) = &child.image {
+            if let Some(self_img) = &mut self.image {
+                self_img.update_from_child(child_img);
+            } else {
+                self.image = Some(child_img.clone());
+            }
+        }
+        if let Some(child_player) = &child.player {
+            if let Some(self_player) = &mut self.player {
+                self_player.update_from_child(child_player);
+            } else {
+                self.player = Some(child_player.clone());
+            }
+        }
+        if let Some(child_app) = &child.app {
+            if let Some(self_app) = &mut self.app {
+                self_app.update_from_child(child_app);
+            } else {
+                self.app = Some(child_app.clone());
+            }
         }
     }
 }
@@ -203,10 +222,10 @@ impl TwitterImage {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone(),
-            alt: self.alt.clone().or_else(|| parent.alt.clone()),
+    pub fn update_from_child(&mut self, child: &Self) {
+        self.url = child.url.clone(); // non-optional overwrites
+        if child.alt.is_some() {
+            self.alt = child.alt.clone();
         }
     }
 }
@@ -275,12 +294,16 @@ impl TwitterPlayer {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            url: self.url.clone(),
-            width: self.width.clone().or_else(|| parent.width.clone()),
-            height: self.height.clone().or_else(|| parent.height.clone()),
-            stream: self.stream.clone().or_else(|| parent.stream.clone()),
+    pub fn update_from_child(&mut self, child: &Self) {
+        self.url = child.url.clone();
+        if child.width.is_some() {
+            self.width = child.width.clone();
+        }
+        if child.height.is_some() {
+            self.height = child.height.clone();
+        }
+        if child.stream.is_some() {
+            self.stream = child.stream.clone();
         }
     }
 }
@@ -322,26 +345,27 @@ impl TwitterApp {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            iphone: match (&self.iphone, &parent.iphone) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            ipad: match (&self.ipad, &parent.ipad) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
-            googleplay: match (&self.googleplay, &parent.googleplay) {
-                (Some(child), Some(parent)) => Some(child.inherit_from(parent)),
-                (Some(child), None) => Some(child.clone()),
-                (None, Some(parent)) => Some(parent.clone()),
-                (None, None) => None,
-            },
+    pub fn update_from_child(&mut self, child: &Self) {
+        if let Some(child_iphone) = &child.iphone {
+            if let Some(self_iphone) = &mut self.iphone {
+                self_iphone.update_from_child(child_iphone);
+            } else {
+                self.iphone = Some(child_iphone.clone());
+            }
+        }
+        if let Some(child_ipad) = &child.ipad {
+            if let Some(self_ipad) = &mut self.ipad {
+                self_ipad.update_from_child(child_ipad);
+            } else {
+                self.ipad = Some(child_ipad.clone());
+            }
+        }
+        if let Some(child_gp) = &child.googleplay {
+            if let Some(self_gp) = &mut self.googleplay {
+                self_gp.update_from_child(child_gp);
+            } else {
+                self.googleplay = Some(child_gp.clone());
+            }
         }
     }
 }
@@ -384,16 +408,15 @@ impl TwitterAppPlatform {
         }
     }
 
-    pub fn inherit_from(&self, parent: &Self) -> Self {
-        Self {
-            name: self.name.clone(),
-            id: self.id.clone(),
-            url: self.url.clone().or_else(|| parent.url.clone()),
+    pub fn update_from_child(&mut self, child: &Self) {
+        self.name = child.name.clone();
+        self.id = child.id.clone();
+        if child.url.is_some() {
+            self.url = child.url.clone();
         }
     }
 }
 
-// Keep the helper function render_platform if used elsewhere, but we can remove it if not needed
 fn render_platform(html: &mut String, platform: &str, data: &TwitterAppPlatform) {
     html.push_str(&format!("<meta name=\"twitter:app:name:{}\" content=\"{}\" />\n", platform, data.name.as_ref()));
     html.push_str(&format!("<meta name=\"twitter:app:id:{}\" content=\"{}\" />\n", platform, data.id.as_ref()));

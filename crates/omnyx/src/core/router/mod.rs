@@ -9,7 +9,6 @@ pub mod logic;
 pub mod registry;
 pub mod utils;
 pub mod matcher;
-pub mod proxy;
 
 pub use core::*;
 pub use builder::*;
@@ -19,4 +18,3 @@ pub use logic::*;
 pub use registry::*;
 pub use utils::*;
 pub use matcher::*;
-pub use proxy::*;
