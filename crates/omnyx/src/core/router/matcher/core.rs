@@ -37,6 +37,7 @@ pub struct PageEndpoint {
 
 #[derive(Clone)]
 pub struct Layout {
+    pub(crate) id: String,
     pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,

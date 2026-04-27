@@ -12,8 +12,9 @@ use crate::core::router::handlers::{
     ErasedPageComponent, ErasedLayoutComponent, ErasedLoaderComponent, 
     ErasedErrorComponent, LayoutProps
 };
-use crate::core::{ERROR_PAGE, NOT_FOUND_PAGE, PageEndpoint, RouteEntry, RouteKind, RouteMetadata};
+use crate::core::{PageEndpoint, RouteKind, RouteMetadata};
 use crate::core::pingora::PingoraAdapter;
+use crate::error::RouteError;
 
 /// A type alias for the boxed future that will be streamed later.
 pub type ControllerTask = Pin<Box<dyn Future<Output = Response> + Send>>;
@@ -27,23 +28,16 @@ pub enum MainComponent {
 impl MainComponent {
     pub async fn call(&self, req: Request) -> Response {
         // We wrap the future in AssertUnwindSafe to catch panics inside the async block
-        let result = std::panic::AssertUnwindSafe(async {
+        if let Ok(res) = std::panic::AssertUnwindSafe(async {
             match self {
                 Self::Page(p) => p.call_erased(req).await,
                 Self::Layout(l) => l.call_erased(req).await,
             }
         })
-        .catch_unwind()
-        .await;
-
-        match result {
-            Ok(response) => response,
-            Err(_) => {
-                // The controller panicked! Turn it into an Error Body.
-                let mut res = Response::empty();
-                res.body = Body::Err("Controller Panic".into());
-                res
-            }
+        .catch_unwind().await {
+            res
+        } else {
+            Response::from_body(Body::Err("Controller Panic".into()))
         }
     }
 }
@@ -60,9 +54,10 @@ pub enum SlotOutcome {
     Ready(String),
     Pending { id: String, shell: String },
     FragmentError(String),
-    NotFound,
+    NotFound(String),
     /// Signal to tell the parent layout that this slot failed and needs a boundary.
     BubbleUpError, 
+    BubbleUpNotFound,
 }
 
 static SLOT_COUNTER: AtomicUsize = AtomicUsize::new(1);
@@ -73,17 +68,17 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
     pub(crate) async fn render_route(&self, session: &mut Session) -> pingora::Result<bool> {
         let req_header = session.req_header();
         
-        let matched = match self.state.router.lookup(req_header.uri.path().trim_end_matches("/")) {
-            Ok(m) => m,
-            Err(_) => {
-                // ROUTE NOT FOUND
-                return self.handle_404(session).await;
-            }
+        let matched = if let Ok(matched_route) = self.state.router.lookup(req_header.uri.path().trim_end_matches("/")) { 
+            matched_route
+        } else {
+            // Route Not Found
+            return self.handle_not_found_response(session).await;
         };
 
-        let metadata = match &matched.entry.kind {
-            RouteKind::Page(page) => { page.metadata.clone() },
-            RouteKind::Api(_) => { RouteMetadata::default() }
+        let metadata = if let RouteKind::Page(page) =  &matched.entry.kind {
+            page.metadata.clone()
+        } else {
+            RouteMetadata::default()
         };
 
         // Initialize the Omnyx Request context
@@ -91,9 +86,14 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
             self.state.user_state.clone(),
             req_header, 
             matched.params, 
-            "req-id", 
+            "XXX-XXX-XXX", 
             metadata,
         );
+
+        // Run Middlewares
+        if let Err(_) = self.run_middlewares(&mut req).await {
+            return self.handle_error_response(session).await
+        }
 
         // Branching between API and Page rendering
         let (response, tasks) = match &matched.entry.kind {
@@ -167,15 +167,13 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         }
 
         if current_outcome == SlotOutcome::BubbleUpError {
-            let mut res = Response::empty();
-            res.body = Body::Html(ERROR_PAGE.into());
+            let res = Response::from_body(Body::Html(self.fallbacks.error_html.into()));
             return Ok((res, tasks));
         }
 
         // Finalize the response object
         let final_html = self.unwrap_outcome(&current_outcome);
-        let mut res = Response::empty();
-        res.body = Body::Html(final_html);
+        let res = Response::from_body(Body::Html(final_html));
         Ok((res, tasks))
     }
     
@@ -262,7 +260,8 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         match outcome {
             SlotOutcome::Ready(h) | SlotOutcome::Pending { shell: h, .. } | SlotOutcome::FragmentError(h) => h.clone(),
             SlotOutcome::BubbleUpError => "".to_string(),
-            SlotOutcome::NotFound => "".to_string(),
+            SlotOutcome::NotFound(h) => h.clone(),
+            SlotOutcome::BubbleUpNotFound => "".to_string(),
         }
     }
 
@@ -274,7 +273,7 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         response: Response,
         mut tasks: Vec<DeferredTask>,
     ) -> pingora::Result<bool> {
-        let (body_bytes, content_type) = response.body.clone().into_bytes();
+        let (body_bytes, content_type) = response.body.into_bytes_and_content_type();
         let mut header = ResponseHeader::build(req.status().as_u16(), None).unwrap();
         
         header.insert_header("Content-Type", content_type).unwrap();
@@ -309,7 +308,11 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         Ok(true)
     }
 
-    async fn handle_404(&self, session: &mut Session) -> pingora::Result<bool> {
+    async fn run_middlewares(&self, req: &mut Request) -> Result<(), RouteError> {
+        Ok(())
+    }
+
+    async fn handle_not_found_response(&self, session: &mut Session) -> pingora::Result<bool> {
 
         let mut header = ResponseHeader::build(404, None).unwrap();
         header.insert_header("Content-Type", "text/html").unwrap();
@@ -317,6 +320,16 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         session.write_response_header(Box::new(header), false).await?;
         session.write_response_body(Some(bytes::Bytes::from(self.fallbacks.not_found_html)), true).await?;
         
+        Ok(true)
+    }
+
+    async fn handle_error_response(&self, session: &mut Session) -> pingora::Result<bool> {
+
+        let mut header = ResponseHeader::build(404, None).unwrap();
+        header.insert_header("Content-Type", "text/html").unwrap();
+        
+        session.write_response_header(Box::new(header), false).await?;
+        session.write_response_body(Some(bytes::Bytes::from(self.fallbacks.error_html)), true).await?;
         Ok(true)
     }
 }

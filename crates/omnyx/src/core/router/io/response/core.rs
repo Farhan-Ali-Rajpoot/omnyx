@@ -1,8 +1,4 @@
-use axum::http::{HeaderMap, StatusCode};
-use axum_extra::extract::cookie::{CookieJar};
 use serde_json::Value;
-
-use crate::core::router::logic::RouteMetadata;
 
 #[derive(Debug, Clone)]
 pub enum Body {
@@ -40,7 +36,7 @@ impl Body {
         }
     }
 
-    pub fn into_bytes(self) -> (bytes::Bytes, &'static str) {
+    pub fn into_bytes_and_content_type(self) -> (bytes::Bytes, &'static str) {
         match self {
             Body::Html(s) => {
                 (bytes::Bytes::from(s), "text/html; charset=utf-8")

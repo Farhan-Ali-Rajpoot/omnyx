@@ -6,6 +6,11 @@ use crate::core::router::io::{Response, Body};
 
 
 impl Response {
+    pub fn from_body(body: Body) -> Self {
+        Self {
+            body,
+        }
+    }
     pub fn html(content: impl Into<String>) -> Self {
         Self {
             body: Body::Html(content.into())
@@ -40,7 +45,7 @@ impl Response {
         }
     }
 
-    pub fn bytes(data: impl Into<Vec<u8>>, content_type: impl Into<String>) -> Self {
+    pub fn bytes(data: impl Into<Vec<u8>>) -> Self {
         Self {
             body: Body::Bytes(data.into())
         }

@@ -133,7 +133,7 @@ impl RouteMatcher {
                 }
             }
             RouteNode::Layout {
-                id: _,
+                id,
                 controller,
                 error_controller,
                 loader_controller,
@@ -153,6 +153,7 @@ impl RouteMatcher {
 
                 // Build the layout object, which will be pushed onto the layout stack
                 let mut current_layout = Layout {
+                    id,
                     controller,
                     error_controller,
                     loader_controller,
@@ -248,7 +249,7 @@ fn bake_parallel_route_recursive(
             // or `LinearMap<String, RouteMatcher>`. I'll leave a comment.
         }
         ParallelRouteNode::Layout {
-            id: _,
+            id,
             controller,
             error_controller,
             loader_controller,
@@ -257,6 +258,7 @@ fn bake_parallel_route_recursive(
             children,
         } => {
             let mut inner_layout = Layout {
+                id,
                 controller,
                 error_controller,
                 loader_controller,
