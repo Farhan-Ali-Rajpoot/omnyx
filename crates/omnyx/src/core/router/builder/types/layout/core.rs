@@ -2,12 +2,12 @@ use std::marker::PhantomData;
 use std::sync::Arc;
 
 use crate::collections::LinearMap;
-use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper};
+use crate::core::{ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper};
 use crate::core::router::registry::{RouteNode, ParallelRouteNode};
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedErrorComponent, ErasedLoaderComponent};
 use crate::core::router::logic::{RouteMetadata, Middleware};
 use crate::core::router::builder::Router;
-use crate::core::router::builder::types::layout::{ParallelRouteBuilder, ParallelRouteRoot};
+use crate::core::router::builder::types::layout::{ParallelRouteBuilder};
 
 
 pub struct LayoutDefinition {
@@ -15,8 +15,7 @@ pub struct LayoutDefinition {
     pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc< dyn ErasedNotFoundComponent>>,
-    pub(crate) parallel_routes: LinearMap<String, ParallelRouteNode>,
+    pub(crate) parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>,
     pub(crate) metadata: Option<RouteMetadata>,
     pub(crate) children: Vec<RouteNode>,
     pub(crate) extensions: crate::core::router::registry::Extensions,
@@ -69,20 +68,6 @@ impl LayoutDefinition {
         self
     }
 
-    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
-    where
-        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
-        Args: 'static + Clone + Send + Sync,
-    {
-        let wrapper = NotFoundComponentWrapper {
-            handler,
-            _marker: PhantomData,
-        };
-
-        self.not_found_controller = Some(Arc::new(wrapper));
-        self
-    }
-
     pub fn metadata(mut self, metadata: RouteMetadata) -> Self {
         self.metadata = Some(metadata);
         self
@@ -100,13 +85,10 @@ impl LayoutDefinition {
 
     pub fn parallel_route<F>(mut self, name: impl Into<String>, f: F) -> Self 
     where
-        F: FnOnce(ParallelRouteBuilder<ParallelRouteRoot>) -> ParallelRouteBuilder<ParallelRouteRoot>
+        F: FnOnce(ParallelRouteBuilder) -> ParallelRouteBuilder
     {
-        let root_builder = f(ParallelRouteBuilder { context: ParallelRouteRoot { node: None } });
-
-        if let Some(node) = root_builder.context.node {
-            self.parallel_routes.insert(name.into(), node);
-        }
+        let root_builder = f(ParallelRouteBuilder::new());
+        self.parallel_routes.insert(name.into(), root_builder.root_nodes);
         self
     }
 
@@ -132,7 +114,6 @@ impl LayoutDefinition {
             controller: self.controller,
             error_controller: self.error_controller,
             loader_controller: self.loader_controller,
-            not_found_controller: self.not_found_controller,
             parallel_routes: self.parallel_routes,
             metadata: self.metadata,
             children: self.children,

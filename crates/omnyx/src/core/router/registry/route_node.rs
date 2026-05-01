@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use crate::core::ErasedNotFoundComponent;
 use crate::core::router::registry::Extensions;
 use crate::core::router::logic::metadata::RouteMetadata;
 use crate::core::router::logic::Middleware;
@@ -21,7 +20,6 @@ pub enum RouteNode {
         controllers: LinearMap<http::Method, Arc<dyn ErasedPageComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware>>,
@@ -41,10 +39,9 @@ pub enum RouteNode {
         controller: Option<Arc<dyn ErasedLayoutComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
-        parallel_routes: LinearMap<String, ParallelRouteNode>, 
+        parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>, 
         extensions: Extensions,
         middlewares: Vec<Arc<dyn Middleware>>,
     },

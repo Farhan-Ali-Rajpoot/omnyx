@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
-use crate::core::{ErasedLoaderComponent, ErasedNotFoundComponent};
 use crate::error::RouteError;
 use crate::core::router::logic::{RouteMetadata, Middleware};
-use crate::core::router::handlers::{ErasedLayoutComponent, ErasedApiHandler, ErasedPageComponent, ErasedErrorComponent};
+use crate::core::router::handlers::{ErasedLayoutComponent, ErasedApiHandler, ErasedPageComponent, ErasedErrorComponent, ErasedLoaderComponent};
 use crate::collections::LinearMap;
 
 #[derive(Clone)]
@@ -11,12 +10,24 @@ pub struct RouteMatcher {
     pub(crate) router: matchit::Router<Arc<RouteEntry>>,
 }
 
-#[derive(Clone)]
+pub struct ParallelRouteMatcher {
+    pub(crate) router: matchit::Router<Arc<ParallelRoute>>,
+}
+
 pub struct MatchedRoute {
     pub(crate) pattern: String,
     pub(crate) entry: Arc<RouteEntry>,
     pub(crate) params: LinearMap<String, Vec<String>>,
 }
+
+
+#[derive(Clone)]
+pub struct MatchedParallelRoute {
+    pub(crate) pattern: String,
+    pub(crate) entry: Arc<ParallelRoute>,
+    pub(crate) params: LinearMap<String, Vec<String>>,
+}
+
 
 #[derive(Clone)]
 pub struct ApiEndpoint {
@@ -29,7 +40,6 @@ pub struct PageEndpoint {
     
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
     pub(crate) layouts: Vec<Arc<Layout>>,
     
     pub(crate) metadata: RouteMetadata,
@@ -37,20 +47,19 @@ pub struct PageEndpoint {
 
 #[derive(Clone)]
 pub struct Layout {
-    pub(crate) id: String,
+    pub(crate) base_path: String,
     pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
-    pub(crate) parallel_routes: LinearMap<String, ParallelRoute>,
+    pub(crate) parallel_routers: LinearMap<String, Arc<ParallelRouteMatcher>>,
 }
 
 #[derive(Clone)]
 pub struct ParallelRoute {
+    pub(crate) matched_pattern: String,
     pub(crate) controller: Option<Arc<dyn ErasedPageComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
     pub(crate) layouts: Vec<Arc<Layout>>,
 }
 
@@ -97,6 +106,42 @@ impl RouteMatcher {
         }
 
         Ok(MatchedRoute {
+            pattern: matched.value.matched_pattern.clone(), 
+            entry: Arc::clone(matched.value),
+            params,
+        })
+    }
+}
+
+
+
+impl ParallelRouteMatcher {
+    pub fn new() -> Self {
+        Self {
+            router: matchit::Router::new(),
+        }
+    }
+
+    pub fn resolve(&mut self, path: impl Into<String>, value: ParallelRoute) -> Result<(), RouteError> {
+        let path_str = path.into();
+        self.router.insert(path_str, Arc::new(value))
+            .map_err(|e| RouteError::RegistrationFailed(format!("{}", e).into()))
+    }
+
+    pub fn lookup(&self, path: &str) -> Result<MatchedParallelRoute, matchit::MatchError> {
+        let matched = self.router.at(path)?;
+        let mut params = LinearMap::with_capacity(matched.params.len());
+        for (key, value) in matched.params.iter() {
+            let segments: Vec<String> = value
+                .split('/')
+                .filter(|s| !s.is_empty()) 
+                .map(|s| s.to_string())
+                .collect();
+        
+            params.insert(key.to_string(), segments);
+        }
+
+        Ok(MatchedParallelRoute {
             pattern: matched.value.matched_pattern.clone(), 
             entry: Arc::clone(matched.value),
             params,

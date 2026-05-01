@@ -23,7 +23,6 @@ impl Router {
             controllers: LinearMap::new(),
             error_controller: None,
             loader_controller: None,
-            not_found_controller: None,
             middlewares: Vec::new(),
             metadata: None,
             children: Vec::new(),
@@ -63,7 +62,6 @@ impl Router {
             controller: None,
             error_controller: None,
             loader_controller: None,
-            not_found_controller: None,
             parallel_routes: LinearMap::new(),
             metadata: None,
             children: Vec::new(),
@@ -96,6 +94,16 @@ impl Router {
 
     pub fn nest(mut self, router: Router) -> Self {
         self.root_nodes.extend(router.root_nodes);
+        self
+    }
+
+    pub fn children<F>(mut self, f: F) -> Self 
+    where 
+        F: FnOnce(Router) -> Router 
+    {
+        let final_router = f(Router::new());
+
+        self.root_nodes.extend(final_router.root_nodes);
         self
     }
 }

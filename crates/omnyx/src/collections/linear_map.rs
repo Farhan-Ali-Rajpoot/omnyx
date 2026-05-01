@@ -106,6 +106,21 @@ where
     }
 }
 
+impl<K, V> FromIterator<(K, V)> for LinearMap<K, V>
+where
+    K: PartialEq,
+{
+    fn from_iter<I: IntoIterator<Item = (K, V)>>(iter: I) -> Self {
+        let iterator = iter.into_iter();
+        let (lower, _) = iterator.size_hint();
+        
+        let mut map = Self::with_capacity(lower);
+        map.extend(iterator);
+        map
+    }
+}
+
+
 impl<K, V> IntoIterator for LinearMap<K, V> {
     type Item = (K, V);
     type IntoIter = std::vec::IntoIter<Self::Item>;

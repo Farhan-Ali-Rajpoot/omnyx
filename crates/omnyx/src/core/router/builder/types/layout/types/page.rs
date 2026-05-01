@@ -1,9 +1,9 @@
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper, PageComponent, PageComponentWrapper};
+use crate::core::{ErrorComponent, ErrorComponentWrapper, LoaderComponent, LoaderComponentWrapper, PageComponent, PageComponentWrapper};
 use crate::core::router::handlers::{ErasedErrorComponent, ErasedPageComponent, ErasedLoaderComponent};
-use crate::core::router::builder::types::layout::{ParallelRouteBuilder, ParallelRouteCollection};
+use crate::core::router::builder::types::layout::{ParallelRouteBuilder};
 use crate::core::router::registry::ParallelRouteNode;
 use crate::core::router::utils::Path;
 
@@ -14,7 +14,6 @@ pub struct ParallelRoutePageDefination {
     pub controller: Option<Arc<dyn ErasedPageComponent>>,
     pub error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
     pub children: Vec<ParallelRouteNode>,
 }
 
@@ -65,28 +64,24 @@ impl ParallelRoutePageDefination {
         self
     }
 
-    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
-    where
-        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
-        Args: 'static + Clone + Send + Sync,
+    pub fn children<F>(mut self, f: F) -> Self 
+    where 
+        F: FnOnce(ParallelRouteBuilder) -> ParallelRouteBuilder
     {
-        let wrapper = NotFoundComponentWrapper {
-            handler,
-            _marker: PhantomData,
-        };
+        let final_router = f(ParallelRouteBuilder::new());
 
-        self.not_found_controller = Some(Arc::new(wrapper));
+        self.children.extend(final_router.root_nodes);
         self
     }
 
-    pub fn children<F>(mut self, f: F) -> Self 
-    where 
-        F: FnOnce(ParallelRouteBuilder<ParallelRouteCollection>) -> ParallelRouteBuilder<ParallelRouteCollection>
-    {
-        let final_router = f(ParallelRouteBuilder { context: ParallelRouteCollection { root_nodes: Vec::new() }});
-
-        self.children.extend(final_router.context.root_nodes);
-        self
+    pub fn into_parallel_route_node(self) -> ParallelRouteNode {
+        ParallelRouteNode::Page {
+            children: self.children,
+            controller: self.controller,
+            error_controller: self.error_controller,
+            loader_controller: self.loader_controller,
+            path: self.path
+        }
     }
 }
 

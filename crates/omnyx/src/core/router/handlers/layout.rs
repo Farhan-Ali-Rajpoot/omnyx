@@ -4,19 +4,16 @@ use crate::collections::LinearMap;
 use crate::core::router::io::{Response, Request};
 use crate::types::BoxFuture;
 
-#[derive(Debug, Clone)]
-pub struct LayoutProps {
-    pub children: String,                  
-    pub parallel_routes: LinearMap<String, String>,      
+#[derive(Debug, Clone, Default)]
+pub struct RenderedParallelRoute {
+    pub html: String,
+    pub params: LinearMap<String, Vec<String>>,
 }
 
-impl Default for LayoutProps {
-    fn default() -> Self {
-        Self {
-            children: "".into(),
-            parallel_routes: LinearMap::new(),
-        }
-    }
+#[derive(Debug, Clone, Default)]
+pub struct LayoutProps {
+    pub children: String,                  
+    pub parallel_routes: LinearMap<String, RenderedParallelRoute>,      
 }
 
 impl LayoutProps {

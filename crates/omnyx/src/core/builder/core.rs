@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use pingora::services::listening::Service;
+use include_dir::Dir;
 use pingora::proxy::http_proxy_service;
 
 use crate::core::router::RouterService;
@@ -10,15 +10,15 @@ use crate::core::router::registry::RouteNode;
 use crate::core::PingoraAdapter;
 
 pub struct Config {
-    pub address: String,
-    pub public_dir: Option<String>,
+    pub address: std::borrow::Cow<'static, str>,
+    pub embedded_public_dir: Option<&'static Dir<'static>>,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            address: "127.0.0.1:8080".to_string(),
-            public_dir: None,
+            address: "127.0.0.1:8080".into(),
+            embedded_public_dir: None,
         }
     }
 }

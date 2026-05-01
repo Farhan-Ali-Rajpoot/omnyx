@@ -12,30 +12,25 @@ readme = "README.md"
 # The core web engine
 axum = "0.7"
 tokio = { version = "1.50.0", features = ["full"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["full"] }
 http = "1.4.0"
 async-trait = "0.1.89"
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.149"
 futures = "0.3"
-pin-project-lite = "0.2"
-rscx = "0.1.14"
 const_format = "0.2.35"
-tracing = "0.1.44"
 thiserror = "1"
 matchit = "0.9.1"
-axum-extra = { version = "0.12.5", features = ["cookie"] }
-lightningcss = "1.0.0-alpha.71"
-swc_core = "58.0.4"
 bytes = "1.11.1"
-percent-encoding = "2.3.2"
-
-rkyv = "0.8.15"
-bumpalo = { version = "3.20.2", features = ["collections", "boxed", "serde"] }
-chrono = "0.4.44"
 pingora = { version = "0.8.0", features = [ "lb" ] }
 cookie = "0.18.1"
 parking_lot = "0.12.5"
-bumpalo-herd = "0.1.2"
+mime_guess = "2.0.5"
+include_dir = "0.7.4"
+
+swc_ecma_parser = "39.0.1"
+swc_ecma_codegen = "26.0.1"
+swc_ecma_transforms_base = "42.0.0"
+swc_ecma_transforms_typescript = "46.0.1"
+swc_ecma_visit = "23.0.0"
+lightningcss = "1.0.0-alpha.71"

@@ -1,15 +1,16 @@
 mod core;
 mod error;
 mod types;
-mod collections;
+pub mod collections;
 mod config;
 
 
-
+pub use include_dir;
 
 pub mod router {
     pub use crate::core::router::Router;
     pub use crate::core::router::handlers::LayoutProps;
+    pub use crate::core::router::handlers::RenderedParallelRoute;
     pub use crate::core::router::logic::RouteMetadata;
 }
 

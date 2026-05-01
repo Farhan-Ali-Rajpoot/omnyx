@@ -87,7 +87,7 @@ impl Request
             method: header.method.clone(),
             uri: header.uri.clone(),
             state: state,
-            
+
             // Wrap in RwLocks for shared async mutation
             status: RwLock::new(http::StatusCode::OK),
             params: RwLock::new(params),
@@ -142,6 +142,7 @@ impl Request
 
     // Get status
     pub fn status(&self) -> RwLockReadGuard<'_, http::StatusCode> {
+        self.mark_dynamic();
         self.inner.status.read()
     }
 
@@ -152,15 +153,24 @@ impl Request
 
     // Get request method
     #[inline]
-    pub fn method(&self) -> &http::Method { &self.inner.method }
+    pub fn method(&self) -> &http::Method { 
+        self.mark_dynamic();
+        &self.inner.method
+     }
     
     // Get URI struct
     #[inline]
-    pub fn uri(&self) -> &http::Uri { &self.inner.uri }
+    pub fn uri(&self) -> &http::Uri { 
+        self.mark_dynamic();
+        &self.inner.uri
+    }
     
     // Get Request id
     #[inline]
-    pub fn request_id(&self) -> &str { &self.inner.id }
+    pub fn request_id(&self) -> &str { 
+        self.mark_dynamic();
+        &self.inner.id
+    }
 
     // -- Cookies --
 
@@ -233,6 +243,7 @@ impl Request
     // Get Header
     #[inline]
     pub fn header(&self, name: &str) -> Option<String> {
+        self.mark_dynamic();
         self.inner.headers.read()
             .get(name)
             .and_then(|v| v.to_str().ok())
@@ -241,6 +252,7 @@ impl Request
 
     // Get Read Guard to Headers
     pub fn headers_raw(&self) -> RwLockReadGuard<'_, http::HeaderMap> {
+        self.mark_dynamic();
         self.inner.headers.read()
     }
 
@@ -253,6 +265,7 @@ impl Request
 
     // Set Header
     pub fn set_header(&self, name: &str, value: impl TryInto<http::HeaderValue>) -> Result<(), HeaderError> {
+        self.mark_dynamic();
         let value = value.try_into().map_err(|_| HeaderError::InvalidValue)?;
         let name = http::HeaderName::from_bytes(name.as_bytes())
             .map_err(|_| HeaderError::InvalidName)?;
@@ -264,6 +277,7 @@ impl Request
 
     /// Remove all headers with the given name.
     pub fn remove_header(&self, name: &str) -> bool {
+        self.mark_dynamic();
         let name = match http::HeaderName::from_bytes(name.as_bytes()) {
             Ok(n) => n,
             Err(_) => return false,
@@ -275,6 +289,7 @@ impl Request
 
     // Append Header
     pub fn append_header(&self, name: &str, value: impl TryInto<http::HeaderValue>) -> Result<(), HeaderError> {
+        self.mark_dynamic();
         let value = value.try_into().map_err(|_| HeaderError::InvalidValue)?;
         let name = http::HeaderName::from_bytes(name.as_bytes())
             .map_err(|_| HeaderError::InvalidName)?;
@@ -287,12 +302,14 @@ impl Request
     // Check Header
     #[inline]
     pub fn has_header(&self, name: &str) -> bool {
+        self.mark_dynamic();
         self.inner.headers.read().contains_key(name)
     }
 
     // Get all headers
     #[inline]
     pub fn header_all(&self, name: &str) -> Vec<String> {
+        self.mark_dynamic();
         self.inner.headers.read()
             .get_all(name)
             .iter()
@@ -316,6 +333,7 @@ impl Request
 
     // Set Query (Mostly won't be used)
     pub fn set_query(&self, key: &str, value: String) {
+        self.mark_dynamic();
         self.mark_modified();
         self.inner.query.write().insert(key.to_string(), value);
     }
@@ -338,6 +356,7 @@ impl Request
 
     // Set Param
     pub fn set_param(&self, key: &str, value: Vec<String>) {
+        self.mark_dynamic();
         self.mark_modified();
         self.inner.params.write().insert(key.to_string(), value);
     }
@@ -379,11 +398,13 @@ impl Request
 
     // Get Read guard Metadata
     pub fn metadata(&self) -> RwLockReadGuard<'_, RouteMetadata> {
+        self.mark_dynamic();
         self.inner.metadata.read()
     }
 
     // Get write guard to metadata
     pub fn metadata_mut(&self) -> RwLockWriteGuard<'_, RouteMetadata> {
+        self.mark_dynamic();
         self.mark_modified();
         self.inner.metadata.write()
     }

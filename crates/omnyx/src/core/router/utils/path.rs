@@ -49,6 +49,24 @@ impl Path {
         }
         pattern
     }
+
+    pub fn split_optional_catch_all(&self) -> Option<(String, String)> {
+        if let Some(PathSegment::OptionalCatchAll(_)) = self.segments.last() {
+            // Full pattern with catch‑all (e.g., "/user/{*slug}")
+            let full_pattern = self.to_matchit_pattern();
+            // Build pattern without the last segment
+            let base_segments = &self.segments[..self.segments.len() - 1];
+            let mut base_path = String::new();
+            for seg in base_segments {
+                base_path.push('/');
+                base_path.push_str(&seg.to_matchit_single());
+            }
+            if base_path.is_empty() { base_path = "/".to_string(); }
+            Some((base_path, full_pattern))
+        } else {
+            None
+        }
+    }
 }
 
 impl PathSegment {

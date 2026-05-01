@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper};
+use crate::collections::LinearMap;
+use crate::core::{ErrorComponent, ErrorComponentWrapper, LayoutComponent, LayoutComponentWrapper, LoaderComponent, LoaderComponentWrapper};
 use crate::core::router::registry::{ParallelRouteNode};
-use crate::core::router::builder::types::layout::{ParallelRouteBuilder, ParallelRouteCollection, ParallelRouteRoot};
+use crate::core::router::builder::types::layout::{ParallelRouteBuilder};
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedLoaderComponent, ErasedErrorComponent};
 
 
@@ -14,8 +15,7 @@ pub struct ParallelRouteLayoutDefination {
     pub(crate) controller: Option<Arc<dyn ErasedLayoutComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
-    pub(crate) parallel_routes: HashMap<String, ParallelRouteNode>, 
+    pub(crate) parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>, 
     pub(crate) children: Vec<ParallelRouteNode>,
 }
 
@@ -63,41 +63,35 @@ impl ParallelRouteLayoutDefination {
         self.loader_controller = Some(Arc::new(wrapper));
         self
     }
-
-    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
-    where
-        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
-        Args: 'static + Clone + Send + Sync,
-    {
-        let wrapper = NotFoundComponentWrapper {
-            handler,
-            _marker: PhantomData,
-        };
-
-        self.not_found_controller = Some(Arc::new(wrapper));
-        self
-    }
     
     pub fn parallel_route<F>(mut self, id: impl Into<String>, f: F) -> Self 
     where 
-        F: FnOnce(ParallelRouteBuilder<ParallelRouteRoot>) -> ParallelRouteBuilder<ParallelRouteRoot> 
+        F: FnOnce(ParallelRouteBuilder) -> ParallelRouteBuilder 
     {
-        let final_builder = f(ParallelRouteBuilder { context: ParallelRouteRoot { node: None } });
+        let final_builder = f(ParallelRouteBuilder::new());
 
-        if let Some(node) = final_builder.context.node {
-            self.parallel_routes.insert(id.into(), node);
-        }
+        self.parallel_routes.insert(id.into(), final_builder.root_nodes);
         self
     }
 
     pub(crate) fn children<F>(mut self, f: F) -> Self 
     where 
-        F: FnOnce(ParallelRouteBuilder<ParallelRouteCollection>) -> ParallelRouteBuilder<ParallelRouteCollection> 
+        F: FnOnce(ParallelRouteBuilder) -> ParallelRouteBuilder 
     {
-        let final_router = f(ParallelRouteBuilder { context: ParallelRouteCollection { root_nodes: Vec::new() } });
+        let final_router = f(ParallelRouteBuilder::new());
 
-        self.children.extend(final_router.context.root_nodes);
+        self.children.extend(final_router.root_nodes);
         self
     }
 
+    pub fn into_parallel_route_node(self) -> ParallelRouteNode {
+        ParallelRouteNode::Layout {
+            children: self.children,
+            controller: self.controller,
+            error_controller: self.error_controller,
+            loader_controller: self.loader_controller,
+            id: self.id,
+            parallel_routes: self.parallel_routes,
+        }
+    }
 }

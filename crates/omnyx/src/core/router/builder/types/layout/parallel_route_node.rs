@@ -1,63 +1,55 @@
 use std::collections::HashMap;
 
+use crate::collections::LinearMap;
 use crate::core::router::registry::{ParallelRouteNode};
 use crate::core::router::utils::Path;
 use crate::core::router::builder::types::layout::{ParallelRoutePageDefination, ParallelRouteLayoutDefination};
 
-pub trait ParallelRouteContainer {
-    type Output;
-    fn collect(&mut self, node: ParallelRouteNode);
-}
-
-pub struct ParallelRouteRoot {
-    pub node: Option<ParallelRouteNode>
-}
-
-impl ParallelRouteContainer for ParallelRouteRoot {
-    type Output = ParallelRouteNode;
-    fn collect(&mut self, node: ParallelRouteNode) {
-        self.node = Some(node);
-    }
-}
-
-pub struct ParallelRouteCollection {
+pub struct ParallelRouteBuilder {
     pub root_nodes: Vec<ParallelRouteNode>
 }
 
-impl ParallelRouteContainer for ParallelRouteCollection {
-    type Output = Vec<ParallelRouteNode>;
-    fn collect(&mut self, node: ParallelRouteNode) {
-        self.root_nodes.push(node);
+impl ParallelRouteBuilder {
+
+    pub fn new() -> Self {
+        Self {
+            root_nodes: Vec::new()
+        }
     }
-}
 
-pub struct ParallelRouteBuilder<C: ParallelRouteContainer> {
-    pub(crate) context: C
-}
-
-impl<C: ParallelRouteContainer> ParallelRouteBuilder<C> {
-
-    pub fn page(&self, path: impl Into<String>) -> ParallelRoutePageDefination {
-        ParallelRoutePageDefination {
+    pub fn page<F>(mut self, path: impl Into<String>, f: F) -> Self
+    where
+        F: FnOnce(ParallelRoutePageDefination) -> ParallelRoutePageDefination
+    {
+        let page = ParallelRoutePageDefination {
             path: Path::from_str(&path.into()),
             controller: None,
             error_controller: None,
             loader_controller: None,
-            not_found_controller: None,
             children: Vec::new(),
-        }
+        };
+
+        let s = f(page);
+        self.root_nodes.push(s.into_parallel_route_node());
+        self
     }
 
-    pub fn layout(&self, id: impl Into<String>) -> ParallelRouteLayoutDefination {
-        ParallelRouteLayoutDefination {
+    pub fn layout<F>(mut self, id: impl Into<String>, f: F) -> Self
+    where
+        F: FnOnce(ParallelRouteLayoutDefination) -> ParallelRouteLayoutDefination 
+    {
+        let layout = ParallelRouteLayoutDefination {
             id: id.into(),
             controller: None,
             loader_controller: None,
             error_controller: None,
-            not_found_controller: None,
-            parallel_routes: HashMap::new(),
+            parallel_routes: LinearMap::new(),
             children: Vec::new(), 
-        }
+        };
+
+        let s = f(layout);
+        self.root_nodes.push(s.into_parallel_route_node());
+        self
     }
 
 }

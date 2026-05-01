@@ -9,14 +9,13 @@ use crate::core::router::handlers::{
 use crate::core::router::logic::{Middleware, RouteMetadata};
 use crate::core::router::registry::RouteNode;
 use crate::core::router::utils::Path;
-use crate::core::{ErasedNotFoundComponent, ErrorComponent, ErrorComponentWrapper, LoaderComponent, LoaderComponentWrapper, NotFoundComponent, NotFoundComponentWrapper, PageComponent, PageComponentWrapper};
+use crate::core::{ErrorComponent, ErrorComponentWrapper, LoaderComponent, LoaderComponentWrapper, PageComponent, PageComponentWrapper};
 
 pub struct PageDefinition {
     pub(crate) path: Path,
     pub(crate) controllers: LinearMap<http::Method, Arc<dyn ErasedPageComponent>>,
     pub(crate) error_controller: Option<Arc<dyn ErasedErrorComponent>>,
     pub(crate) loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-    pub(crate) not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
     
     pub(crate) metadata: Option<RouteMetadata>,
     pub(crate) children: Vec<RouteNode>,
@@ -62,20 +61,6 @@ impl PageDefinition {
         };
 
         self.error_controller = Some(Arc::new(wrapper));
-        self
-    }
-
-    pub fn not_found_handler<H, Args>(mut self, handler: H) -> Self 
-    where
-        H: NotFoundComponent<Args> + Clone + Send + Sync + 'static,
-        Args: 'static + Clone + Send + Sync,
-    {
-        let wrapper = NotFoundComponentWrapper {
-            handler,
-            _marker: PhantomData,
-        };
-
-        self.not_found_controller = Some(Arc::new(wrapper));
         self
     }
 
@@ -125,7 +110,6 @@ impl PageDefinition {
             controllers: self.controllers,
             error_controller: self.error_controller,
             loader_controller: self.loader_controller,
-            not_found_controller: self.not_found_controller,
             metadata: self.metadata,
             children: self.children,
             extensions: self.extensions,

@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::collections::LinearMap;
-use crate::core::ErasedNotFoundComponent;
 use crate::core::router::handlers::{ErasedLayoutComponent, ErasedPageComponent, ErasedErrorComponent, ErasedLoaderComponent};
 use crate::core::router::utils::Path;
 
@@ -12,7 +11,6 @@ pub enum ParallelRouteNode {
         controller: Option<Arc<dyn ErasedPageComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
         children: Vec<ParallelRouteNode>,
     },
 
@@ -21,8 +19,7 @@ pub enum ParallelRouteNode {
         controller: Option<Arc<dyn ErasedLayoutComponent>>,
         error_controller: Option<Arc<dyn ErasedErrorComponent>>,
         loader_controller: Option<Arc<dyn ErasedLoaderComponent>>,
-        not_found_controller: Option<Arc<dyn ErasedNotFoundComponent>>,
-        parallel_routes: LinearMap<String, ParallelRouteNode>, 
+        parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>, 
         children: Vec<ParallelRouteNode>,
     }
 }

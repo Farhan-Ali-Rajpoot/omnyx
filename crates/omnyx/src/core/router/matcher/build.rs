@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::collections::LinearMap;
+use crate::core::{ParallelRouteMatcher, Request, Response};
 use crate::core::router::logic::{Middleware, RouteMetadata};
 use crate::core::router::registry::Extensions;
 use crate::core::router::registry::ParallelRouteNode;
@@ -23,8 +24,8 @@ pub struct RouteBakeContext {
 
 #[derive(Clone)]
 pub struct ParallelRouteBakeContext {
+    pub path: String,            // absolute path prefix from parent layout (e.g., "/dashboard")
     pub slot_name: String,            // e.g., "sidebar", "header"
-    pub base_path: String,            // absolute path prefix from parent layout (e.g., "/dashboard")
     pub layouts: Vec<Arc<Layout>>,    // layouts inside this slot
 }
 
@@ -63,19 +64,11 @@ impl RouteMatcher {
                 controllers,
                 error_controller,
                 loader_controller,
-                not_found_controller,
                 metadata,
                 children,
                 middlewares,
                 extensions,
             } => {
-                // Pages cannot have children (Next.js semantics)
-                if !children.is_empty() {
-                    return Err(RouteError::InvalidRoute(
-                        "Page node cannot have children. Use a Layout folder instead.".into(),
-                    ));
-                }
-
                 let mut current_ctx = ctx.clone();
                 current_ctx.path = join_paths(&ctx.path, &path.to_matchit_pattern());
                 current_ctx.middlewares.extend(middlewares);
@@ -83,26 +76,49 @@ impl RouteMatcher {
                 if let Some(meta) = metadata {
                     current_ctx.metadata.update_from_child(&meta);
                 }
-
+            
                 if !controllers.is_empty() {
                     let page_endpoint = PageEndpoint {
-                        controllers,
-                        loader_controller,
-                        error_controller,
-                        not_found_controller,
+                        controllers: controllers.clone(),
+                        loader_controller: loader_controller.clone(),
+                        error_controller: error_controller.clone(),
                         layouts: current_ctx.layouts.clone(),
                         metadata: current_ctx.metadata.clone(),
                     };
-
-                    let entry = RouteEntry {
+                
+                    let base_entry = RouteEntry {
                         matched_pattern: current_ctx.path.clone(),
                         middlewares: current_ctx.middlewares.clone(),
                         extensions: current_ctx.extensions.clone(),
-                        kind: RouteKind::Page(page_endpoint),
+                        kind: RouteKind::Page(page_endpoint.clone()),
                     };
-
-                    // Assuming router.resolve returns Err on duplicate
-                    router.resolve(&current_ctx.path, entry)?;
+                    router.resolve(&current_ctx.path, base_entry)?;
+                
+                    // Optional catch‑all expansion
+                    if let Some((base_pattern, full_pattern)) = path.split_optional_catch_all() {
+                        // The base_pattern (without catch‑all) might be the same as current_ctx.path
+                        // if the path already had the optional segment. But we need to insert the full pattern.
+                        let full_route_path = join_paths(&ctx.path, &full_pattern);
+                        let full_page_endpoint = PageEndpoint {
+                            controllers,
+                            loader_controller,
+                            error_controller,
+                            layouts: current_ctx.layouts.clone(),
+                            metadata: current_ctx.metadata.clone(),
+                        };
+                        let full_entry = RouteEntry {
+                            matched_pattern: full_route_path.clone(),
+                            middlewares: current_ctx.middlewares.clone(),
+                            extensions: current_ctx.extensions.clone(),
+                            kind: RouteKind::Page(full_page_endpoint),
+                        };
+                        router.resolve(&full_route_path, full_entry)?;
+                    }
+                }
+            
+                // Recursively bake children
+                for child in children {
+                    Self::bake_route_recursive(child, router, current_ctx.clone())?;
                 }
             }
             RouteNode::Api {
@@ -137,10 +153,9 @@ impl RouteMatcher {
                 controller,
                 error_controller,
                 loader_controller,
-                not_found_controller,
                 metadata,
                 children,
-                parallel_routes,
+                parallel_routes,  // now LinearMap<String, Vec<ParallelRouteNode>>
                 extensions,
                 middlewares,
             } => {
@@ -150,31 +165,31 @@ impl RouteMatcher {
                 if let Some(meta) = metadata {
                     current_ctx.metadata.update_from_child(&meta);
                 }
-
-                // Build the layout object, which will be pushed onto the layout stack
+            
                 let mut current_layout = Layout {
-                    id,
+                    base_path: current_ctx.path.clone(),
                     controller,
                     error_controller,
                     loader_controller,
-                    not_found_controller,
-                    parallel_routes: LinearMap::new(), // now keyed by slot name (String)
+                    parallel_routers: LinearMap::new(),
                 };
-
-                // Bake parallel routes WITHIN this layout – pass the current accumulated path as base
-                for (slot_name, node) in parallel_routes {
-                    let parallel_ctx = ParallelRouteBakeContext {
-                        slot_name: slot_name.clone(),
-                        base_path: current_ctx.path.clone(),
-                        layouts: Vec::new(),
-                    };
-                    bake_parallel_route_recursive(node, &mut current_layout, parallel_ctx)?;
+            
+                // For each slot, build a single matcher from all its nodes
+                for (slot_name, nodes) in parallel_routes {
+                    let mut slot_matcher = ParallelRouteMatcher::new();
+                    // Insert each top‑level node into the same matcher
+                    for node in nodes {
+                        bake_parallel_route_recursive(node, &mut slot_matcher, ParallelRouteBakeContext {
+                            slot_name: slot_name.clone(),
+                            path: current_ctx.path.clone(),
+                            layouts: Vec::new(),
+                        })?;
+                    }
+                    current_layout.parallel_routers.insert(slot_name, Arc::new(slot_matcher));
                 }
-
-                // Push this layout onto the context for descendant pages (and parallel routes)
+            
                 current_ctx.layouts.push(Arc::new(current_layout));
-
-                // Recurse into normal children (e.g., nested folders)
+            
                 for child in children {
                     Self::bake_route_recursive(child, router, current_ctx.clone())?;
                 }
@@ -200,13 +215,12 @@ impl RouteMatcher {
         Ok(())
     }
 }
-
-/// Bakes a parallel route tree into the parent `Layout`’s `parallel_routes` map.
-/// Each slot stores its routes keyed by the **full path** (base_path + child path).
-/// At request time, you can match the request path against this map to find the parallel route leaf.
+/// Bakes a parallel route tree into a `ParallelRouteMatcher` for a single slot.
+/// `ctx.path` is the absolute path prefix of the parent layout (e.g., "/dashboard").
+/// This prefix is **not** used as part of the slot’s route keys.
 fn bake_parallel_route_recursive(
     node: ParallelRouteNode,
-    layout: &mut Layout,
+    matcher: &mut ParallelRouteMatcher,
     ctx: ParallelRouteBakeContext,
 ) -> Result<(), RouteError> {
     match node {
@@ -215,74 +229,70 @@ fn bake_parallel_route_recursive(
             controller,
             error_controller,
             loader_controller,
-            not_found_controller,
             children,
         } => {
-            // Pages in parallel routes cannot have children either.
-            if !children.is_empty() {
-                return Err(RouteError::InvalidRoute(
-                    "Parallel route page cannot have children".into(),
-                ));
-            }
-
-            let full_path = join_paths(&ctx.base_path, &path.to_matchit_pattern());
+            let mut raw_path = path.to_matchit_pattern();
+            let full_pattern = if raw_path.is_empty() { "/".to_string() } else { raw_path };
             let parallel_route = ParallelRoute {
-                controller,
-                error_controller,
-                loader_controller,
-                not_found_controller,
+                matched_pattern: full_pattern.clone(),
+                controller: controller.clone(),
+                error_controller: error_controller.clone(),
+                loader_controller: loader_controller.clone(),
                 layouts: ctx.layouts.clone(),
             };
-
-            // Store the parallel route under its slot name.
-            // Note: If a slot defines multiple pages (e.g., @sidebar/profile and @sidebar/settings),
-            // the map will hold one entry per full path – but lookup needs to match the exact request path.
-            // Alternative: store a separate RouteMatcher per slot. This simple map works if you iterate
-            // over entries and find the one whose key matches the request path prefix.
-            layout
-                .parallel_routes
-                .insert(ctx.slot_name.clone(), parallel_route);
-            // ^^^ Caution: this overwrites previous entries for the same slot name.
-            // For multiple pages per slot, you'd need a map from path to route, or a small matcher.
-            // I'm keeping the original signature but note this limitation.
-            // Better fix: change `Layout::parallel_routes` to `LinearMap<String, LinearMap<String, ParallelRoute>>`
-            // or `LinearMap<String, RouteMatcher>`. I'll leave a comment.
+            // Insert the full pattern (catch‑all)
+            matcher.resolve(&full_pattern, parallel_route.clone())?;
+        
+            // If there is an optional catch‑all, insert the base path as well.
+            if let Some((base_pattern, _)) = path.split_optional_catch_all() {
+                // Insert base pattern (e.g., "/") only if it's not already present? We'll just insert.
+                // The router will keep the last inserted for duplicates; we want the base pattern to resolve to the same component.
+                matcher.resolve(&base_pattern, parallel_route)?;
+            }
+        
+            // Recurse into children (they already have their own paths)
+            for child in children {
+                bake_parallel_route_recursive(child, matcher, ctx.clone())?;
+            }
         }
         ParallelRouteNode::Layout {
             id,
             controller,
             error_controller,
             loader_controller,
-            not_found_controller,
             parallel_routes,
             children,
         } => {
+            // This layout will wrap pages inside the slot.
             let mut inner_layout = Layout {
-                id,
+                base_path: ctx.path.clone(),
                 controller,
                 error_controller,
                 loader_controller,
-                not_found_controller,
-                parallel_routes: LinearMap::new(),
+                parallel_routers: LinearMap::new(),
             };
 
-            // Recurse into nested parallel routes (inside this parallel layout)
-            for (slot_name, node) in parallel_routes {
-                let child_ctx = ParallelRouteBakeContext {
-                    slot_name: slot_name.clone(),
-                    base_path: ctx.base_path.clone(), // same base path; path is built inside pages
-                    layouts: ctx.layouts.clone(),
-                };
-                bake_parallel_route_recursive(node, &mut inner_layout, child_ctx)?;
-            }
+            // Build matchers for any *nested parallel slots* inside this layout.
+            for (slot_name, nodes) in parallel_routes {
+                    let mut slot_matcher = ParallelRouteMatcher::new();
+                    // Insert each top‑level node into the same matcher
+                    for node in nodes {
+                        bake_parallel_route_recursive(node, &mut slot_matcher, ParallelRouteBakeContext {
+                            slot_name: slot_name.clone(),
+                            path: ctx.path.clone(),
+                            layouts: Vec::new(),
+                        })?;
+                    }
+                    inner_layout.parallel_routers.insert(slot_name, Arc::new(slot_matcher));
+                }
 
-            // Push this parallel layout onto the context's layout stack for deeper pages
+            // Push this layout onto the layout stack for deeper pages in the same slot.
             let mut new_ctx = ctx.clone();
             new_ctx.layouts.push(Arc::new(inner_layout));
 
-            // Recurse into children pages of this parallel layout
+            // Recurse into children pages (which belong to the same slot)
             for child in children {
-                bake_parallel_route_recursive(child, layout, new_ctx.clone())?;
+                bake_parallel_route_recursive(child, matcher, new_ctx.clone())?;
             }
         }
     }
