@@ -1,6 +1,6 @@
 [package]
 name = "omnyx"
-version = "0.0.13"
+version = "0.0.14"
 edition = "2024"
 description = "Omnyx - Web Framework With Nextjs like Routing"
 license = "MIT"
