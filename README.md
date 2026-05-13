@@ -1,14 +1,36 @@
-# **The Next.js-inspired Full-Stack Framework for Rust.**
+# Omnyx (Experimental R&D Archive)
 
-Omnyx is a research-driven, full-stack framework designed to bring the structural layout mechanics and file-system developer experience (DX) of modern frameworks like Next.js into the high-performance world of Rust. It features a custom client-side runtime that leverages absolute coordinate-based DOM patching to achieve precise reactivity completely free of a Virtual DOM.
+**An experimental attempt to explore Next.js-inspired frontend architecture inside Rust using WebAssembly (Wasm).**
+
+Omnyx was a research project built to test whether modern frontend concepts like:
+
+- Nested layouts
+- Reactive UI patching
+- Server/client rendering coordination
+- Lightweight rendering pipelines
+
+could work efficiently in a Rust-native full-stack environment.
+
+Instead of using a Virtual DOM, Omnyx implemented a custom coordinate-based DOM patching runtime written for WebAssembly.
+
+The goal was simple:
+
+> Explore whether Rust could realistically power modern frontend systems beyond backend infrastructure.
 
 [![Crates.io](https://img.shields.io/crates/v/omnyx.svg)](https://crates.io/crates/omnyx)
 
 ---
 
-# 🚀 Test This Library
+> [!WARNING]
+> ## Project Status: Archived Experimental Prototype
+>
+> Omnyx is preserved only as a research experiment and proof-of-concept.
+>
+> This project ultimately concluded that Rust is excellent for backend systems and infrastructure engineering, but currently not practical for large-scale frontend ecosystem development.
 
-To explore the architecture, audit the custom rendering engine, or test the routing core, add Omnyx to your project:
+---
+
+# 🚀 Try the Prototype
 
 ```bash
 cargo add omnyx
@@ -16,148 +38,102 @@ cargo add omnyx
 
 ---
 
-# 💡 Why This Project Was Started
+# 💡 Why This Experiment Started
 
-Omnyx was born out of frustration with the modern JavaScript frontend landscape. The reliance on heavy single-page application (SPA) architectures and the "reactive magic" of traditional frameworks (like React hooks, complex global state management, and the Virtual DOM) introduces a severe abstraction tax.
+Modern frontend frameworks heavily rely on runtime abstractions:
 
-The Virtual DOM spends valuable CPU cycles diffing massive memory trees in the browser environment, leading to performance degradation on complex dashboards and data-heavy applications.
+- Virtual DOM diffing
+- Reactive hooks
+- Hydration systems
+- Large client-side state engines
 
-The initial mission of Omnyx was to prove that you could have the best of both worlds:
+Omnyx attempted to explore a lower-level alternative using Rust + Wasm.
 
-## The Modern DX
-
-- File-system style routing
-- Structural layout inheritance
-- Parallel routes
-- Nested view state
-
-## Systems-Level Efficiency
-
-- Native Rust engine compiling to WebAssembly (Wasm)
-- No Virtual DOM
-- Bare-metal rendering efficiency
+The runtime used direct coordinate-based DOM patching instead of Virtual DOM tree diffing in order to reduce browser overhead and improve rendering efficiency.
 
 ---
 
-# 🛠 Architectural Blueprint & Core Features
+# 🛠 What the Experiment Discovered
 
-To achieve this, the framework moved away from traditional reactivity and implemented a custom addressing system:
+From a pure performance standpoint, the architecture worked.
 
-## Nested Layout Inheritance
+The real problem was not speed.
 
-First-class support for hierarchical UI layouts directly mapped onto Rust’s strict compile-time ownership and lifetime models.
+The real problem was the frontend ecosystem.
 
-## Coordinate-Based Patching
+Modern frontend engineering depends on massive JavaScript ecosystems that simply do not exist in Rust-Wasm environments.
 
-Instead of a Virtual DOM, Omnyx maps components using precise, absolute identifier coordinates.
+Examples:
 
-Example:
-
-```text
-L1 -> Layout 1
-S1 -> Section 1
-P1 -> Patch 1
-```
-
-The client-side runtime uses these coordinates for surgical DOM reconciliation and direct patching, making state updates incredibly lightweight.
-
-## Bare-Metal Core
-
-Built to utilize zero-copy serialization mechanisms to process data payloads between the server and client with minimal allocation overhead.
-
-## Auth-Ready Flow Architecture
-
-Native architectural entry points designed to handle secure, low-overhead session tracking and professional-grade authentication natively within a systems context.
-
----
-
-# 🛑 Why This Project Was Stopped (Experimental Findings)
-
-While the core coordinate routing and layout compilation work successfully, building complex production web applications on the framework revealed critical ecosystem constraints.
-
----
-
-# 1. The Frontend Library Tax
-
-Modern user interfaces require thousands of specialized, highly polished components developers take for granted in the JavaScript ecosystem.
-
-## Examples
-
-### UI & Design Primitives
-
+- `three.js` for 3D rendering
 - `react-icons`
 - `lucide-react`
+- charting libraries
+- animation engines
+- accessibility systems
+- mature UI component ecosystems
 
-### Accessible Component Engines
+In JavaScript/React ecosystems, these tools are instantly available.
 
-- TanStack Table
-- Headless state machines
-- ARIA accessibility systems
+In Rust frontend development, developers are forced to manually build basic UI infrastructure from scratch.
 
-> In Rust-Wasm, these primitives simply do not exist at ecosystem scale.
-
-An engineer building a SaaS application is forced to spend enormous engineering velocity rebuilding foundational UI infrastructure.
-
----
-
-# 2. The "Canvas Tax" on Data Visualization
-
-Building modern corporate dashboards requires advanced data representation:
-
-- Real-time graphs
-- Charts
-- Maps
-- Tooltips
-- Interactive rendering
-
-In pure Rust, this often means manual Canvas API interaction or low-level SVG manipulation.
-
-Compared to React chart ecosystems, the productivity gap is substantial.
+Even simple frontend tasks become expensive engineering problems.
 
 ---
 
-# ⚖️ The Engineering Verdict
+# ⚖️ Final Conclusion
 
-## ❌ Suboptimal: Global Web SaaS & Dashboards
+This experiment led to a very clear engineering conclusion:
 
-For consumer platforms, dashboards, and public-facing web products:
+## Rust Wins the Backend
 
-### Best Stack
+Rust is exceptional for:
 
-- Rust backend engine
-- TypeScript/React frontend shell
+- High-performance backend servers
+- Infrastructure systems
+- Databases
+- Networking
+- Concurrent systems
+- APIs
+- Systems programming
 
-This provides:
-
-- Maximum iteration speed
-- Massive UI ecosystem access
-- Faster product delivery
-
----
-
-## ⚙️ Optimal: Single-Binary Utilities & Local Clouds
-
-Rust-native frontend compilation excels for:
-
-- Embedded system GUIs
-- Database dashboards
-- Hardware monitoring panels
-- Air-gapped infrastructures
-- Localhost-only software
-
-In these environments, deployment simplicity outweighs ecosystem limitations.
+Rust belongs in the engine layer.
 
 ---
 
-# 🏁 Current Status
+## JavaScript Wins the Frontend
 
-Omnyx is preserved as a proof-of-concept and open-source research archive exploring:
+JavaScript remains the dominant frontend language because its ecosystem is unmatched.
 
-- Coordinate-based rendering pipelines
-- Zero-VDOM UI state tracking
-- Absolute routing algorithms
+Frontend development today depends heavily on:
 
-Developers are encouraged to clone, audit, and experiment with the architecture.
+- UI libraries
+- Rendering engines
+- Browser tooling
+- Design systems
+- Visualization frameworks
+- Rapid iteration ecosystems
+
+Frameworks like React and Next.js succeed not only because of the language, but because of the ecosystem surrounding them.
+
+That ecosystem currently cannot be replicated in Rust.
+
+---
+
+# 🏁 Lessons Learned
+
+Omnyx proved that low-level frontend rendering in Rust is technically possible.
+
+But it also proved that frontend development is fundamentally ecosystem-driven, not just performance-driven.
+
+The best modern architecture is often:
+
+- Rust for backend systems
+- JavaScript/TypeScript for frontend interfaces
+
+Rust builds the machine.
+
+JavaScript builds the dashboard.
 
 ---
 
