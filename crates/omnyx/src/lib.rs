@@ -6,6 +6,7 @@ mod config;
 
 
 pub use include_dir;
+pub use rscx;
 
 pub mod router {
     pub use crate::core::router::Router;

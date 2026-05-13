@@ -180,13 +180,21 @@ impl RouteMetadata {
     }
 
     // --- Custom meta / link tags ---
-    pub fn add_meta(mut self, tag: MetaTag) -> Self {
-        self.custom_meta.push(tag);
+    pub fn add_meta<T>(mut self, f: T) -> Self
+    where
+        T: FnOnce(MetaTag) -> MetaTag,
+    {
+        let meta_tag = f(MetaTag::new());
+        self.custom_meta.push(meta_tag);
         self
     }
 
-    pub fn add_link(mut self, tag: LinkTag) -> Self {
-        self.custom_links.push(tag);
+    pub fn add_link<T>(mut self, f: T) -> Self 
+    where
+        T: FnOnce(LinkTag) -> LinkTag,
+    {
+        let link_tag = f(LinkTag::new());
+        self.custom_links.push(link_tag);
         self
     }
 

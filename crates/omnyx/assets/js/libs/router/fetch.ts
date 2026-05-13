@@ -27,7 +27,7 @@ export async function fetchPage(
   });
   const res: Response = await result.json();
 
-  const doc = new DOMParser().parseFromString(res, "text/html");
+  const doc = new DOMParser().parseFromString("", "text/html");
 
   const container = doc.querySelector(containerSelector);
 

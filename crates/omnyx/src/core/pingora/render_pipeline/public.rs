@@ -8,7 +8,7 @@ use crate::core::PingoraAdapter;
 impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
 
     /// Handles requests to the embedded public directory (via include_dir).
-    pub async fn handle_public_response(&self, session: &mut Session, path: &str) -> pingora::Result<bool> {
+    pub async fn serve_public_directory(&self, session: &mut Session, path: &str) -> pingora::Result<bool> {
         if !path.starts_with("/public") {
             return Ok(false);
         }

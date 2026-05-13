@@ -26,7 +26,14 @@ pub fn home_router() -> Router {
                             { &sidebar.html }
                             <Footer class=None />
                         </div>
-                    }
+                    };
+
+                    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+
+                    Err::<&str, &str>("Layout-Error")
+                })
+                .error_handler(async move || {
+                    "Error occured in layout"
                 })
                 .parallel_route("@sidebar", |r| {
                     r
@@ -34,12 +41,12 @@ pub fn home_router() -> Router {
                         page
                         .handler(|| async move { Err::<&str, &str>("z") })
                         .loader_handler(|| async move { html!{ "Loading Sidebar"} })
-                        .error_handler(|| async move { html! { "Error-Sidebar" } })
+                        .error_handler(|| async move { Err::<&str, &str>("z") })
                         .children(|r| {
                             r
                             .page("/user", |page| {
                                 page
-                                .handler(|| async move {    html! { User_Sidebar }  })
+                                .handler(|| async move {  tokio::time::sleep(std::time::Duration::from_secs(3)).await;   html! { User_Sidebar }  })
                                 .loader_handler(|| async move { html! { "Loading User_Sidebar "}})
                                 .error_handler(|| async move { html! { "Error User_Sidebar"}})
                             })
@@ -58,7 +65,7 @@ pub fn home_router() -> Router {
                                 .page("/user", |page|  {
                                     page
                                     .method("GET", || async move {
-                                        Err::<&str, &str>("E")
+                                        tokio::time::sleep(std::time::Duration::from_secs(3)).await; Err::<&str, &str>("E")
                                     })
                                     .loader_handler(|| async move {
                                         "Loading User"

@@ -13,7 +13,8 @@ pub struct RenderedParallelRoute {
 #[derive(Debug, Clone, Default)]
 pub struct LayoutProps {
     pub children: String,                  
-    pub parallel_routes: LinearMap<String, RenderedParallelRoute>,      
+    pub parallel_routes: LinearMap<String, RenderedParallelRoute>,     
+    pub node_id: String,
 }
 
 impl LayoutProps {

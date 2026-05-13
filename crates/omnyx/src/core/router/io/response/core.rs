@@ -31,8 +31,10 @@ impl Body {
             Body::Json(v) => v.to_string(), 
             
             Body::Bytes(b) => String::from_utf8_lossy(&b).into_owned(),
+
+            Body::Err(v) => v,
             
-            Body::Redirect(_) | Body::Empty | Body::Err(_) => String::new(),
+            Body::Redirect(_) | Body::Empty => String::new(),
         }
     }
 

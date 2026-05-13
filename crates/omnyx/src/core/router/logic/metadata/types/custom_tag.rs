@@ -17,6 +17,37 @@ pub struct MetaTag {
 }
 
 impl MetaTag {
+
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn name(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.name = Some(value.into());
+        self
+    }
+
+    pub fn property(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.property = Some(value.into());
+        self
+    }
+
+    pub fn http_equiv(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.http_equiv = Some(value.into());
+        self
+    }
+
+    pub fn content(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.content = Some(value.into());
+        self
+    }
+
+    pub fn charset(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.charset = Some(value.into());
+        self
+    }
+
+    
     /// Renders the meta tag as a valid HTML string.
     /// Handles charset specially (self-closing tag without content).
     pub fn render_html(&self) -> String {
@@ -135,6 +166,57 @@ pub struct LinkTag {
 }
 
 impl LinkTag {
+
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn rel(mut self, rel: impl Into<Cow<'static, str>>) -> Self {
+        self.rel = Some(rel.into());
+        self
+    }
+
+    pub fn href(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.href = Some(value.into());
+        self
+    }
+
+    pub fn r#type(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.type_ = Some(value.into());
+        self
+    }
+
+    pub fn sizes(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.sizes = Some(value.into());
+        self
+    }
+
+    pub fn media(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.media = Some(value.into());
+        self
+    }
+
+    pub fn integrity(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.integrity = Some(value.into());
+        self
+    }
+
+    pub fn crossorigin(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.crossorigin = Some(value.into());
+        self
+    }
+
+    pub fn referrerpolicy(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.referrerpolicy = Some(value.into());
+        self
+    }
+    
+    pub fn as_(mut self, value: impl Into<Cow<'static, str>>) -> Self {
+        self.as_ = Some(value.into());
+        self
+    }
+    
+
     /// Renders the link tag with all present attributes.
     pub fn render_html(&self) -> String {
         let mut html = String::with_capacity(256);

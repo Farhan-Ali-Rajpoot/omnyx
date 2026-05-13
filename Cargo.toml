@@ -13,11 +13,11 @@ edition = "2024"
 omnyx = { path = "crates/omnyx" }
 
 const_format = "0.2.35"
-rscx = "0.1.14"
 chrono = "0.4.44"
 pingora = { version = "0.8.0", features = ["proxy"] }
 async-trait = "0.1.89"
 bytes = "1.11.1"
 serde_json = "1.0.149"
 tokio = "1.52.1"
+rscx = "0.1.14"
 

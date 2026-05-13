@@ -3,12 +3,15 @@ use pingora::proxy::{ProxyHttp, Session};
 use pingora::upstreams::peer::HttpPeer;
 use std::sync::Arc;
 
-use crate::core::{AppState, ERROR_PAGE, ErasedPageComponent, NOT_FOUND_PAGE};
+use crate::core::{
+    AppState, ERROR_PAGE, ErasedLayoutComponent, LayoutComponent, LayoutComponentWrapper,
+    LayoutProps, NOT_FOUND_PAGE, Request,
+};
 
 pub struct PingoraAdapter<T = ()> {
     pub state: Arc<AppState<T>>,
-    /// Static HTML fallbacks if custom handlers fail or aren't provided
     pub fallbacks: FrameworkFallbacks,
+    pub root_layout: Arc<dyn ErasedLayoutComponent>,
 }
 
 pub struct FrameworkFallbacks {
@@ -18,15 +21,41 @@ pub struct FrameworkFallbacks {
 
 impl<T> PingoraAdapter<T>
 where
-    T: Send + Sync + 'static
+    T: Send + Sync + 'static,
 {
-    pub(crate) fn from_state(state: Arc<AppState<T>>) -> Self {
+    pub(crate) fn from_state_and_root_layout(
+        state: Arc<AppState<T>>,
+        maybe_root: Option<Arc<dyn ErasedLayoutComponent>>,
+    ) -> Self {
+        // Default root layout (if none provided)
+        let default_root = Arc::new(LayoutComponentWrapper {
+            handler: async move |req: Request, props: LayoutProps| {
+                rscx::html! {
+                    <!DOCTYPE html>
+                    <html lang="en">
+                        <head>
+                            { &req.metadata().render_html() }
+                            <meta charset="utf-8" />
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        </head>
+                        <body>
+                            { props.children }
+                        </body>
+                    </html>
+                }
+            },
+            _marker: std::marker::PhantomData,
+        });
+
+        let root_layout = maybe_root.unwrap_or(default_root);
+
         Self {
             state,
             fallbacks: FrameworkFallbacks {
                 error_html: ERROR_PAGE,
                 not_found_html: NOT_FOUND_PAGE,
-            }
+            },
+            root_layout,
         }
     }
 }
