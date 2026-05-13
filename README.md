@@ -47,7 +47,7 @@ Modern frontend frameworks heavily rely on runtime abstractions:
 - Hydration systems
 - Large client-side state engines
 
-Omnyx attempted to explore a lower-level alternative using Rust + Wasm.
+Omnyx attempted to explore a lower-level alternative using Rust + Vanilla Web (CSS + JS).
 
 The runtime used direct coordinate-based DOM patching instead of Virtual DOM tree diffing in order to reduce browser overhead and improve rendering efficiency.
 
