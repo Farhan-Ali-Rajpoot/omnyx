@@ -26,7 +26,6 @@ impl Router {
             middlewares: Vec::new(),
             metadata: None,
             children: Vec::new(),
-            extensions: crate::core::router::registry::Extensions::new(),
         };
 
         let final_page = f(page);
@@ -44,7 +43,6 @@ impl Router {
             controllers: LinearMap::new(),
             children: Vec::new(),
             middlewares: Vec::new(),
-            extensions: crate::core::router::registry::Extensions::new(),
         };
 
         let final_api = f(api);
@@ -65,7 +63,6 @@ impl Router {
             parallel_routes: LinearMap::new(),
             metadata: None,
             children: Vec::new(),
-            extensions: crate::core::router::registry::Extensions::new(),
             middlewares: Vec::new(),
         };
 
@@ -82,7 +79,6 @@ impl Router {
         let group = GroupDefinition {
             id: id.into(),
             children: Vec::new(),
-            extensions: crate::core::router::registry::Extensions::new(),
             middlewares: Vec::new(),
             metadata: None,
         };

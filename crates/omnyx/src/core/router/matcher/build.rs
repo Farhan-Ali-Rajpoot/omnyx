@@ -3,7 +3,6 @@ use std::sync::Arc;
 use crate::collections::LinearMap;
 use crate::core::ParallelRouteMatcher;
 use crate::core::router::logic::{Middleware, RouteMetadata};
-use crate::core::router::registry::Extensions;
 use crate::core::router::registry::ParallelRouteNode;
 use crate::core::router::registry::RouteNode;
 use crate::error::RouteError;
@@ -19,7 +18,6 @@ pub struct RouteBakeContext {
     pub layouts: Vec<Arc<Layout>>,   // layout chain
     pub middlewares: Vec<Arc<dyn Middleware>>,
     pub metadata: RouteMetadata,
-    pub extensions: Extensions,
     pub node_ids: Vec<String>,        // collect node IDs of layouts and page
 }
 
@@ -38,7 +36,6 @@ impl Default for RouteBakeContext {
             layouts: Vec::new(),
             middlewares: Vec::new(),
             metadata: RouteMetadata::default(),
-            extensions: Extensions::new(),
             node_ids: Vec::new(),
         }
     }
@@ -68,12 +65,10 @@ impl RouteMatcher {
                 metadata,
                 children,
                 middlewares,
-                extensions,
             } => {
                 let mut current_ctx = ctx.clone();
                 current_ctx.path = join_paths(&ctx.path, &path.to_matchit_pattern());
                 current_ctx.middlewares.extend(middlewares);
-                current_ctx.extensions.extend(extensions);
                 if let Some(meta) = metadata {
                     current_ctx.metadata.update_from_child(&meta);
                 }
@@ -106,7 +101,6 @@ impl RouteMatcher {
                     let entry = RouteEntry {
                         matched_pattern: current_ctx.path.clone(),
                         middlewares: current_ctx.middlewares.clone(),
-                        extensions: current_ctx.extensions.clone(),
                         kind: RouteKind::Page(page_endpoint),
                         node_ids: node_ids.clone(),
                     };
@@ -126,7 +120,6 @@ impl RouteMatcher {
                         let full_entry = RouteEntry {
                             matched_pattern: full_route_path.clone(),
                             middlewares: current_ctx.middlewares.clone(),
-                            extensions: current_ctx.extensions.clone(),
                             kind: RouteKind::Page(full_page_endpoint),
                             node_ids,
                         };
@@ -144,19 +137,16 @@ impl RouteMatcher {
                 controllers,
                 children,
                 middlewares,
-                extensions,
             } => {
                 let mut current_ctx = ctx.clone();
                 current_ctx.path = join_paths(&ctx.path, &path.to_matchit_pattern());
                 current_ctx.middlewares.extend(middlewares);
-                current_ctx.extensions.extend(extensions);
 
                 if !controllers.is_empty() {
                     let api_endpoint = ApiEndpoint { controllers };
                     let entry = RouteEntry {
                         matched_pattern: current_ctx.path.clone(),
                         middlewares: current_ctx.middlewares.clone(),
-                        extensions: current_ctx.extensions.clone(),
                         kind: RouteKind::Api(api_endpoint),
                         node_ids: vec![],
                     };
@@ -176,12 +166,10 @@ impl RouteMatcher {
                 metadata,
                 children,
                 parallel_routes,
-                extensions,
                 middlewares,
             } => {
                 let mut current_ctx = ctx.clone();
                 current_ctx.middlewares.extend(middlewares);
-                current_ctx.extensions.extend(extensions);
                 if let Some(meta) = metadata {
                     current_ctx.metadata.update_from_child(&meta);
                 }
@@ -232,12 +220,10 @@ impl RouteMatcher {
                 id: _,
                 children,
                 metadata,
-                extensions,
                 middlewares,
             } => {
                 let mut current_ctx = ctx.clone();
                 current_ctx.middlewares.extend(middlewares);
-                current_ctx.extensions.extend(extensions);
                 if let Some(meta) = metadata {
                     current_ctx.metadata.update_from_child(&meta);
                 }

@@ -23,7 +23,6 @@ pub enum RouteNode {
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware>>,
-        extensions: Extensions,
     },
     
     Api {
@@ -31,7 +30,6 @@ pub enum RouteNode {
         controllers: LinearMap<http::Method, Arc<dyn ErasedApiHandler>>,
         children: Vec<RouteNode>,
         middlewares: Vec<Arc<dyn Middleware>>,
-        extensions: Extensions,
     },
 
     Layout {
@@ -42,7 +40,6 @@ pub enum RouteNode {
         metadata: Option<RouteMetadata>,
         children: Vec<RouteNode>,
         parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>, 
-        extensions: Extensions,
         middlewares: Vec<Arc<dyn Middleware>>,
     },
 
@@ -50,7 +47,6 @@ pub enum RouteNode {
         id: String,
         children: Vec<RouteNode>,
         metadata: Option<RouteMetadata>,
-        extensions: Extensions,
         middlewares: Vec<Arc<dyn Middleware>>,
     },
 }

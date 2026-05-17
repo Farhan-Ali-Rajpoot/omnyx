@@ -3,10 +3,10 @@ use pingora::proxy::{ProxyHttp, Session};
 use pingora::upstreams::peer::HttpPeer;
 use std::sync::Arc;
 
-use crate::core::{
-    AppState, ERROR_PAGE, ErasedLayoutComponent, LayoutComponent, LayoutComponentWrapper,
-    LayoutProps, NOT_FOUND_PAGE, Request,
-};
+use crate::core::pingora::handle_route::render_pipeline::templates::{NOT_FOUND_PAGE, ERROR_PAGE};
+use crate::core::router::handlers::{ErasedLayoutComponent, LayoutComponentWrapper, LayoutProps};
+use crate::core::router::io::Request;
+use crate::core::AppState;
 
 pub struct PingoraAdapter<T = ()> {
     pub state: Arc<AppState<T>>,
@@ -76,7 +76,7 @@ where
         session: &mut Session,
         _ctx: &mut Self::CTX,
     ) -> pingora::Result<bool> {
-        self.render_route(session).await
+        self.handle_route(session).await
     }
 
     async fn upstream_peer(

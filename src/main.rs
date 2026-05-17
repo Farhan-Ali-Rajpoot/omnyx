@@ -16,7 +16,7 @@ fn main() {
     let router = base_router();
 
     let config = Config {
-        address: "127.0.0.1:3000".into(),
+        address: "127.0.0.1:5000".into(),
         embedded_public_dir: Some(&PUBLIC_DIR),
     };
 

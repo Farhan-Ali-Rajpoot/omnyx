@@ -76,7 +76,6 @@ pub enum RouteKind {
 pub struct RouteEntry {
     pub(crate) matched_pattern: String,
     pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
-    pub(crate) extensions: crate::core::router::registry::Extensions,
     pub(crate) kind: RouteKind,
     pub(crate) node_ids: Vec<String>,   // NEW: list of all node IDs in this route
 }

@@ -19,7 +19,6 @@ pub struct PageDefinition {
     
     pub(crate) metadata: Option<RouteMetadata>,
     pub(crate) children: Vec<RouteNode>,
-    pub(crate) extensions: crate::core::router::registry::Extensions,
     pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
 }
 
@@ -83,11 +82,6 @@ impl PageDefinition {
         self
     }
 
-    pub fn extension<T: Send + Clone + Sync + 'static>(mut self, value: T) -> Self {
-        self.extensions.insert(value);
-        self
-    }
-
     pub fn children<F>(mut self, f: F) -> Self
     where
         F: FnOnce(Router) -> Router,
@@ -112,7 +106,6 @@ impl PageDefinition {
             loader_controller: self.loader_controller,
             metadata: self.metadata,
             children: self.children,
-            extensions: self.extensions,
             middlewares: self.middlewares,
         }
     }

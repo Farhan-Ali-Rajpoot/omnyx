@@ -14,7 +14,6 @@ pub struct ApiDefinition {
     pub(crate) controllers: LinearMap<http::Method, Arc<dyn ErasedApiHandler>>,
     pub(crate) children: Vec<RouteNode>,
     pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
-    pub(crate) extensions: crate::core::router::registry::Extensions,
     
 }
 
@@ -37,11 +36,6 @@ impl ApiDefinition {
         };
 
         self.controllers.insert(m, Arc::new(wrapper));
-        self
-    }
-
-    pub fn extension<T: Send + Sync + Clone + 'static>(mut self, value: T) -> Self {
-        self.extensions.insert(value);
         self
     }
 
@@ -72,7 +66,6 @@ impl ApiDefinition {
             controllers: self.controllers,
             children: self.children,
             middlewares: self.middlewares,
-            extensions: self.extensions,
         }
     }
 }

@@ -1,6 +1,5 @@
 use std::borrow::Cow;
-use axum::http::StatusCode;
-use axum::response::IntoResponse as AxumIntoResponse;
+use http::StatusCode;
 use super::{Response, Body};
 
 pub trait IntoResponse {

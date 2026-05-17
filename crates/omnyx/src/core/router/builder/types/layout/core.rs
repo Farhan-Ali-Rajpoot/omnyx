@@ -18,7 +18,6 @@ pub struct LayoutDefinition {
     pub(crate) parallel_routes: LinearMap<String, Vec<ParallelRouteNode>>,
     pub(crate) metadata: Option<RouteMetadata>,
     pub(crate) children: Vec<RouteNode>,
-    pub(crate) extensions: crate::core::router::registry::Extensions,
     pub(crate) middlewares: Vec<Arc<dyn Middleware>>,
 }
 
@@ -78,11 +77,6 @@ impl LayoutDefinition {
         self
     }
 
-    pub fn extension<T: Send + Clone + Sync + 'static>(mut self, value: T) -> Self {
-        self.extensions.insert(value);
-        self
-    }
-
     pub fn parallel_route<F>(mut self, name: impl Into<String>, f: F) -> Self 
     where
         F: FnOnce(ParallelRouteBuilder) -> ParallelRouteBuilder
@@ -117,7 +111,6 @@ impl LayoutDefinition {
             parallel_routes: self.parallel_routes,
             metadata: self.metadata,
             children: self.children,
-            extensions: self.extensions,
             middlewares: self.middlewares,
         }
     }
