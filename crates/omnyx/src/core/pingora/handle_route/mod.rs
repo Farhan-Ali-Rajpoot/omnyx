@@ -1,10 +1,11 @@
-pub mod core;
 pub mod public;
-pub mod render_pipeline;
+pub mod renderer;
+pub mod core;
 pub mod middleware;
+pub mod finalize_response;
 
-
-pub use core::*;
 pub use public::*;
-pub use render_pipeline::*;
+pub use renderer::*;
+pub use core::*;
 pub use middleware::*;
+pub use finalize_response::*;

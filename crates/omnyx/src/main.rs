@@ -1,23 +1,11 @@
 
 use omnyx::{
-    builder::{AppBuilder, Config},
-    include_dir::{self, Dir, include_dir},
-    request::Request,
-    router::LayoutProps,
-    collections::LinearMap,
-    router::{RenderedParallelRoute, Router},
-    rscx::html,
+    builder::{AppBuilder, Config, Renderer}, collections::LinearMap, include_dir::{self, Dir, include_dir}, request::Request, router::{LayoutProps, RenderedParallelRoute, Router}, rscx::html
 };
 
 static PUBLIC_DIR: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/assets");
 
 fn main() {
-    let router = home_router();
-
-    let config = Config {
-        address: "127.0.0.1:3000".into(),
-        embedded_public_dir: Some(&PUBLIC_DIR),
-    };
 
     let root_layout = async move |req: Request, props: LayoutProps| {
         omnyx::rscx::html! {
@@ -37,10 +25,20 @@ fn main() {
         } 
     };
 
+    let router = home_router();
+
+    let config = Config {
+        address: "127.0.0.1:3000".into(),
+        embedded_public_dir: Some(&PUBLIC_DIR),
+    };
+
+    let renderer = Renderer::new()
+        .root_layout_handler(root_layout);
+    
     let app = AppBuilder::new()
         .with_config(config)
         .with_router(router)
-        .with_root_layout(root_layout)
+        .with_renderer(renderer)
         .build()
         .unwrap();
 

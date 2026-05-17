@@ -1,15 +1,14 @@
 use pingora::http::ResponseHeader;
 use pingora::proxy::Session;
 
-use crate::core::pingora::PingoraAdapter;
 use crate::core::router::io::Request;
-use crate::core::{Body, DeferredTask, Response};
+use crate::core::{Body, DeferredTask, PingoraAdapter, Response};
 
 impl<T> PingoraAdapter<T>
 where
-    T: Send + Sync + 'static,
+    T: Send + Sync + 'static
 {
-    pub async fn finalize_streaming_response(
+    pub async fn finalize_response(
         &self,
         session: &mut Session,
         req: &Request,

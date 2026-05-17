@@ -29,4 +29,4 @@ where
 }
 
 impl_handler!(ApiHandler, call; );
-impl_handler!(ApiHandler, call; T1);
+impl_handler!(ApiHandler, call; t1);

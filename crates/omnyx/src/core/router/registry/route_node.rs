@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use crate::core::router::registry::Extensions;
 use crate::core::router::logic::metadata::RouteMetadata;
 use crate::core::router::logic::Middleware;
 use crate::core::router::utils::Path;

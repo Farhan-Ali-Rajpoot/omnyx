@@ -28,7 +28,7 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         }
 
         eprintln!("[handle_public_response] File not found: {}", path);
-        self.handle_not_found_response(session).await
+        self.renderer.handle_not_found_response(session).await
     }
 
     /// Retrieves a file from the embedded public directory (if configured).

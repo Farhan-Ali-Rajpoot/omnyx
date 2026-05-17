@@ -29,4 +29,4 @@ where
 }
 
 impl_handler!(LoaderComponent, call; );
-impl_handler!(LoaderComponent, call; T1);
+impl_handler!(LoaderComponent, call; t1);

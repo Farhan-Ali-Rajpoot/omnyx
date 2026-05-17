@@ -29,4 +29,4 @@ where
 }
 
 impl_handler!(SpecialComponent, call; );
-impl_handler!(SpecialComponent, call; T1);
+impl_handler!(SpecialComponent, call; t1);

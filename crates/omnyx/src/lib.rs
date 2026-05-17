@@ -27,4 +27,5 @@ pub mod response {
 
 pub mod builder {
     pub use crate::core::builder::{AppBuilder, Config};
+    pub use crate::core::pingora::renderer::Renderer;
 }

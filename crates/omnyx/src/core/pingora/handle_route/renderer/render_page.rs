@@ -6,6 +6,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use crate::collections::LinearMap;
+use crate::core::renderer::Renderer;
 use crate::core::{Layout, ParallelRouteMatcher};
 use crate::core::pingora::PingoraAdapter;
 use crate::core::router::handlers::{
@@ -84,10 +85,7 @@ impl LayoutCapture {
 
 
 
-impl<T> PingoraAdapter<T>
-where
-    T: Send + Sync + 'static,
-{
+impl Renderer {
     pub(crate) async fn render_page(
         &self,
         session: &mut Session,
@@ -238,7 +236,13 @@ where
             node_id: "L_root".to_string(),
         };
         req.set_layout_props(root_layout_props);
-        let final_html = self.root_layout.call_erased(req.clone()).await.body.to_string();
+        let final_html = { 
+            if let Some(rh) = &self.root_layout {
+                rh.call_erased(req.clone()).await.body.to_string()
+            } else {
+                self.fallbacks.root_layout.call_erased(req.clone()).await.body.to_string()
+            }
+        };
 
         // Inject the node IDs script for initial page load
         let node_ids_json = serde_json::to_string(&node_ids).unwrap();
@@ -250,7 +254,7 @@ where
             .await
     }
 
-    async fn render_parallel_slot(
+    pub(crate) async fn render_parallel_slot(
         &self,
         req: &mut Request,
         matcher: &ParallelRouteMatcher,
@@ -371,7 +375,7 @@ where
         (SlotOutcome::Ready(wrapped_slot), matched.params)
     }
 
-    async fn execute_slot(
+    pub(crate) async fn execute_slot(
         &self,
         req: &mut Request,
         main: &Option<MainComponent>,
@@ -424,7 +428,7 @@ where
         self.try_error_boundary(req, error).await
     }
 
-    async fn get_loader_html(&self, loader: &Arc<dyn ErasedLoaderComponent>, req: &Request) -> String {
+    pub(crate) async fn get_loader_html(&self, loader: &Arc<dyn ErasedLoaderComponent>, req: &Request) -> String {
         let l_res = std::panic::AssertUnwindSafe(loader.call_erased(req.clone()))
             .catch_unwind()
             .await
@@ -436,7 +440,7 @@ where
         }
     }
 
-    pub async fn try_error_boundary(
+    pub(crate) async fn try_error_boundary(
         &self,
         req: &Request,
         error: &Option<Arc<dyn ErasedErrorComponent>>,
@@ -453,7 +457,7 @@ where
         }
     }
 
-    pub fn unwrap_outcome(&self, outcome: &SlotOutcome) -> String {
+    pub(crate) fn unwrap_outcome(&self, outcome: &SlotOutcome) -> String {
         match outcome {
             SlotOutcome::Ready(h) => h.clone(),
             SlotOutcome::Pending { shell, .. } => shell.clone(),

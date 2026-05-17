@@ -29,4 +29,4 @@ where
 }
 
 impl_handler!(ErrorComponent, call; );
-impl_handler!(ErrorComponent, call; T1);
+impl_handler!(ErrorComponent, call; t1);

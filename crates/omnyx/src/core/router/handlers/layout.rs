@@ -49,5 +49,5 @@ where
 }
 
 impl_handler!(LayoutComponent, call; );
-impl_handler!(LayoutComponent, call; T1);
-impl_handler!(LayoutComponent, call; T1, T2);
+impl_handler!(LayoutComponent, call; t1);
+impl_handler!(LayoutComponent, call; t1, t2);

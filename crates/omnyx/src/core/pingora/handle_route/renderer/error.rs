@@ -4,11 +4,12 @@
 use pingora::http::ResponseHeader;
 use pingora::proxy::Session;
 
-use crate::core::pingora::PingoraAdapter;
+use crate::core::renderer::Renderer;
 
 
-impl<T> PingoraAdapter<T> where T: Send + Sync + 'static { 
-    pub async fn return_error_page(&self, session: &mut Session) -> pingora::Result<bool> {
+
+impl Renderer { 
+    pub(crate) async fn return_error_page(&self, session: &mut Session) -> pingora::Result<bool> {
 
         let mut header = ResponseHeader::build(404, None).unwrap();
         header.insert_header("Content-Type", "text/html").unwrap();
@@ -18,7 +19,7 @@ impl<T> PingoraAdapter<T> where T: Send + Sync + 'static {
         Ok(true)
     }
 
-    pub async fn send_response(
+    pub(crate) async fn send_response(
         &self,
         session: &mut Session,
         status: u16,

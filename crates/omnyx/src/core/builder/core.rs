@@ -5,7 +5,8 @@ use pingora::proxy::http_proxy_service;
 use crate::core::router::RouterService;
 use crate::core::router::builder::Router;
 use crate::error::OmnyxError;
-use crate::core::{App, AppState, ErasedLayoutComponent, LayoutComponent, LayoutComponentWrapper};
+use crate::core::{App, AppState};
+use crate::core::pingora::handle_route::Renderer;
 use crate::core::router::registry::RouteNode;
 use crate::core::PingoraAdapter;
 
@@ -23,21 +24,17 @@ impl Default for Config {
     }
 }
 
+#[derive(Default)]
 pub struct AppBuilder<T = ()> {
     pub(crate) routers: Vec<Router>,
-    pub(crate) state: Arc<T>, 
+    pub(crate) user_state: Arc<T>, 
     pub(crate) config: Config,
-    pub(crate) root_layout: Option<Arc<dyn ErasedLayoutComponent>>, // type-erased
+    pub(crate) renderer: Renderer,
 }
 
 impl AppBuilder<()> {
     pub fn new() -> Self {
-        Self {
-            routers: Vec::new(),
-            state: Arc::new(()),
-            config: Config::default(),
-            root_layout: None,
-        }
+        Self::default()
     }
 }
 
@@ -49,10 +46,10 @@ impl<T> AppBuilder<T> {
 
     pub fn with_state<S>(self, new_state: S) -> AppBuilder<S> {
         AppBuilder {
-            state: Arc::new(new_state), 
+            user_state: Arc::new(new_state), 
             routers: self.routers, 
-            config: self.config, 
-            root_layout: self.root_layout,
+            config: self.config,
+            renderer: self.renderer,
         }
     }
 
@@ -61,18 +58,11 @@ impl<T> AppBuilder<T> {
         self
     }
 
-    pub fn with_root_layout<H, Args>(mut self, layout: H) -> Self
-    where
-        H: LayoutComponent<Args> + Clone + Send + Sync + 'static,
-        Args: 'static + Clone + Send + Sync,
-    {
-        let wrapper = LayoutComponentWrapper {
-            handler: layout,
-            _marker: std::marker::PhantomData,
-        };
-        self.root_layout = Some(Arc::new(wrapper));
+    pub fn with_renderer(mut self, renderer: Renderer) -> Self {
+        self.renderer = renderer;
         self
     }
+
 }
 
 impl<T> AppBuilder<T>
@@ -85,11 +75,14 @@ where
     
         let state = Arc::new(AppState { 
             router,
-            user_state: self.state, 
+            user_state: self.user_state, 
             config: self.config, 
         });
 
-        let adapter = PingoraAdapter::from_state_and_root_layout(Arc::clone(&state), self.root_layout);
+        let adapter = PingoraAdapter { 
+            state: Arc::clone(&state),
+            renderer: self.renderer,
+        };
 
         let mut proxy_service = http_proxy_service(&server.configuration, adapter);
         proxy_service.add_tcp(&state.config.address);

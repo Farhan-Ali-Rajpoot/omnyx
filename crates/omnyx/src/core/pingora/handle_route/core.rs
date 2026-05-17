@@ -1,12 +1,8 @@
 use pingora::proxy::Session;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 use crate::core::pingora::PingoraAdapter;
-use crate::core::router::handlers::{
-    ErasedErrorComponent, ErasedLayoutComponent, ErasedLoaderComponent, ErasedPageComponent,
-};
-use crate::core::router::io::{Body, Request, Response};
-use crate::core::{PageEndpoint, RouteKind, RouteMetadata};
+use crate::core::router::io::{Request,};
+use crate::core::{RouteKind, RouteMetadata};
 
 
 
@@ -29,7 +25,7 @@ where
         let matched = if let Ok(m) = self.state.router.lookup(&path) {
             m
         } else {
-            return self.handle_not_found_response(session).await;
+            return self.renderer.handle_not_found_response(session).await;
         };
 
         let metadata = if let RouteKind::Page(page) = &matched.entry.kind {
@@ -49,7 +45,7 @@ where
         println!("{} {}", req.method(), path);
 
         if let Err(_) = self.run_middlewares(&mut req).await {
-            return self.return_error_page(session).await;
+            return self.renderer.return_error_page(session).await;
         }
 
         match &matched.entry.kind {
@@ -61,15 +57,10 @@ where
                         .ok_or_else(|| pingora::Error::new_str("405"))?;
                     let res = page_ctr.call_erased(req.clone()).await;
                     return self
-                        .finalize_streaming_response(session, &req, Some(res), None)
+                        .finalize_response(session, &req, Some(res), None)
                         .await;
                 }
-                // Navigation handling (commented for now)
-                // if let Some(_) = req.header("X-OMNYX-NAVIGATION") {
-                //     return self.render_page_navigation(session, &mut req, page).await;
-                // } else {
-                    return self.render_page(session, &mut req, page).await;
-                // }
+                self.renderer.render_page(session, &mut req, page).await
             }
             RouteKind::Api(api) => {
                 let ctr = api
@@ -77,9 +68,9 @@ where
                     .get(req.method())
                     .ok_or_else(|| pingora::Error::new_str("405"))?;
                 let res = ctr.call_erased(req.clone()).await;
-                return self
-                    .finalize_streaming_response(session, &req, Some(res), None)
-                    .await;
+                self
+                    .finalize_response(session, &req, Some(res), None)
+                    .await
             }
         }
     }
